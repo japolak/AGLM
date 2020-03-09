@@ -94,7 +94,7 @@ The table below reports the output with filled in missing information.
 The the coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'S given the sample data.\\
 
 To compute the overall F-test we use the equation below and the statistic then follows an F distribution with corresponding degrees of freedom.
-\[ F = \frac{\SSreg/p}{\SSR/(n-(p+1))} \sim F_{n,n-(p+1)}
+\[ F = \frac{\SSreg/p}{\SSR/(n-(p+1))} \sim F_{p,n-(p+1)}
 \]
 
 The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2$. Other values we can easily obtain from the filled table above.
@@ -102,15 +102,24 @@ The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2
 (f = (e / 2) / (181257.15 / (51-(2+1)) ))
 @
 
-Hence the F-statistic has a value of \Sexpr{f}. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
+Hence, the F-statistic has a value of \Sexpr{f}. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
 
 <<F-pvalue, include=TRUE>>=
 (p = pf(f,2,48,lower.tail = FALSE))
 @
 
+The p-value is \Sexpr{p}, which is very low and therefore there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test therefore determines if the linear model is at least suitable to explain some of the variance in the outcome variable. Which in this case it does.
+
 \section*{Task 2}
 
+\section*{Task 3}
+
+\section*{Task 4}
+
 \section*{Task Template}
+
+This is just an expample of how to use latex and r-code chunks in knitr.\\
+
 You can test if \textbf{knitr} works with this minimal demo. OK, let's
 get started with some boring random numbers:
 
