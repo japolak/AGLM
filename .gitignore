@@ -1,2 +1,5 @@
 #Ignore Files
 Grab*.pdf
+*.gz
+*-concordance.tex
+.Rproj.user

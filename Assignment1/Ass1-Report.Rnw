@@ -1,0 +1,142 @@
+%% LyX 2.2.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you  know what you are doing.
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{dsfont}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+
+% Margins of the document
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+
+% Header and footer for all pages
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{Page \thepage}
+
+% Header and footer for first page
+\fancypagestyle{plain}{%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyhf{}%
+  \rhead{ETH Zurich}
+  \lhead{Applied Generalized Linear Models \\ Spring Semester 2020}
+  \rfoot{Page \thepage}
+}
+
+%% Global Settings
+<<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options
+opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
+options(formatR.arrow=TRUE,width=90)
+@
+
+
+\DeclareMathOperator{\SSR}{SSR}
+\DeclareMathOperator{\SSreg}{SSreg}
+\DeclareMathOperator{\SST}{SST}
+
+
+%% ---------- BEGIN DOCUMENT -----------------------------------------------
+\begin{document}
+
+%% Tiltle
+\title{Assignment 1}
+\author{Milan Kuzmanovic, Mark McMahon \\ Martin Kotuliak, Jakub Polak}
+\date{\today}
+
+\maketitle
+
+\section*{Task 1}
+
+A multiple linear regression model has been estimated to study the relation- ship between $Y =$ violent crime rate (per 100,000 people), $X_1 =$ poverty rate (percentage with income below the poverty line) and $X_2 =$ percentage living in urban area. Data are collected in 51 cities in the U.S.\\
+
+The relevant equations that relate estimate, standard error, T-statistic, R-squared and Sum of Squares of residuals, regression and total are folloqwing.
+
+\[ \frac{\beta_i}{se(\beta_i)} = T_i \qquad R^2 = \frac{\SSreg}{\SST}= 1-\frac{\SSR}{\SST}  \qquad \SST = \SSreg + \SSR
+\]
+
+Using these we just plug in the corresponding information that is already provided and compute the missing values.
+
+<<table, echo=TRUE, include=TRUE, eval=TRUE, results='hold'>>=
+a <- -498.683 / 140.988
+b <- 4.885 * 6.677
+c <- 9.112 / 6.900
+d <- 1841257.15 / (1 - 0.5708)
+e <- d - 1841257.15
+@
+
+The table below reports the output with filled in missing information.
+
+\begin{center}
+\begin{tabular}{ l r r r r }
+ \hline
+            & Est.            & s.e.              & t-value         & p-value \\
+ \hline
+ Intercept  & -498.683  & 140.988 & $^{a\;}$\Sexpr{round(a,3)} & 0.009 \\
+ $X_1$      & $^{b\;}$\Sexpr{round(b,3)} & 6.677  & 4.885     & 0.001 \\
+ $X_2$      & 9.112  & $^{c\;}$\Sexpr{round(c,3)} & 6.900      & 0.001 \\
+ \hline
+ $R^2$      & 0.5708            & & & \\
+ SSreg      & $^{e\;}$\Sexpr{format(e,scientific=FALSE)} & & & \\
+ SSR        & 1841257.15        & & & \\
+ SSTotal    & $^{d\;}$\Sexpr{format(d,scientific=FALSE)} & & & \\
+ \hline
+\end{tabular}
+\end{center}
+
+The the coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'S given the sample data.\\
+
+To compute the overall F-test we use the equation below and the statistic then follows an F distribution with corresponding degrees of freedom.
+\[ F = \frac{\SSreg/p}{\SSR/(n-(p+1))} \sim F_{n,n-(p+1)}
+\]
+
+The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2$. Other values we can easily obtain from the filled table above.
+<<F-statistic, include=TRUE>>=
+(f = (e / 2) / (181257.15 / (51-(2+1)) ))
+@
+
+Hence the F-statistic has a value of \Sexpr{f}. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
+
+<<F-pvalue, include=TRUE>>=
+p = pf()
+@
+
+\section*{Task 2}
+
+\section*{Task Template}
+You can test if \textbf{knitr} works with this minimal demo. OK, let's
+get started with some boring random numbers:
+
+<<boring-random>>=
+set.seed(1121)
+(x=rnorm(20))
+mean(x);var(x)
+@
+
+The first element of \texttt{x} is \Sexpr{x[1]}. Boring boxplots
+and histograms recorded by the PDF device:
+
+<<boring-plots, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
+par(mar=c(4,4,.1,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3,las=1)
+boxplot(x)
+hist(x,main='')
+@
+
+Do the above chunks work? You should be able to compile the \TeX{}
+The first element of \texttt{x} is \Sexpr{x[1]}. Boring boxplots
+and histograms recorded by the PDF device:
+
+<<boring-plots2, echo=FALSE, fig.width=8, fig.height=4, out.width='.8\\linewidth'>>=
+plot(x,type="l")
+@
+
+Do the above chunks work? You should be able to compile the \TeX{}
+
+\end{document}
