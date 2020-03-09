@@ -164,11 +164,12 @@ Hence the F-statistic has a value of 324.2311914. To interpret this, the global 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{p} \hlkwb{=} \hlkwd{pf}\hlstd{()}
+\hlstd{(p} \hlkwb{=} \hlkwd{pf}\hlstd{(f,}\hlnum{2}\hlstd{,}\hlnum{48}\hlstd{,}\hlkwc{lower.tail} \hlstd{=} \hlnum{FALSE}\hlstd{))}
 \end{alltt}
-
-
-{\ttfamily\noindent\bfseries\color{errorcolor}{\#\# Error in pf(): argument "{}q"{} is missing, with no default}}\end{kframe}
+\begin{verbatim}
+## [1] 1.319003e-28
+\end{verbatim}
+\end{kframe}
 \end{knitrout}
 
 \section*{Task 2}

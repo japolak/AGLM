@@ -105,7 +105,7 @@ The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2
 Hence the F-statistic has a value of \Sexpr{f}. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
 
 <<F-pvalue, include=TRUE>>=
-p = pf()
+(p = pf(f,2,48,lower.tail = FALSE))
 @
 
 \section*{Task 2}
