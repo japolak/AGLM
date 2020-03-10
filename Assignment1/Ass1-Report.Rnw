@@ -1,4 +1,4 @@
-%% Do not edit unless you know what you are doing.
+%% Do not edit preable unless you know what you are doing.
 \documentclass{article}
 \usepackage[sc]{mathpazo}
 \usepackage[T1]{fontenc}
@@ -28,8 +28,11 @@
   \rfoot{Page \thepage}
 }
 
-%% Global Settings
+%% Global Settings of R-code
 <<setup, include=FALSE, cache=FALSE>>=
+#install.packages("knitr","dplyr","ggplot2")
+library(dplyr)
+library(ggplot2)
 library(knitr)
 # set global chunk options
 opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
