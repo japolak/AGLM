@@ -166,8 +166,8 @@ The F-test is used for comparing the factors of the total deviation. In ANOVA, F
 The process of ANOVA testing is following:
 \begin{itemize}
 \item Compute the common variance, which is called variance within samples $S^2_{\text{within}}$ or residual variance.\\
-\item Compute the variance between sample means, by first computing the mean of each group and then computing the variance between sample means . \\
-\item Produce F-statistic as the ratio of $F =S^2_{\text{between}} / S^2_{\text{within}}$.
+\item Compute the variance between sample means, by first computing the mean of each group and then computing the variance between sample means $S^2_{\text{between}}$. \\
+\item Produce F-statistic as the ratio of $F = \frac{S^2_{\text{between}} / (I-1)}{S^2_{\text{within}}/(n-I)} $.
 \end{itemize}
 
 With the code below, we specify the data and compute common statistics for each group.
@@ -209,7 +209,7 @@ fit <- aov(grade ~ group, data = X)
 summary(fit)
 @
 
-The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.
+The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.\\
 
 <<t2-modified-data, echo=FALSE, include=FALSE>>=
 set.seed(352144)
@@ -229,10 +229,15 @@ fit4 <- aov(grade ~ group, data = X4)
 summary(fit4)
 
 @
+\newpage
+Case (2):\\
+Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller.\\
 
-Case:Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8.\\
+Case (3):\\
+Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistics to be larger. The main reason is that that the variation within each group have decreased and therefore the $S^2_{\text{within}}$ will decrease and as the denominator of a ratio will decrease, the whole F-test statistics will be larger. With such a small variances, we would even expect the test to be significant at the 5\% significance level.\\
 
-In this situation, we would expect the
+Case (4):\\
+Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistics to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistics will be with 2 and 77 degrees of freedom. The groups variance has still the same number of degrees of freedom as the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Error of Residuals compared to Mean Squared Error of Groups. Hence, the overall F-test statistics would significantly increase.
 
 
 \section*{Task 3}
