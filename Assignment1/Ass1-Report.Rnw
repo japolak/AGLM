@@ -9,6 +9,13 @@
 \usepackage{indentfirst}
 \usepackage{fancyhdr}
 \usepackage{amsmath}
+\usepackage{enumitem}
+
+% No indents in whole document
+\setlength\parindent{0pt}
+
+% Gaps between item is itemize
+\setitemize{itemsep=-1em,topsep=0.5em,parsep=0em,partopsep=0pt}
 
 % Margins of the document
 \geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
@@ -28,7 +35,7 @@
   \rfoot{Page \thepage}
 }
 
-%% Global Settings of R-code
+% Global Settings of R-code
 <<setup, include=FALSE, cache=FALSE>>=
 # Install these packages if you don't have them already
 #install.packages("knitr","dplyr","ggplot2")
@@ -40,10 +47,16 @@ opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
 options(formatR.arrow=TRUE,width=90)
 @
 
-%% Mathematics Operators for Ease of Notation
+% Mathematics Operators for Ease of Notation
 \DeclareMathOperator{\SSR}{SSR}
 \DeclareMathOperator{\SSreg}{SSreg}
 \DeclareMathOperator{\SST}{SST}
+
+% Bad Box settings
+\hbadness=10000
+\vbadness=\maxdimen
+\vfuzz=30pt
+\hfuzz=30pt
 
 
 %% ---------- BEGIN DOCUMENT -----------------------------------------------
@@ -66,7 +79,7 @@ The relevant equations that relate estimate, standard error, T-statistic, R-squa
 
 Using these we just plug in the corresponding information that is already provided and compute the missing values.
 
-<<table, echo=TRUE, include=TRUE, eval=TRUE, results='hold'>>=
+<<t1-table, echo=TRUE, include=TRUE, eval=TRUE, results='hold'>>=
 a <- -498.683 / 140.988
 b <- 4.885 * 6.677
 c <- 9.112 / 6.900
@@ -100,19 +113,103 @@ To compute the overall F-test we use the equation below and the statistic then f
 \]
 
 The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2$. Other values we can easily obtain from the filled table above.
-<<F-statistic, include=TRUE>>=
+<<t1-statistic, include=TRUE>>=
 (f = (e / 2) / (181257.15 / (51-(2+1)) ))
 @
 
 Hence, the F-statistic has a value of \Sexpr{f}. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
 
-<<F-pvalue, include=TRUE>>=
+<<t1-pvalue, include=TRUE>>=
 (p = pf(f,2,48,lower.tail = FALSE))
 @
 
 The p-value is \Sexpr{p}, which is very low and therefore there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test therefore determines if the linear model is at least suitable to explain some of the variance in the outcome variable. Which in this case it does.
 
 \section*{Task 2}
+
+The table below shows the scores of the first test (maximum score 10 points) in a beginning German course. Students in the course are grouped as follows:
+\begin{itemize}
+\item Group A: Never studied foreign language before, but have good English skills\\
+\item Group B: Never studied foreign language before, have poor English skills\\
+\item Group C: Studied other foreign language
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{ c c c }
+ \hline
+ Group A & Group B & Group C \\
+ \hline
+ 4 & 1 & 9 \\
+ 6 & 5 & 10 \\
+ 8 &   & 5 \\
+ \hline
+\end{tabular}
+\end{center}
+
+Two-sample t-test is usual method for comparing mean scores of two groups. The one-way analysis of variance (ANOVA), also known as one-factor ANOVA, is an extension of independent two-samples t-test for comparing means in a situation where there are more than two groups. This corresponds to our situation.\\
+
+The Hypothesis test in ANOVA is following:
+\begin{itemize}
+\item Null hypothesis: the means of the different groups are the same \\
+\item Alternative hypothesis: At least one sample mean is not equal to the others
+\end{itemize}
+
+The Assumptions of ANOVA are following:
+\begin{itemize}
+\item The observations are obtained independently and randomly from the population defined by the groups of factor levels.\\
+\item The data of each factor level are normally distributed.\\
+\item These normal populations have a common variance.
+\end{itemize}
+
+The F-test is used for comparing the factors of the total deviation. In ANOVA, F-statistic is computed as the ratio of the variance between groups and variance within groups. The F-statistic is then compared to the F-distribution with $I-1$ and $n-I$ degrees of freedom, where $I =$ total number of groups and $n =$ total number of observations. Note that, a lower ratio (ratio $< 1$) indicates that there are no significant difference between the means of the samples being compared. However, a higher ratio implies that the variation among group means are significant.\\
+
+The process of ANOVA testing is following:
+\begin{itemize}
+\item Compute the common variance, which is called variance within samples $S^2_{\text{within}}$ or residual variance.\\
+\item Compute the variance between sample means, by first computing the mean of each group and then computing the variance between sample means . \\
+\item Produce F-statistic as the ratio of $F =S^2_{\text{between}} / S^2_{\text{within}}$.
+\end{itemize}
+
+With the code below, we specify the data and compute common statistics for each group.
+<<t2-data>>=
+X <- data.frame("grade" = c(4,6,8,1,5,9,10,5),
+                "group" = c("A","A","A","B","B","C","C","C"))
+library(dplyr)
+data.frame(group_by(X, group) %>%
+  summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade)))
+@
+
+These can be easily visualised with a boxplot (left) or a group means plot with errorbars signifying one standard deviation (right). The main observation we conclude from these plot is the large variance within groups caused mainly by having just few observations.
+
+<<t2-plots, echo=FALSE, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
+boxplot(grade ~ group, data=X, col=2:5, frame = FALSE, xlab = "Groups", ylab="Grade")
+points(grade ~ group, data=X,pch=20)
+
+Xplot <- X
+out = group_by(Xplot, group) %>%
+  summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade))
+Xplot$mean <- c(rep(out$mean[1],3),rep(out$mean[2],2),rep(out$mean[3],3))
+Xplot$sd <- c(rep(out$sd[1],3),rep(out$sd[2],2),rep(out$sd[3],3))
+ggplot(Xplot) +
+  geom_errorbar(aes(x= group, ymin= mean-sd, ymax = mean+sd, width=0.3, color=group)) +
+  geom_point(aes(x=group, y= mean, color=group),size=5,shape=3) +
+  geom_point(aes(x = group, y = grade), size=2) +
+  xlab("Groups") +
+  ylab("Grade") +
+  theme_bw() +
+  theme(axis.line = element_line(colour = "black", size=.5),
+        panel.border = element_rect(colour = "white"))
+
+@
+
+Finaly, below we compute the ANOVA tests with our data using the function \verb+aov()+.
+
+<<t2-aov>>=
+fit <- aov(grade ~ group, data = X)
+summary(fit)
+@
+
+The F-statistics value is 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant in 5 \% significance level and therefore we cannot reject the null hypothesis.
 
 \section*{Task 3}
 

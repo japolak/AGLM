@@ -15,27 +15,6 @@ p = pf(f,2,48,lower.tail = FALSE)
 
 ##### Task 2 #####
 
-# ANOVA
-# The one-way analysis of variance (ANOVA), also known as one-factor ANOVA, is an extension of independent two-samples t-test for comparing means in a situation where there are more than two groups.
-# Test hypotheses:
-# • Null hypothesis: the means of the different groups are the same
-# • Alternative hypothesis: At least one sample mean is not equal to the others.
-# Assumptions:
-# • The observations are obtained independently and randomly from the population defined by the factor levels
-# • The data of each factor level are normally distributed.
-# • These normal populations have a common variance.
-# Process:
-# • Compute the common variance, which is called variance within samples (S2within) or residual variance.
-# • Compute the variance between sample means as follow:
-#   - Compute the mean of each group
-#   - Compute the variance between sample means (S2between)
-# • Produce F-statistic as the ratio of S2between/S2within.
-# Statistic:
-# The F-test is used for comparing the factors of the total deviation. In ANOVA, F-statistic is computed as the ratio of the variance between groups and variance within groups. The F-statistic is the compared to the F-distribution with (I-1) and (n-I) degrees of freedom.
-# where I = total number of groups and n = total number of observations.
-# Note that, a lower ratio (ratio < 1) indicates that there are no significant difference between the means of the samples being compared. However, a higher ratio implies that the variation among group means are significant.
-
-
 library(dplyr)
 library(ggplot2)
 
@@ -46,12 +25,13 @@ set.seed(352144)
 X4 <- data.frame("grade" = c(rnorm(30,6,2),rnorm(20,3,2.83),rnorm(30,8,2.65)),"group" = c(rep(c("A","B","C"),c(30,20,30)))  )
 str(X)
 out = group_by(X, group) %>% summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade))
-(Xsummary = data.frame(out))
+print(data.frame(out))
 
-boxplot(grade ~ group, data=X, col=5:7, frame = FALSE)
+boxplot(grade ~ group, data=X, col=5:7, frame = FALSE, xlab = "Groups", ylab="Grade")
 points(grade ~ group, data=X,pch=20)
 
 Xplot <- X
+out = group_by(X, group) %>% summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade))
 Xplot$mean <- c(rep(out$mean[1],3),rep(out$mean[2],2),rep(out$mean[3],3))
 Xplot$sd <- c(rep(out$sd[1],3),rep(out$sd[2],2),rep(out$sd[3],3))
 ggplot(Xplot) +
@@ -59,7 +39,10 @@ ggplot(Xplot) +
   geom_point(aes(x=group, y= mean, color=group),size=5,shape=3) +
   geom_point(aes(x = group, y = grade), size=5) +
   xlab("Groups") +
-  ylab("Grade")
+  ylab("Grade") +
+  theme_bw() +
+  theme(axis.line = element_line(colour = "grey", size=0), panel.border = element_rect(colour = "white"))
+
 
 fit <- aov(grade ~ group, data = X)
 summary(fit)
