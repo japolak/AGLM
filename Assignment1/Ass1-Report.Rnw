@@ -30,6 +30,7 @@
 
 %% Global Settings of R-code
 <<setup, include=FALSE, cache=FALSE>>=
+# Install these packages if you don't have them already
 #install.packages("knitr","dplyr","ggplot2")
 library(dplyr)
 library(ggplot2)

@@ -45,7 +45,8 @@ X3 <- data.frame("grade" = c(5,6,7,1.73,4.27,9.6,8,6.4), "group" = c("A","A","A"
 set.seed(352144)
 X4 <- data.frame("grade" = c(rnorm(30,6,2),rnorm(20,3,2.83),rnorm(30,8,2.65)),"group" = c(rep(c("A","B","C"),c(30,20,30)))  )
 str(X)
-(out = group_by(X, group) %>% summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade)))
+out = group_by(X, group) %>% summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade))
+(Xsummary = data.frame(out))
 
 boxplot(grade ~ group, data=X, col=5:7, frame = FALSE)
 points(grade ~ group, data=X,pch=20)
@@ -64,17 +65,6 @@ fit <- aov(grade ~ group, data = X)
 summary(fit)
 #As the p-value is more than the significance level 0.05, we cannot conclude that there are significant differences between the groups highlighted with in the model summary.
 
-
-## BELOW VALID ONLY IF THERE IS SIGNIFICANCE OF DIFFERENT GROUP MEANS!!
-# Multiple pairwise-comparison between the means of groups
-# In one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
-# It’s possible to perform multiple pairwise-comparison, to determine if the mean difference between specific pairs of group are statistically significant.
-TukeyHSD(fit)
-# diff: difference between means of the two groups
-# lwr, upr: the lower and the upper end point of the confidence interval at 95% (default)
-# p adj: p-value after adjustment for the multiple comparisons.
-# It can be seen from the output, that difference between no groups is significant with an adjusted p-value.
-
 fit2 <- aov(grade ~ group, data = X2)
 summary(fit2)
 
@@ -86,7 +76,37 @@ summary(fit4)
 
 ##### Task 3 #####
 
-# Nothing yet
+X <- data.frame("strength"=c(3129,3000,2865,2890,3200,3300,2975,3150,2800,2900,2985,3050,2600,2700,2600,2765),"mixing"=rep(c("1","2","3","4"),c(4,4,4,4)) )
+
+boxplot(strength ~ mixing,data=X, xlab="Mixing technique", ylab="Compressive Strength", frame=FALSE, col=5:8)
+points(strength ~ mixing, data=X,pch=20)
+
+out = group_by(X, mixing) %>% summarise( count = n(), mean = mean(strength), var = var(strength), sd = sd(strength))
+(Xsummary = data.frame(out))
+
+Xplot <- X
+Xplot$mean <- c(rep(out$mean[1],4),rep(out$mean[2],4),rep(out$mean[3],4),rep(out$mean[4],4))
+Xplot$sd <- c(rep(out$sd[1],4),rep(out$sd[2],4),rep(out$sd[3],4),rep(out$sd[4],4))
+ggplot(Xplot) +
+  geom_errorbar(aes(x= mixing, ymin= mean-sd, ymax = mean+sd, width=0.3, color=mixing)) +
+  geom_point(aes(x= mixing, y= mean, color=mixing),size=5,shape=3) +
+  geom_point(aes(x = mixing, y = strength), size=2) +
+  xlab("Mixing technique") +
+  ylab("Compressive Strength")
+
+fit <- aov(strength ~ mixing, data = X)
+summary(fit)
+
+## BELOW VALID ONLY IF THERE IS SIGNIFICANCE OF DIFFERENT GROUP MEANS!!
+# Multiple pairwise-comparison between the means of groups
+# In one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
+# It’s possible to perform multiple pairwise-comparison, to determine if the mean difference between specific pairs of group are statistically significant.
+
+# diff: difference between means of the two groups
+# lwr, upr: the lower and the upper end point of the confidence interval at 95% (default)
+# p adj: p-value after adjustment for the multiple comparisons.
+# It can be seen from the output, that difference between no groups is significant with an adjusted p-value.
+TukeyHSD(fit)
 
 ##### Task 4 #####
 
