@@ -99,9 +99,9 @@ The table below reports the output with filled in missing information.
  $X_2$      & 9.112  & $^{c\;}$\Sexpr{round(c,3)} & 6.900      & 0.001 \\
  \hline
  $R^2$      & 0.5708            & & & \\
- SSreg      & $^{e\;}$\Sexpr{format(e,scientific=FALSE)} & & & \\
+ SSreg      & $^{e\;}$\Sexpr{format(e,scientific=FALSE,nsmall=2)} & & & \\
  SSR        & 1841257.15        & & & \\
- SSTotal    & $^{d\;}$\Sexpr{format(d,scientific=FALSE)} & & & \\
+ SSTotal    & $^{d\;}$\Sexpr{format(d,scientific=FALSE,nsmall=2)} & & & \\
  \hline
 \end{tabular}
 \end{center}
@@ -114,7 +114,7 @@ To compute the overall F-test we use the equation below and the statistic then f
 
 The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2$. Other values we can easily obtain from the filled table above.
 <<t1-statistic, include=TRUE>>=
-(f = (e / 2) / (181257.15 / (51-(2+1)) ))
+(f = (e / 2) / (1841257.15 / (51-(2+1)) ))
 @
 
 Hence, the F-statistic has a value of \Sexpr{f}. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
@@ -231,7 +231,7 @@ summary(fit4)
 @
 \newpage
 Case (2):\\
-Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller.\\
+Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller. Since the p-value \\
 
 Case (3):\\
 Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistics to be larger. The main reason is that that the variation within each group have decreased and therefore the $S^2_{\text{within}}$ will decrease and as the denominator of a ratio will decrease, the whole F-test statistics will be larger. With such a small variances, we would even expect the test to be significant at the 5\% significance level.\\

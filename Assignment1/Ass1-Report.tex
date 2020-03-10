@@ -145,9 +145,9 @@ The table below reports the output with filled in missing information.
  $X_2$      & 9.112  & $^{c\;}$1.321 & 6.900      & 0.001 \\
  \hline
  $R^2$      & 0.5708            & & & \\
- SSreg      & $^{e\;}$2448718 & & & \\
+ SSreg      & $^{e\;}$2448717.57 & & & \\
  SSR        & 1841257.15        & & & \\
- SSTotal    & $^{d\;}$4289975 & & & \\
+ SSTotal    & $^{d\;}$4289974.72 & & & \\
  \hline
 \end{tabular}
 \end{center}
@@ -162,15 +162,15 @@ The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}
-\hlstd{(f} \hlkwb{=} \hlstd{(e} \hlopt{/} \hlnum{2}\hlstd{)} \hlopt{/} \hlstd{(}\hlnum{181257.15} \hlopt{/} \hlstd{(}\hlnum{51}\hlopt{-}\hlstd{(}\hlnum{2}\hlopt{+}\hlnum{1}\hlstd{)) ))}
+\hlstd{(f} \hlkwb{=} \hlstd{(e} \hlopt{/} \hlnum{2}\hlstd{)} \hlopt{/} \hlstd{(}\hlnum{1841257.15} \hlopt{/} \hlstd{(}\hlnum{51}\hlopt{-}\hlstd{(}\hlnum{2}\hlopt{+}\hlnum{1}\hlstd{)) ))}
 \end{alltt}
 \begin{verbatim}
-## [1] 324.2312
+## [1] 31.91799
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-Hence, the F-statistic has a value of 324.2311914. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
+Hence, the F-statistic has a value of 31.917987. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -178,12 +178,12 @@ Hence, the F-statistic has a value of 324.2311914. To interpret this, the global
 \hlstd{(p} \hlkwb{=} \hlkwd{pf}\hlstd{(f,}\hlnum{2}\hlstd{,}\hlnum{48}\hlstd{,}\hlkwc{lower.tail} \hlstd{=} \hlnum{FALSE}\hlstd{))}
 \end{alltt}
 \begin{verbatim}
-## [1] 1.319003e-28
+## [1] 1.526979e-09
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-The p-value is \ensuremath{1.3190029\times 10^{-28}}, which is very low and therefore there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test therefore determines if the linear model is at least suitable to explain some of the variance in the outcome variable. Which in this case it does.
+The p-value is \ensuremath{1.5269792\times 10^{-9}}, which is very low and therefore there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test therefore determines if the linear model is at least suitable to explain some of the variance in the outcome variable. Which in this case it does.
 
 \section*{Task 2}
 
@@ -226,8 +226,8 @@ The F-test is used for comparing the factors of the total deviation. In ANOVA, F
 The process of ANOVA testing is following:
 \begin{itemize}
 \item Compute the common variance, which is called variance within samples $S^2_{\text{within}}$ or residual variance.\\
-\item Compute the variance between sample means, by first computing the mean of each group and then computing the variance between sample means . \\
-\item Produce F-statistic as the ratio of $F =S^2_{\text{between}} / S^2_{\text{within}}$.
+\item Compute the variance between sample means, by first computing the mean of each group and then computing the variance between sample means $S^2_{\text{between}}$. \\
+\item Produce F-statistic as the ratio of $F = \frac{S^2_{\text{between}} / (I-1)}{S^2_{\text{within}}/(n-I)} $.
 \end{itemize}
 
 With the code below, we specify the data and compute common statistics for each group.
@@ -284,9 +284,13 @@ The F-statistics has value of 2.5, which is above 1 which signifies some differe
 
 \newpage
 Case (2):\\
-Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect for the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller.\\
+Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller. Since the p-value \\
 
-Case:
+Case (3):\\
+Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistics to be larger. The main reason is that that the variation within each group have decreased and therefore the $S^2_{\text{within}}$ will decrease and as the denominator of a ratio will decrease, the whole F-test statistics will be larger. With such a small variances, we would even expect the test to be significant at the 5\% significance level.\\
+
+Case (4):\\
+Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistics to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistics will be with 2 and 77 degrees of freedom. The groups variance has still the same number of degrees of freedom as the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Error of Residuals compared to Mean Squared Error of Groups. Hence, the overall F-test statistics would significantly increase.
 
 
 \section*{Task 3}
