@@ -38,8 +38,9 @@
 % Global Settings of R-code
 <<setup, include=FALSE, cache=FALSE>>=
 # Install these packages if you don't have them already
-#install.packages("knitr","dplyr","ggplot2")
+#install.packages("knitr","dplyr","ggplot2","multcomp")
 library(dplyr)
+library(multcomp)
 library(ggplot2)
 library(knitr)
 # set global chunk options
@@ -231,7 +232,7 @@ fit4 <- aov(grade ~ group, data = X4)
 summary(fit4)
 
 @
-\newpage
+
 Case (2):\\
 Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller. Since the F-value will be closer to 1 (or closer to the mean of F-distribution), the p-value will therefore also increase as observing statistics more extreme is more likely than before. \\
 
@@ -239,10 +240,76 @@ Case (3):\\
 Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistics to be larger. The main reason is that that the variation within each group have decreased and therefore the $S^2_{\text{within}}$ will decrease and as the denominator of a ratio will decrease, the whole F-test statistics will be larger. Since the F-statistics increased, the p-value will decrease (observing more extreme statistics is less likely). With such a small variances, we would could even expect the test to be significant at the 5\% significance level.\\
 
 Case (4):\\
-Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistics to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistics will be with 2 and 77 degrees of freedom. The groups variance has still the same number of degrees of freedom as the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Error of Residuals compared to Mean Squared Error of Groups. Hence, the overall F-test statistics would significantly increase. With similar line of reasoning as before, as the F-statistics will be large, the p-value (probability of observing more extreme statistics) will be very low.\\
-
+Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistics to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistics will be with 2 and 77 degrees of freedom. The groups variance has still the same number of degrees of freedom as the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Residual compared to Mean Squared of Groups. Hence, the overall F-test statistics would significantly increase. With similar line of reasoning as before, as the F-statistics will be large, the p-value (probability of observing more extreme statistics) will be very low.\\
 
 \section*{Task 3}
+
+The compressive strength of concrete is being studied, and four different mixing techniques are being investigated. The following data have been collected. For each mixing technique, 4 compressive strength measurements (in pounds per square inch) have been recorded.\\
+
+\begin{center}
+\begin{tabular}{ l c c c c}
+ \hline
+ & \multicolumn{4}{c}{Compressive Strenght} \\
+ \hline
+ Mixing & 1 & 2 & 3 & 4 \\
+ \hline
+ 1 & 3129 & 3000 & 2865 & 2890 \\
+ 2 & 3200 & 3300 & 2975 & 3150 \\
+ 3 & 2800 & 2900 & 2985 & 3050 \\
+ 4 & 2600 & 2700 & 2600 & 2765 \\
+ \hline
+\end{tabular}
+\end{center}
+
+In this task we perform the same one-factor Analysis of Variance as in previous task. We load the data to R in following way and subsequently visualise it with same techniques as before. From the plots we can clearly see that some mixing techniques are quite different to others.
+
+<<t3-data>>=
+X <- data.frame("strength"=c(3129,3000,2865,2890,
+                             3200,3300,2975,3150,
+                             2800,2900,2985,3050,
+                             2600,2700,2600,2765),
+                "mixing"=rep(c("1","2","3","4"),c(4,4,4,4)) )
+@
+
+
+<<t3-plots, echo=FALSE, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
+boxplot(strength ~ mixing,data=X, xlab="Mixing technique", ylab="Compressive Strength", frame=FALSE, col=c(2,3,5,6))
+points(strength ~ mixing, data=X,pch=20)
+
+Xplot <- X
+out = group_by(Xplot, mixing) %>%
+  summarise( count = n(), mean = mean(strength), var = var(strength), sd = sd(strength))
+Xplot$mean <- c(rep(out$mean[1],4),rep(out$mean[2],4),rep(out$mean[3],4),rep(out$mean[4],4))
+Xplot$sd <- c(rep(out$sd[1],4),rep(out$sd[2],4),rep(out$sd[3],4),rep(out$sd[4],4))
+ggplot(Xplot) +
+  geom_errorbar(aes(x= mixing, ymin= mean-sd, ymax = mean+sd, width=0.3, color=mixing)) +
+  geom_point(aes(x= mixing, y= mean, color=mixing),size=5,shape=3) +
+  geom_point(aes(x = mixing, y = strength), size=2) +
+  xlab("Mixing technique") +
+  ylab("Compressive Strength") +
+  theme_bw() +
+  theme(axis.line = element_line(colour = "black", size=.5),
+        panel.border = element_rect(colour = "white"))
+
+@
+
+Below, we perform the Analysis of Variance using again \verb+aov()+ function.\\
+
+<<t3-anova>>=
+fit <- aov(strength ~ mixing, data = X)
+summary(fit)
+@
+
+From the summary we can see that the F-statistics is 12.73, which is quite large for F-distribution with 3 and 12 degrees of freedom. This is also evident from the p-value being 0.0005, which is very small and we would therefore reject the null hypothesis that the group means are all the same. Therefore we can conclude there is some evidence that for at least one mixing technique, the compressive strength differs from others. But we cannot conclude which one differs. To yield this conclusion, we perform the multiple pairwise-comparison, to determine if the mean difference between specific pairs of group are statistically significant. \\
+
+As the ANOVA test is significant, we can compute Tukey Honest Significant Differences for performing multiple pairwise-comparison between the means of groups. We use the function \verb+glht()+ [in \verb+multcomp+ package], where glht stands for general linear hypothesis tests.
+
+<<t3-pairwise-comparison>>=
+library(multcomp)
+summary(glht(fit, linfct = mcp(mixing = "Tukey")))
+
+@
+
 
 \section*{Task 4}
 

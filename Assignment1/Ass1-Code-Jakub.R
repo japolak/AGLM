@@ -46,7 +46,6 @@ ggplot(Xplot) +
 
 fit <- aov(grade ~ group, data = X)
 summary(fit)
-#As the p-value is more than the significance level 0.05, we cannot conclude that there are significant differences between the groups highlighted with in the model summary.
 
 fit2 <- aov(grade ~ group, data = X2)
 summary(fit2)
@@ -59,13 +58,13 @@ summary(fit4)
 
 ##### Task 3 #####
 
-X <- data.frame("strength"=c(3129,3000,2865,2890,3200,3300,2975,3150,2800,2900,2985,3050,2600,2700,2600,2765),"mixing"=rep(c("1","2","3","4"),c(4,4,4,4)) )
+X <- data.frame("strength"=c(3129,3000,2865,2890,3200,3300,2975,3150,2800,2900,2985,3050,2600,2700,2600,2765),
+                "mixing"=rep(c("1","2","3","4"),c(4,4,4,4)) )
 
-boxplot(strength ~ mixing,data=X, xlab="Mixing technique", ylab="Compressive Strength", frame=FALSE, col=5:8)
+boxplot(strength ~ mixing,data=X, xlab="Mixing technique", ylab="Compressive Strength", frame=FALSE, col=2:5)
 points(strength ~ mixing, data=X,pch=20)
 
 out = group_by(X, mixing) %>% summarise( count = n(), mean = mean(strength), var = var(strength), sd = sd(strength))
-(Xsummary = data.frame(out))
 
 Xplot <- X
 Xplot$mean <- c(rep(out$mean[1],4),rep(out$mean[2],4),rep(out$mean[3],4),rep(out$mean[4],4))
@@ -80,15 +79,10 @@ ggplot(Xplot) +
 fit <- aov(strength ~ mixing, data = X)
 summary(fit)
 
-## BELOW VALID ONLY IF THERE IS SIGNIFICANCE OF DIFFERENT GROUP MEANS!!
-# Multiple pairwise-comparison between the means of groups
-# In one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
-# It’s possible to perform multiple pairwise-comparison, to determine if the mean difference between specific pairs of group are statistically significant.
 
 
 library(multcomp)
 summary(glht(fit, linfct = mcp(mixing = "Tukey")))
-
 plot(fit)
 
 ##### Task 4 #####

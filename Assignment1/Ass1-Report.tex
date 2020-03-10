@@ -284,7 +284,7 @@ Finaly, below we compute the ANOVA tests with our data using the function \verb+
 The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.\\
 
 
-\newpage
+
 Case (2):\\
 Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller. Since the F-value will be closer to 1 (or closer to the mean of F-distribution), the p-value will therefore also increase as observing statistics more extreme is more likely than before. \\
 
@@ -292,10 +292,106 @@ Case (3):\\
 Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistics to be larger. The main reason is that that the variation within each group have decreased and therefore the $S^2_{\text{within}}$ will decrease and as the denominator of a ratio will decrease, the whole F-test statistics will be larger. Since the F-statistics increased, the p-value will decrease (observing more extreme statistics is less likely). With such a small variances, we would could even expect the test to be significant at the 5\% significance level.\\
 
 Case (4):\\
-Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistics to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistics will be with 2 and 77 degrees of freedom. The groups variance has still the same number of degrees of freedom as the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Error of Residuals compared to Mean Squared Error of Groups. Hence, the overall F-test statistics would significantly increase. With similar line of reasoning as before, as the F-statistics will be large, the p-value (probability of observing more extreme statistics) will be very low.\\
-
+Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistics to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistics will be with 2 and 77 degrees of freedom. The groups variance has still the same number of degrees of freedom as the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Residual compared to Mean Squared of Groups. Hence, the overall F-test statistics would significantly increase. With similar line of reasoning as before, as the F-statistics will be large, the p-value (probability of observing more extreme statistics) will be very low.\\
 
 \section*{Task 3}
+
+The compressive strength of concrete is being studied, and four different mixing techniques are being investigated. The following data have been collected. For each mixing technique, 4 compressive strength measurements (in pounds per square inch) have been recorded.\\
+
+\begin{center}
+\begin{tabular}{ l c c c c}
+ \hline
+ & \multicolumn{4}{c}{Compressive Strenght} \\
+ \hline
+ Mixing & 1 & 2 & 3 & 4 \\
+ \hline
+ 1 & 3129 & 3000 & 2865 & 2890 \\
+ 2 & 3200 & 3300 & 2975 & 3150 \\
+ 3 & 2800 & 2900 & 2985 & 3050 \\
+ 4 & 2600 & 2700 & 2600 & 2765 \\
+ \hline
+\end{tabular}
+\end{center}
+
+In this task we perform the same one-factor Analysis of Variance as in previous task. We load the data to R in following way and subsequently visualise it with same techniques as before. From the plots we can clearly see that some mixing techniques are quite different to others.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{X} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlstr{"strength"}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{3129}\hlstd{,}\hlnum{3000}\hlstd{,}\hlnum{2865}\hlstd{,}\hlnum{2890}\hlstd{,}
+                             \hlnum{3200}\hlstd{,}\hlnum{3300}\hlstd{,}\hlnum{2975}\hlstd{,}\hlnum{3150}\hlstd{,}
+                             \hlnum{2800}\hlstd{,}\hlnum{2900}\hlstd{,}\hlnum{2985}\hlstd{,}\hlnum{3050}\hlstd{,}
+                             \hlnum{2600}\hlstd{,}\hlnum{2700}\hlstd{,}\hlnum{2600}\hlstd{,}\hlnum{2765}\hlstd{),}
+                \hlstr{"mixing"}\hlstd{=}\hlkwd{rep}\hlstd{(}\hlkwd{c}\hlstd{(}\hlstr{"1"}\hlstd{,}\hlstr{"2"}\hlstd{,}\hlstr{"3"}\hlstd{,}\hlstr{"4"}\hlstd{),}\hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{4}\hlstd{)) )}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=.4\linewidth]{figures/plot-t3-plots-1} 
+\includegraphics[width=.4\linewidth]{figures/plot-t3-plots-2} 
+
+}
+
+
+
+\end{knitrout}
+
+Below, we perform the Analysis of Variance using again \verb+aov()+ function.\\
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit} \hlkwb{<-} \hlkwd{aov}\hlstd{(strength} \hlopt{~} \hlstd{mixing,} \hlkwc{data} \hlstd{= X)}
+\hlkwd{summary}\hlstd{(fit)}
+\end{alltt}
+\begin{verbatim}
+##             Df Sum Sq Mean Sq F value   Pr(>F)    
+## mixing       3 489740  163247   12.73 0.000489 ***
+## Residuals   12 153908   12826                     
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+From the summary we can see that the F-statistics is 12.73, which is quite large for F-distribution with 3 and 12 degrees of freedom. This is also evident from the p-value being 0.0005, which is very small and we would therefore reject the null hypothesis that the group means are all the same. Therefore we can conclude there is some evidence that for at least one mixing technique, the compressive strength differs from others. But we cannot conclude which one differs. To yield this conclusion, we perform the multiple pairwise-comparison, to determine if the mean difference between specific pairs of group are statistically significant. \\
+
+As the ANOVA test is significant, we can compute Tukey Honest Significant Differences for performing multiple pairwise-comparison between the means of groups. We use the function \verb+glht()+ [in \verb+multcomp+ package], where glht stands for general linear hypothesis tests.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{library}\hlstd{(multcomp)}
+\hlkwd{summary}\hlstd{(}\hlkwd{glht}\hlstd{(fit,} \hlkwc{linfct} \hlstd{=} \hlkwd{mcp}\hlstd{(}\hlkwc{mixing} \hlstd{=} \hlstr{"Tukey"}\hlstd{)))}
+\end{alltt}
+\begin{verbatim}
+## 
+## 	 Simultaneous Tests for General Linear Hypotheses
+## 
+## Multiple Comparisons of Means: Tukey Contrasts
+## 
+## 
+## Fit: aov(formula = strength ~ mixing, data = X)
+## 
+## Linear Hypotheses:
+##            Estimate Std. Error t value Pr(>|t|)    
+## 2 - 1 == 0   185.25      80.08   2.313   0.1495    
+## 3 - 1 == 0   -37.25      80.08  -0.465   0.9653    
+## 4 - 1 == 0  -304.75      80.08  -3.806   0.0116 *  
+## 3 - 2 == 0  -222.50      80.08  -2.778   0.0692 .  
+## 4 - 2 == 0  -490.00      80.08  -6.119   <0.001 ***
+## 4 - 3 == 0  -267.50      80.08  -3.340   0.0262 *  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## (Adjusted p values reported -- single-step method)
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
 
 \section*{Task 4}
 
