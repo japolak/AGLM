@@ -1,5 +1,7 @@
 #Ignore Files
 Grab*.pdf
+*.Rhistory
+*.log
 *.gz
 *-concordance.tex
 .Rproj.user
