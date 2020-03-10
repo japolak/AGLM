@@ -102,11 +102,11 @@ summary(fit)
 # In one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
 # It’s possible to perform multiple pairwise-comparison, to determine if the mean difference between specific pairs of group are statistically significant.
 
-# diff: difference between means of the two groups
-# lwr, upr: the lower and the upper end point of the confidence interval at 95% (default)
-# p adj: p-value after adjustment for the multiple comparisons.
-# It can be seen from the output, that difference between no groups is significant with an adjusted p-value.
-TukeyHSD(fit)
+
+library(multcomp)
+summary(glht(fit, linfct = mcp(mixing = "Tukey")))
+
+plot(fit)
 
 ##### Task 4 #####
 
