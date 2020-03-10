@@ -279,7 +279,32 @@ Finaly, below we compute the ANOVA tests with our data using the function \verb+
 \end{kframe}
 \end{knitrout}
 
-The F-statistics value is 2.5, wich is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant in 5 \% significance level and therefore we cannot reject the null hypothesis.
+The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{verbatim}
+##             Df Sum Sq Mean Sq F value Pr(>F)
+## group        2      6       3     0.5  0.634
+## Residuals    5     30       6
+##             Df Sum Sq Mean Sq F value Pr(>F)  
+## group        2  30.00  15.000   7.249 0.0333 *
+## Residuals    5  10.35   2.069                 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##             Df Sum Sq Mean Sq F value  Pr(>F)    
+## group        2  298.0  149.02   24.22 6.9e-09 ***
+## Residuals   77  473.7    6.15                    
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+Case:Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8.\\
+
+In this situation, we would expect the
+
 
 \section*{Task 3}
 

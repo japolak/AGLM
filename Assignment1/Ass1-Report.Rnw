@@ -209,7 +209,31 @@ fit <- aov(grade ~ group, data = X)
 summary(fit)
 @
 
-The F-statistics value is 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant in 5 \% significance level and therefore we cannot reject the null hypothesis.
+The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.
+
+<<t2-modified-data, echo=FALSE>>=
+set.seed(352144)
+X2 <- data.frame("grade" = c(4,6,8,9,5,9,10,5),
+                 "group" = c("A","A","A","B","B","C","C","C"))
+X3 <- data.frame("grade" = c(5,6,7,1.73,4.27,9.6,8,6.4),
+                 "group" = c("A","A","A","B","B","C","C","C"))
+X4 <- data.frame("grade" = c(rnorm(30,6,2),rnorm(20,3,2.83),rnorm(30,8,2.65)),
+                 "group" = c(rep(c("A","B","C"),c(30,20,30))))
+fit2 <- aov(grade ~ group, data = X2)
+summary(fit2)
+
+fit3 <- aov(grade ~ group, data = X3)
+summary(fit3)
+
+fit4 <- aov(grade ~ group, data = X4)
+summary(fit4)
+
+@
+
+Case:Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8.\\
+
+In this situation, we would expect the
+
 
 \section*{Task 3}
 
