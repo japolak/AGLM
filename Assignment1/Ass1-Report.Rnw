@@ -1,5 +1,4 @@
-%% LyX 2.2.1 created this file.  For more info, see http://www.lyx.org/.
-%% Do not edit unless you  know what you are doing.
+%% Do not edit unless you know what you are doing.
 \documentclass{article}
 \usepackage[sc]{mathpazo}
 \usepackage[T1]{fontenc}
@@ -37,7 +36,7 @@ opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
 options(formatR.arrow=TRUE,width=90)
 @
 
-
+%% Mathematics Operators for Ease of Notation
 \DeclareMathOperator{\SSR}{SSR}
 \DeclareMathOperator{\SSreg}{SSreg}
 \DeclareMathOperator{\SST}{SST}
@@ -50,7 +49,6 @@ options(formatR.arrow=TRUE,width=90)
 \title{Assignment 1}
 \author{Milan Kuzmanovic, Mark McMahon \\ Martin Kotuliak, Jakub Polak}
 \date{\today}
-
 \maketitle
 
 \section*{Task 1}
