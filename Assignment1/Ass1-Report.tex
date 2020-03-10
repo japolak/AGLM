@@ -281,25 +281,7 @@ Finaly, below we compute the ANOVA tests with our data using the function \verb+
 
 The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.
 
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{verbatim}
-##             Df Sum Sq Mean Sq F value Pr(>F)
-## group        2      6       3     0.5  0.634
-## Residuals    5     30       6
-##             Df Sum Sq Mean Sq F value Pr(>F)  
-## group        2  30.00  15.000   7.249 0.0333 *
-## Residuals    5  10.35   2.069                 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-##             Df Sum Sq Mean Sq F value  Pr(>F)    
-## group        2  298.0  149.02   24.22 6.9e-09 ***
-## Residuals   77  473.7    6.15                    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
+
 
 Case:Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8.\\
 
@@ -309,71 +291,5 @@ In this situation, we would expect the
 \section*{Task 3}
 
 \section*{Task 4}
-
-\section*{Task Template}
-
-This is just an expample of how to use latex and r-code chunks in knitr.\\
-
-You can test if \textbf{knitr} works with this minimal demo. OK, let's
-get started with some boring random numbers:
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{set.seed}\hlstd{(}\hlnum{1121}\hlstd{)}
-\hlstd{(x}\hlkwb{=}\hlkwd{rnorm}\hlstd{(}\hlnum{20}\hlstd{))}
-\end{alltt}
-\begin{verbatim}
-##  [1]  0.1449583  0.4383221  0.1531912  1.0849426  1.9995449 -0.8118832  0.1602680
-##  [8]  0.5858923  0.3600880 -0.0253084  0.1508809  0.1100824  1.3596812 -0.3269946
-## [15] -0.7163819  1.8097690  0.5084011 -0.5274603  0.1327188 -0.1559430
-\end{verbatim}
-\begin{alltt}
-\hlkwd{mean}\hlstd{(x);}\hlkwd{var}\hlstd{(x)}
-\end{alltt}
-\begin{verbatim}
-## [1] 0.3217385
-## [1] 0.5714534
-\end{verbatim}
-\end{kframe}
-\end{knitrout}
-
-The first element of \texttt{x} is 0.1449583. Boring boxplots
-and histograms recorded by the PDF device:
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\begin{alltt}
-\hlkwd{par}\hlstd{(}\hlkwc{mar}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,}\hlnum{4}\hlstd{,}\hlnum{.1}\hlstd{,}\hlnum{.1}\hlstd{),}\hlkwc{cex.lab}\hlstd{=}\hlnum{.95}\hlstd{,}\hlkwc{cex.axis}\hlstd{=}\hlnum{.9}\hlstd{,}\hlkwc{mgp}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{.7}\hlstd{,}\hlnum{0}\hlstd{),}\hlkwc{tcl}\hlstd{=}\hlopt{-}\hlnum{.3}\hlstd{,}\hlkwc{las}\hlstd{=}\hlnum{1}\hlstd{)}
-\hlkwd{boxplot}\hlstd{(x)}
-\hlkwd{hist}\hlstd{(x,}\hlkwc{main}\hlstd{=}\hlstr{''}\hlstd{)}
-\end{alltt}
-\end{kframe}
-
-{\centering \includegraphics[width=.4\linewidth]{figures/plot-boring-plots-1} 
-\includegraphics[width=.4\linewidth]{figures/plot-boring-plots-2} 
-
-}
-
-
-
-\end{knitrout}
-
-Do the above chunks work? You should be able to compile the \TeX{}
-The first element of \texttt{x} is 0.1449583. Boring boxplots
-and histograms recorded by the PDF device:
-
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-
-{\centering \includegraphics[width=.8\linewidth]{figures/plot-boring-plots2-1} 
-
-}
-
-
-
-\end{knitrout}
-
-Do the above chunks work? You should be able to compile the \TeX{}
 
 \end{document}

@@ -211,7 +211,7 @@ summary(fit)
 
 The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.
 
-<<t2-modified-data, echo=FALSE>>=
+<<t2-modified-data, echo=FALSE, include=FALSE>>=
 set.seed(352144)
 X2 <- data.frame("grade" = c(4,6,8,9,5,9,10,5),
                  "group" = c("A","A","A","B","B","C","C","C"))
@@ -238,37 +238,5 @@ In this situation, we would expect the
 \section*{Task 3}
 
 \section*{Task 4}
-
-\section*{Task Template}
-
-This is just an expample of how to use latex and r-code chunks in knitr.\\
-
-You can test if \textbf{knitr} works with this minimal demo. OK, let's
-get started with some boring random numbers:
-
-<<boring-random>>=
-set.seed(1121)
-(x=rnorm(20))
-mean(x);var(x)
-@
-
-The first element of \texttt{x} is \Sexpr{x[1]}. Boring boxplots
-and histograms recorded by the PDF device:
-
-<<boring-plots, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
-par(mar=c(4,4,.1,.1),cex.lab=.95,cex.axis=.9,mgp=c(2,.7,0),tcl=-.3,las=1)
-boxplot(x)
-hist(x,main='')
-@
-
-Do the above chunks work? You should be able to compile the \TeX{}
-The first element of \texttt{x} is \Sexpr{x[1]}. Boring boxplots
-and histograms recorded by the PDF device:
-
-<<boring-plots2, echo=FALSE, fig.width=8, fig.height=4, out.width='.8\\linewidth'>>=
-plot(x,type="l")
-@
-
-Do the above chunks work? You should be able to compile the \TeX{}
 
 \end{document}
