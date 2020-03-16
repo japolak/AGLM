@@ -78,7 +78,7 @@ The relevant equations that relate estimate, standard error, T-statistic, R-squa
 \[ \frac{\beta_i}{se(\beta_i)} = T_i \qquad R^2 = \frac{\SSreg}{\SST}= 1-\frac{\SSR}{\SST}  \qquad \SST = \SSreg + \SSR
 \]
 
-Using these we just plug in the corresponding information that is already provided and compute the missing values.
+We plug in the corresponding information that is already provided and compute the missing values.
 
 <<t1-table, echo=TRUE, include=TRUE, eval=TRUE, results='hold'>>=
 a <- -498.683 / 140.988
@@ -107,7 +107,7 @@ The table below reports the output with filled in missing information.
 \end{tabular}
 \end{center}
 
-The the coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'S given the sample data.\\
+The the coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'s given the sample data. \\
 
 To compute the overall F-test we use the equation below and the statistic then follows an F distribution with corresponding degrees of freedom.
 \[ F = \frac{\SSreg/p}{\SSR/(n-(p+1))} \sim F_{p,n-(p+1)}
@@ -124,7 +124,7 @@ Hence, the F-statistic has a value of \Sexpr{f}. To interpret this, the global F
 (p = pf(f,2,48,lower.tail = FALSE))
 @
 
-The p-value is \Sexpr{p}, which is very low and therefore there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test therefore determines if the linear model is at least suitable to explain some of the variance in the outcome variable. Which in this case it does.
+The p-value is \Sexpr{p}, which is lower than the significance level $\alpha=0.05$ and therefore, there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test determines the linear model is suitable to explain some of the variance in the outcome variable. Which in this case it does.
 
 \section*{Task 2}
 
@@ -177,6 +177,7 @@ With the code below, we specify the data and compute common statistics for each 
 <<t2-data>>=
 X <- data.frame("grade" = c(4,6,8,1,5,9,10,5),
                 "group" = c("A","A","A","B","B","C","C","C"))
+
 library(dplyr)
 data.frame(group_by(X, group) %>%
   summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade)))
@@ -307,9 +308,9 @@ As the ANOVA test is significant, we can compute Tukey Honest Significant Differ
 <<t3-pairwise-comparison>>=
 library(multcomp)
 summary(glht(fit, linfct = mcp(mixing = "Tukey")))
-
 @
 
+In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest differenence is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has the smallest comptessive strength then all other mixing techniques. Hence, we would not recommend to use mixing technique 4 for concrete in practice.
 
 \section*{Task 4}
 

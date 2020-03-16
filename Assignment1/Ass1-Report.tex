@@ -119,7 +119,7 @@ The relevant equations that relate estimate, standard error, T-statistic, R-squa
 \[ \frac{\beta_i}{se(\beta_i)} = T_i \qquad R^2 = \frac{\SSreg}{\SST}= 1-\frac{\SSR}{\SST}  \qquad \SST = \SSreg + \SSR
 \]
 
-Using these we just plug in the corresponding information that is already provided and compute the missing values.
+We plug in the corresponding information that is already provided and compute the missing values.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -152,7 +152,7 @@ The table below reports the output with filled in missing information.
 \end{tabular}
 \end{center}
 
-The the coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'S given the sample data.\\
+The the coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'s given the sample data. \\
 
 To compute the overall F-test we use the equation below and the statistic then follows an F distribution with corresponding degrees of freedom.
 \[ F = \frac{\SSreg/p}{\SSR/(n-(p+1))} \sim F_{p,n-(p+1)}
@@ -183,7 +183,7 @@ Hence, the F-statistic has a value of 31.917987. To interpret this, the global F
 \end{kframe}
 \end{knitrout}
 
-The p-value is \ensuremath{1.5269792\times 10^{-9}}, which is very low and therefore there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test therefore determines if the linear model is at least suitable to explain some of the variance in the outcome variable. Which in this case it does.
+The p-value is \ensuremath{1.5269792\times 10^{-9}}, which is lower than the significance level $\alpha=0.05$ and therefore, there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the p-value of a given sample is small and it suggests that the model with all the covariates is better than the one with just intercept coefficient. This test determines the linear model is suitable to explain some of the variance in the outcome variable. Which in this case it does.
 
 \section*{Task 2}
 
@@ -238,6 +238,7 @@ With the code below, we specify the data and compute common statistics for each 
 \begin{alltt}
 \hlstd{X} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(}\hlstr{"grade"} \hlstd{=} \hlkwd{c}\hlstd{(}\hlnum{4}\hlstd{,}\hlnum{6}\hlstd{,}\hlnum{8}\hlstd{,}\hlnum{1}\hlstd{,}\hlnum{5}\hlstd{,}\hlnum{9}\hlstd{,}\hlnum{10}\hlstd{,}\hlnum{5}\hlstd{),}
                 \hlstr{"group"} \hlstd{=} \hlkwd{c}\hlstd{(}\hlstr{"A"}\hlstd{,}\hlstr{"A"}\hlstd{,}\hlstr{"A"}\hlstd{,}\hlstr{"B"}\hlstd{,}\hlstr{"B"}\hlstd{,}\hlstr{"C"}\hlstd{,}\hlstr{"C"}\hlstd{,}\hlstr{"C"}\hlstd{))}
+
 \hlkwd{library}\hlstd{(dplyr)}
 \hlkwd{data.frame}\hlstd{(}\hlkwd{group_by}\hlstd{(X, group)} \hlopt{%>%}
   \hlkwd{summarise}\hlstd{(} \hlkwc{count} \hlstd{=} \hlkwd{n}\hlstd{(),} \hlkwc{mean} \hlstd{=} \hlkwd{mean}\hlstd{(grade),} \hlkwc{var} \hlstd{=} \hlkwd{var}\hlstd{(grade),} \hlkwc{sd} \hlstd{=} \hlkwd{sd}\hlstd{(grade)))}
@@ -392,6 +393,7 @@ As the ANOVA test is significant, we can compute Tukey Honest Significant Differ
 \end{kframe}
 \end{knitrout}
 
+In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest differenence is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has the smallest comptessive strength then all other mixing techniques. Hence, we would not recommend to use mixing technique 4 for concrete in practice.
 
 \section*{Task 4}
 
