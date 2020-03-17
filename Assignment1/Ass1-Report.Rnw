@@ -313,5 +313,81 @@ summary(glht(fit, linfct = mcp(mixing = "Tukey")))
 In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest differenence is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has the smallest comptessive strength then all other mixing techniques. Hence, we would not recommend to use mixing technique 4 for concrete in practice.
 
 \section*{Task 4}
+Consider the data set munich.csv. The data set contains information on therent prices of apartments in Munich.  The variables in the data set are:
+
+rent:  net rent per month (in Euro)
+area:  living area in square meters-yearc:
+year of construction
+location:  quality of location according to an expert assessment(0 = average location, 1 = good location, 2 = top location)
+
+
+<<t4-data>>=
+munich <- read.csv("munich.csv")
+munich$location <- factor(munich$location)
+
+
+@
+
+
+<<t4-discuss>>=
+par(mfrow=c(2,2))
+year_agg <- aggregate(munich$rent, list(munich$yearc),
+                      function(x) c(mean=mean(x), sd=sd(x)))
+plot(year_agg$Group.1, year_agg$x[,"mean"], xlab="year",
+     ylab="rent: mean +- 1 sd", ylim=c(0, 1300))
+segments(year_agg$Group.1-0.25, year_agg$x[,"mean"]+year_agg$x[,"sd"],
+          year_agg$Group.1+0.25, year_agg$x[,"mean"]+year_agg$x[,"sd"],col="grey")
+segments(year_agg$Group.1-0.25, year_agg$x[,"mean"]-year_agg$x[,"sd"],
+          year_agg$Group.1+0.25, year_agg$x[,"mean"]-year_agg$x[,"sd"],col="grey")
+segments(year_agg$Group.1, year_agg$x[,"mean"]+year_agg$x[,"sd"],
+         year_agg$Group.1,year_agg$x[,"mean"]-year_agg$x[,"sd"],col="grey")
+
+
+plot(rent~area, data=munich)
+plot(rent~location, data=munich)
+
+
+@
+From the above plots, we can already come to the reasonable conclusion that there is a relationship between rent and area, location, and year.
+
+<<t4-model>>=
+
+f1 <- lm(rent~area*location + yearc, data=munich)
+par(mfrow=c(2,2))
+plot(f1)
+
+@
+
+From the 'Residuals vs Fitted' plot in the top left, we see that the assumption of zero-mean residuals holds (the trend line drifts away from zero as the fitted values go up, but this can be explained by the lack of data in that area of the plot). However, it could be argued that the variance of the errors increase with the fitted values, but this is quite hard to be sure of with this graph alone.\\
+
+The 'Normal Q-Q' plot is perhaps a little concerning with the tails drifting away from the 'expected' line.\\
+
+In the 'Scale-Location' graph, we again have evidence for heteroscedastic residuals, as the trend variance of residuals appears to get larger as the fitted values get larger (which we also observed in the first plot). However, it could be argued again that this major deviation of the trend line from the expected behaviour is due to a handful of points. However, there is mounting evidence for heterscedastic resisualds, so perhaps a variable transformation is required.\\
+
+Finally, in the 'Residuals vs Leverage' plot, we can see that the majority of datapoints have low leverage and a relatively small Cook's distance. There is just one point, row #3909, which has a high leverage as well as a high Cook's distance. This datapoint should be looked at in more detail as the analysis progresses beyond this initial phase.\\
+
+<<t4-summary>>=
+summary(f1)
+
+@
+
+The model results confirm our reasoning that there is a relationship between the three variables (area, location, and year) and rent. Both area and year have a very low p-value. However, location a high p-value which would at first glance suggest that it doesn't have relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is feasible that the 'information' given by location is captured in this interaction. It is good practice to leave this 'main effect' of location in the model still, as we will be including its interaction with area.
+
+<<t4-compare>>=
+
+f2 <- lm(rent~area, data=munich)
+summary(f2)
+@
+
+
+
+<<t4-anova>>=
+
+anova(f2, f1)
+
+@
+
+This analysis of variance shows that the larger model (i.e. including location, year, and the interaction between area and location) is significantly better than the smaller model of just including area. The Residual Sum of Squares is significantly lower, leading to a p-value that signifies a signicant result.
+
 
 \end{document}

@@ -396,5 +396,165 @@ As the ANOVA test is significant, we can compute Tukey Honest Significant Differ
 In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest differenence is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has the smallest comptessive strength then all other mixing techniques. Hence, we would not recommend to use mixing technique 4 for concrete in practice.
 
 \section*{Task 4}
+Consider the data set munich.csv. The data set contains information on therent prices of apartments in Munich.  The variables in the data set are:
+
+rent:  net rent per month (in Euro)
+area:  living area in square meters-yearc:
+year of construction
+location:  quality of location according to an expert assessment(0 = average location, 1 = good location, 2 = top location)
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{munich} \hlkwb{<-} \hlkwd{read.csv}\hlstd{(}\hlstr{"munich.csv"}\hlstd{)}
+\hlstd{munich}\hlopt{$}\hlstd{location} \hlkwb{<-} \hlkwd{factor}\hlstd{(munich}\hlopt{$}\hlstd{location)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
+\hlstd{year_agg} \hlkwb{<-} \hlkwd{aggregate}\hlstd{(munich}\hlopt{$}\hlstd{rent,} \hlkwd{list}\hlstd{(munich}\hlopt{$}\hlstd{yearc),}
+                      \hlkwa{function}\hlstd{(}\hlkwc{x}\hlstd{)} \hlkwd{c}\hlstd{(}\hlkwc{mean}\hlstd{=}\hlkwd{mean}\hlstd{(x),} \hlkwc{sd}\hlstd{=}\hlkwd{sd}\hlstd{(x)))}
+\hlkwd{plot}\hlstd{(year_agg}\hlopt{$}\hlstd{Group.1, year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"mean"}\hlstd{],} \hlkwc{xlab}\hlstd{=}\hlstr{"year"}\hlstd{,}
+     \hlkwc{ylab}\hlstd{=}\hlstr{"rent: mean +- 1 sd"}\hlstd{,} \hlkwc{ylim}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{1300}\hlstd{))}
+\hlkwd{segments}\hlstd{(year_agg}\hlopt{$}\hlstd{Group.1}\hlopt{-}\hlnum{0.25}\hlstd{, year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"mean"}\hlstd{]}\hlopt{+}\hlstd{year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"sd"}\hlstd{],}
+          \hlstd{year_agg}\hlopt{$}\hlstd{Group.1}\hlopt{+}\hlnum{0.25}\hlstd{, year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"mean"}\hlstd{]}\hlopt{+}\hlstd{year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"sd"}\hlstd{],}\hlkwc{col}\hlstd{=}\hlstr{"grey"}\hlstd{)}
+\hlkwd{segments}\hlstd{(year_agg}\hlopt{$}\hlstd{Group.1}\hlopt{-}\hlnum{0.25}\hlstd{, year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"mean"}\hlstd{]}\hlopt{-}\hlstd{year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"sd"}\hlstd{],}
+          \hlstd{year_agg}\hlopt{$}\hlstd{Group.1}\hlopt{+}\hlnum{0.25}\hlstd{, year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"mean"}\hlstd{]}\hlopt{-}\hlstd{year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"sd"}\hlstd{],}\hlkwc{col}\hlstd{=}\hlstr{"grey"}\hlstd{)}
+\hlkwd{segments}\hlstd{(year_agg}\hlopt{$}\hlstd{Group.1, year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"mean"}\hlstd{]}\hlopt{+}\hlstd{year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"sd"}\hlstd{],}
+         \hlstd{year_agg}\hlopt{$}\hlstd{Group.1,year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"mean"}\hlstd{]}\hlopt{-}\hlstd{year_agg}\hlopt{$}\hlstd{x[,}\hlstr{"sd"}\hlstd{],}\hlkwc{col}\hlstd{=}\hlstr{"grey"}\hlstd{)}
+
+
+\hlkwd{plot}\hlstd{(rent}\hlopt{~}\hlstd{area,} \hlkwc{data}\hlstd{=munich)}
+\hlkwd{plot}\hlstd{(rent}\hlopt{~}\hlstd{location,} \hlkwc{data}\hlstd{=munich)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/plot-t4-discuss-1} 
+
+}
+
+
+
+\end{knitrout}
+From the above plots, we can already come to the reasonable conclusion that there is a relationship between rent and area, location, and year.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{f1} \hlkwb{<-} \hlkwd{lm}\hlstd{(rent}\hlopt{~}\hlstd{area}\hlopt{*}\hlstd{location} \hlopt{+} \hlstd{yearc,} \hlkwc{data}\hlstd{=munich)}
+\hlkwd{par}\hlstd{(}\hlkwc{mfrow}\hlstd{=}\hlkwd{c}\hlstd{(}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{))}
+\hlkwd{plot}\hlstd{(f1)}
+\end{alltt}
+\end{kframe}
+
+{\centering \includegraphics[width=\maxwidth]{figures/plot-t4-model-1} 
+
+}
+
+
+
+\end{knitrout}
+
+From the 'Residuals vs Fitted' plot in the top left, we see that the assumption of zero-mean residuals holds (the trend line drifts away from zero as the fitted values go up, but this can be explained by the lack of data in that area of the plot). However, it could be argued that the variance of the errors increase with the fitted values, but this is quite hard to be sure of with this graph alone.\\
+
+The 'Normal Q-Q' plot is perhaps a little concerning with the tails drifting away from the 'expected' line.\\
+
+In the 'Scale-Location' graph, we again have evidence for heteroscedastic residuals, as the trend variance of residuals appears to get larger as the fitted values get larger (which we also observed in the first plot). However, it could be argued again that this major deviation of the trend line from the expected behaviour is due to a handful of points. However, there is mounting evidence for heterscedastic resisualds, so perhaps a variable transformation is required.\\
+
+Finally, in the 'Residuals vs Leverage' plot, we can see that the majority of datapoints have low leverage and a relatively small Cook's distance. There is just one point, row #3909, which has a high leverage as well as a high Cook's distance. This datapoint should be looked at in more detail as the analysis progresses beyond this initial phase.\\
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{summary}\hlstd{(f1)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = rent ~ area * location + yearc, data = munich)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -746.56  -86.86   -8.91   78.91 1046.26 
+## 
+## Coefficients:
+##                  Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)    -5.356e+03  1.964e+02 -27.274  < 2e-16 ***
+## area            4.732e+00  1.267e-01  37.344  < 2e-16 ***
+## location1      -1.052e+00  1.302e+01  -0.081 0.935595    
+## location2       1.219e+01  3.858e+01   0.316 0.752029    
+## yearc           2.796e+00  9.971e-02  28.036  < 2e-16 ***
+## area:location1  6.948e-01  1.802e-01   3.855 0.000117 ***
+## area:location2  1.519e+00  4.449e-01   3.414 0.000646 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 144.9 on 4564 degrees of freedom
+## Multiple R-squared:  0.4575,	Adjusted R-squared:  0.4568 
+## F-statistic: 641.5 on 6 and 4564 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+The model results confirm our reasoning that there is a relationship between the three variables (area, location, and year) and rent. Both area and year have a very low p-value. However, location a high p-value which would at first glance suggest that it doesn't have relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is feasible that the 'information' given by location is captured in this interaction. It is good practice to leave this 'main effect' of location in the model still, as we will be including its interaction with area.
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{f2} \hlkwb{<-} \hlkwd{lm}\hlstd{(rent}\hlopt{~}\hlstd{area,} \hlkwc{data}\hlstd{=munich)}
+\hlkwd{summary}\hlstd{(f2)}
+\end{alltt}
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = rent ~ area, data = munich)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -774.37  -99.85   -7.31   89.87 1016.36 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)    
+## (Intercept) 135.63725    6.89211   19.68   <2e-16 ***
+## area          4.73031    0.09541   49.58   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 158.6 on 4569 degrees of freedom
+## Multiple R-squared:  0.3498,	Adjusted R-squared:  0.3496 
+## F-statistic:  2458 on 1 and 4569 DF,  p-value: < 2.2e-16
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+
+
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(f2, f1)}
+\end{alltt}
+\begin{verbatim}
+## Analysis of Variance Table
+## 
+## Model 1: rent ~ area
+## Model 2: rent ~ area * location + yearc
+##   Res.Df       RSS Df Sum of Sq      F    Pr(>F)    
+## 1   4569 114891462                                  
+## 2   4564  95857954  5  19033509 181.25 < 2.2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
+
+This analysis of variance shows that the larger model (i.e. including location, year, and the interaction between area and location) is significantly better than the smaller model of just including area. The Residual Sum of Squares is significantly lower, leading to a p-value that signifies a signicant result.
+
 
 \end{document}
