@@ -112,9 +112,9 @@
 
 \section*{Task 1}
 
-A multiple linear regression model has been estimated to study the relation- ship between $Y =$ violent crime rate (per 100,000 people), $X_1 =$ poverty rate (percentage with income below the poverty line) and $X_2 =$ percentage living in urban area. Data are collected in 51 cities in the U.S.\\
+A multiple linear regression model has been estimated to study the relationship between $Y =$ violent crime rate (per 100,000 people), $X_1 =$ poverty rate (percentage with income below the poverty line) and $X_2 =$ percentage living in urban area. Data are collected in 51 cities in the U.S.\\
 
-The relevant equations that relate estimate, standard error, T-statistic, R-squared and Sum of Squares of residuals, regression and total are folloqwing.
+The relevant equations that relate estimates, standard error, T-statistic, R-squared and Sum of Squares of residuals, regression, and total are the following.
 
 \[ \frac{\beta_i}{se(\beta_i)} = T_i \qquad R^2 = \frac{\SSreg}{\SST}= 1-\frac{\SSR}{\SST}  \qquad \SST = \SSreg + \SSR
 \]
@@ -152,7 +152,7 @@ The table below reports the output with filled in missing information.
 \end{tabular}
 \end{center}
 
-The the coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'s given the sample data. \\
+The coefficient of determination $R^2$ is $0.5708$. This value measures the proportion of the variance in $Y$ explained by the model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of $X_i$'s given the sample data. \\
 
 To compute the overall F-test we use the equation below and the statistic then follows an F distribution with corresponding degrees of freedom.
 \[ F = \frac{\SSreg/p}{\SSR/(n-(p+1))} \sim F_{p,n-(p+1)}
@@ -170,7 +170,7 @@ The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2
 \end{kframe}
 \end{knitrout}
 
-Hence, the F-statistic has a value of 31.917987. To interpret this, the global F-test, tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
+Hence, the F-statistic has a value of 31.917987. To interpret this, the global F-test tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the test, we can compute its p-value. It is a quantile of the corresponding F-distribution for the given statistic or mass under the distribution.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -206,22 +206,22 @@ The table below shows the scores of the first test (maximum score 10 points) in 
 \end{tabular}
 \end{center}
 
-Two-sample t-test is usual method for comparing mean scores of two groups. The one-way analysis of variance (ANOVA), also known as one-factor ANOVA, is an extension of independent two-samples t-test for comparing means in a situation where there are more than two groups. This corresponds to our situation.\\
+Two-sample t-test is an often used method for comparing mean scores of two groups. The one-way analysis of variance (ANOVA), also known as one-factor ANOVA, is an extension of independent two-samples t-test for comparing means in a situation where there are more than two groups. This corresponds to our situation.\\
 
 The Hypothesis test in ANOVA is following:
 \begin{itemize}
-\item Null hypothesis: the means of the different groups are the same \\
-\item Alternative hypothesis: At least one sample mean is not equal to the others
+\item Null hypothesis: the means of the different groups are the same; \\
+\item Alternative hypothesis: At least one sample mean is not equal to the others.
 \end{itemize}
 
 The Assumptions of ANOVA are following:
 \begin{itemize}
-\item The observations are obtained independently and randomly from the population defined by the groups of factor levels.\\
-\item The data of each factor level are normally distributed.\\
+\item The observations are obtained independently and randomly from the population defined by the groups of factor levels;\\
+\item The data of each factor level are normally distributed;\\
 \item These normal populations have a common variance.
 \end{itemize}
 
-The F-test is used for comparing the factors of the total deviation. In ANOVA, F-statistic is computed as the ratio of the variance between groups and variance within groups. The F-statistic is then compared to the F-distribution with $I-1$ and $n-I$ degrees of freedom, where $I =$ total number of groups and $n =$ total number of observations. Note that, a lower ratio (ratio $< 1$) indicates that there are no significant difference between the means of the samples being compared. However, a higher ratio implies that the variation among group means are significant.\\
+The F-test is used for comparing the factors of the total deviation. In ANOVA, the F-statistic is computed as the ratio of the variance between groups and variance within groups. The F-statistic is then compared to the F-distribution with $I-1$ and $n-I$ degrees of freedom, where $I =$ total number of groups and $n =$ total number of observations. Note that, a lower ratio (ratio $< 1$) indicates that there are no significant difference between the means of the samples being compared. However, a higher ratio implies that the variation among group means are significant.\\
 
 The process of ANOVA testing is following:
 \begin{itemize}
@@ -230,7 +230,7 @@ The process of ANOVA testing is following:
 \item Produce F-statistic as the ratio of $F = \frac{S^2_{\text{between}} / (I-1)}{S^2_{\text{within}}/(n-I)} $.
 \end{itemize}
 
-From the F-statistic we compute the p-value, ie the probability of obtaining test results at least as extreme as the statistics actually observed during the test, assuming that the null hypothesis is correct.\\
+From the F-statistic we compute the p-value, i.e. the probability of obtaining test results at least as extreme as the statistic actually observed during the test, assuming that the null hypothesis is correct.\\
 
 With the code below, we specify the data and compute common statistics for each group.
 \begin{knitrout}
@@ -252,7 +252,7 @@ With the code below, we specify the data and compute common statistics for each 
 \end{kframe}
 \end{knitrout}
 
-These can be easily visualised with a boxplot (left) or a group means plot with errorbars signifying one standard deviation (right). The main observation we conclude from these plot is the large variance within groups caused mainly by having just few observations.
+These can be easily visualised with a boxplot (left) or a group means plot with errorbars signifying one standard deviation (right). The main observation we conclude from these plot is the large variance within groups is caused mainly by having just a few observations.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
@@ -282,18 +282,18 @@ Finaly, below we compute the ANOVA tests with our data using the function \verb+
 \end{kframe}
 \end{knitrout}
 
-The F-statistics has value of 2.5, which is above 1 which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.\\
+The F-statistic has a value of 2.5, which is above 1, which signifies some differences in group means. However the p-value is 0.177, which is not signigicant under the 5 \% significance level and therefore we cannot reject the null hypothesis of the group means being different.\\
 
 
 
 Case (2):\\
-Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistics to be smaller. The main reason is that the differences in the group mean are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistics will be smaller. Since the F-value will be closer to 1 (or closer to the mean of F-distribution), the p-value will therefore also increase as observing statistics more extreme is more likely than before. \\
+Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistic to be smaller. The main reason is that the differences in the group means are going to be smaller and therefore the nominator of the ratio, $S^2_{\text{between}}$ will be smaller and hence the whole ratio or F-statistic will be smaller. Since the F-value will be closer to 1 (or closer to the mean of F-distribution), the p-value will therefore also increase as observing statistics more extreme is more likely than before. \\
 
 Case (3):\\
-Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistics to be larger. The main reason is that that the variation within each group have decreased and therefore the $S^2_{\text{within}}$ will decrease and as the denominator of a ratio will decrease, the whole F-test statistics will be larger. Since the F-statistics increased, the p-value will decrease (observing more extreme statistics is less likely). With such a small variances, we would could even expect the test to be significant at the 5\% significance level.\\
+Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistic to be larger. The main reason is that that the variation within each group have decreased and therefore the $S^2_{\text{within}}$ will decrease and since the denominator of the ratio will decrease, the whole F-test statistics will be larger. Since the F-statistics increased, the p-value will decrease (observing more extreme statistics is less likely). With such small variances, we could even expect the test to be significant at the 5\% significance level.\\
 
 Case (4):\\
-Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistics to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistics will be with 2 and 77 degrees of freedom. The groups variance has still the same number of degrees of freedom as the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Residual compared to Mean Squared of Groups. Hence, the overall F-test statistics would significantly increase. With similar line of reasoning as before, as the F-statistics will be large, the p-value (probability of observing more extreme statistics) will be very low.\\
+Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistic to be larger. The main reason is the F-distribution with which we would be comparing our F-test statistic will be with 2 and 77 degrees of freedom. The groups variance still has the same number of degrees of freedom because the number of groups hasn't changed. However the residual variance now had 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $S^2_{\text{within}}$ by 77, which would result in a signigicantly lower Mean Squared Residual compared to Mean Squared of Groups. Hence, the overall F-test statistics would significantly increase. With similar line of reasoning as before, as the F-statistics will be large, the p-value (probability of observing more extreme statistics) will be very low.\\
 
 \section*{Task 3}
 
@@ -302,7 +302,7 @@ The compressive strength of concrete is being studied, and four different mixing
 \begin{center}
 \begin{tabular}{ l c c c c}
  \hline
- & \multicolumn{4}{c}{Compressive Strenght} \\
+ & \multicolumn{4}{c}{Compressive Strength} \\
  \hline
  Mixing & 1 & 2 & 3 & 4 \\
  \hline
@@ -398,11 +398,12 @@ In the output we can see the individual comparisons between all groups with the 
 \section*{Task 4}
 Consider the data set munich.csv. The data set contains information on therent prices of apartments in Munich.  The variables in the data set are:
 
-rent:  net rent per month (in Euro)
-area:  living area in square meters-yearc:
-year of construction
-location:  quality of location according to an expert assessment(0 = average location, 1 = good location, 2 = top location)
-
+\begin{itemize}
+\item rent:  net rent per month (in Euro)
+\item area:  living area in square meters-yearc:
+\item year of construction
+\item location:  quality of location according to an expert assessment(0 = average location, 1 = good location, 2 = top location)
+\end{itemize}
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -465,9 +466,9 @@ From the 'Residuals vs Fitted' plot in the top left, we see that the assumption 
 
 The 'Normal Q-Q' plot is perhaps a little concerning with the tails drifting away from the 'expected' line.\\
 
-In the 'Scale-Location' graph, we again have evidence for heteroscedastic residuals, as the trend variance of residuals appears to get larger as the fitted values get larger (which we also observed in the first plot). However, it could be argued again that this major deviation of the trend line from the expected behaviour is due to a handful of points. However, there is mounting evidence for heterscedastic resisualds, so perhaps a variable transformation is required.\\
+In the 'Scale-Location' graph, we again have evidence for heteroscedastic residuals, as the trend variance of residuals appears to get larger as the fitted values get larger (which we also observed in the first plot). However, it could be argued again that this major deviation of the trend line from the expected behaviour is due to a just a few datapoints. There is mounting evidence for heteroscedastic residuals, so perhaps a variable transformation is required.\\
 
-Finally, in the 'Residuals vs Leverage' plot, we can see that the majority of datapoints have low leverage and a relatively small Cook's distance. There is just one point, row #3909, which has a high leverage as well as a high Cook's distance. This datapoint should be looked at in more detail as the analysis progresses beyond this initial phase.\\
+Finally, in the 'Residuals vs Leverage' plot we can see that the majority of datapoints have low leverage and a relatively small Cook's distance. There is just one point, in row 3909, which has a high leverage as well as a high Cook's distance. This datapoint should be looked at in more detail as the analysis progresses beyond this initial phase.\\
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
@@ -502,7 +503,7 @@ Finally, in the 'Residuals vs Leverage' plot, we can see that the majority of da
 \end{kframe}
 \end{knitrout}
 
-The model results confirm our reasoning that there is a relationship between the three variables (area, location, and year) and rent. Both area and year have a very low p-value. However, location a high p-value which would at first glance suggest that it doesn't have relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is feasible that the 'information' given by location is captured in this interaction. It is good practice to leave this 'main effect' of location in the model still, as we will be including its interaction with area.
+The model results confirm our reasoning that there is a relationship between the three variables (area, location, and year) and rent. Both area and year have a very low p-value. Location has a high p-value which would at first glance suggest that it doesn't have a significant relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is feasible that the 'information' given by location is captured in this interaction. It is good practice to leave this 'main effect' of location in the model still, as we will be including its interaction with area.
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
