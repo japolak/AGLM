@@ -361,8 +361,19 @@ hist(munich$rent, xlab="Rent", main="")
 2)
 From the above plots, we can already come to the reasonable conclusion that there is a relationship between variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model could be adequate for the analysis. To see whether the assumptions of the linear model hold, we analyse the resituals. The quality of the fit could be infered from the $R^2$ value. \\
 
-3) Here, we estimate the model,
+3) Here, we estimate the model described below and interpret the coefficients following way
 \[ Y = \beta_0 + \beta_1 X_{\text{area}}+ \beta_2 X_{\text{loc:good}} + \beta_3 X_{\text{loc:top}} + \beta_4 X_{\text{yearc}} + \beta_5 X_{\text{loc:good}} X_{\text{area}} + \beta_6 X_{\text{loc:top}}  X_{\text{area}} \]
+
+\begin{itemize}
+\item $\beta_0$ (Intercept): Expected net rent in Eur for an apartment with area being 0 in average location “0”.\\
+\item $\beta_ 1$ (Area): A change in expected net rent in Eur for a 1 unit change in area given an average location.\\
+\item $\beta_2$ (Location1): The difference in expected net rent for two equivalent apartments when one is in average location "0" and one is in good location "1". As $\beta_2 > 0$ expected net rent increases if location is changed from "0" to "1" (average to top), all else equal.\\
+\item $\beta_3$ (Location2): The difference in expected net rent for two equivalent apartments when one is in location "0" and one is in location "2". As $\beta_3 > 0$ expected net rent increases if location is changed from "0" to "2" (average to top), all else equal.\\
+\item $\beta_4$ (Location1:area): The additional change in expected net rent in Eur for a 1 unit change in area, given Location1. Hence the total change for change in area in good Location would be $\beta_1+\beta_4$.\\
+\item $\beta_5$ (Location2:area): The additional change in expected net rent in Eur for a 1 unit change in area, given Location2. Hence the total change for change in area in top Location would be $\beta_1+\beta_5$.\\
+\item $\beta_6$ (Yearc): A change in expected net rent in Eur for a 1 yearc change of an apartment.
+\end{itemize}
+
 <<t4-model>>=
 f1 <- lm(rent~area*location + yearc, data=munich)
 par(mfrow=c(2,2)) ; plot(f1)
