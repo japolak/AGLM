@@ -119,7 +119,7 @@ A multiple linear regression model has been estimated to study the relationship 
 1)
 The relevant equations that relate estimates, standard error, T-statistic, R-squared and Sum of Squares of residuals (SSR), regression (SSReg), and total (SST) are the following:
 
-  \[ \frac{\hat{\beta_j}}{se(\hat{\beta_j})} = t-value \qquad R^2 = \frac{\SSReg}{\SST}= 1-\frac{\SSR}{\SST}  \qquad \SST = \SSReg + \SSR
+  \[ \frac{\hat{\beta_j}}{se(\hat{\beta_j})} = \text{t-value} \qquad R^2 = \frac{\SSReg}{\SST}= 1-\frac{\SSR}{\SST}  \qquad \SST = \SSReg + \SSR
 \]
 
 We plug in the corresponding information that is already provided and compute the missing values.
@@ -408,11 +408,11 @@ As the ANOVA test is significant, we can compute Tukey Honest Significant Differ
 \end{kframe}
 \end{knitrout}
 
-<<<<<<< HEAD
-In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that there is evidence in the data that the mixing technique 4 has the smallest mean compressive strength out of the mixing techniques considered.
-=======
+
+In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that there is evidence in the data that the mixing technique 4 has the smallest mean compressive strength out of the mixing techniques considered.\\
+
 In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has significantly smallest compressive strength out of the mixing techniques considered.
->>>>>>> 68c7a4273e5b0b4141e7e3002d0c920b8408b356
+
 
 Hence, the answer to the main question in this task is yes, there is evidence in the data that the mixing technique does affect the compressive strength of the concrete, and more specifically, based on further analysis, we would not recommend the use of mixing technique 4 in practice.
 
@@ -440,32 +440,32 @@ Consider the data set munich.csv. The data set contains information on therent p
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\maxwidth]{figures/plot-t4-discuss-1} 
+{\centering \includegraphics[width=.9\linewidth]{figures/plot-t4-discuss-1} 
 
 }
 
 
 
 \end{knitrout}
-2)
-<<<<<<< HEAD
-From the above plots, we can already come to a reasonable conclusion that there is a relationship between the variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model should be adequate for the analysis.
-=======
+
+2) From the above plots, we can already come to a reasonable conclusion that there is a relationship between the variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model should be adequate for the analysis.\\
+
 From the above plots, we can already come to the reasonable conclusion that there is a relationship between variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model could be adequate for the analysis. To see whether the assumptions of the linear model hold, we analyse the resituals. The quality of the fit could be infered from the $R^2$ value. \\
 
-3) Here, we estimate the model described below and interpret the coefficients following way
+
+3) Here, we estimate the model described below.
 \[ Y = \beta_0 + \beta_1 X_{\text{area}}+ \beta_2 X_{\text{loc:good}} + \beta_3 X_{\text{loc:top}} + \beta_4 X_{\text{yearc}} + \beta_5 X_{\text{loc:good}} X_{\text{area}} + \beta_6 X_{\text{loc:top}}  X_{\text{area}} \]
 
+We can interpret the coefficients following way:
 \begin{itemize}
-\item $\beta_0$ (Intercept): Expected net rent in Eur for an apartment with area being 0 in average location “0”.\\
-\item $\beta_ 1$ (Area): A change in expected net rent in Eur for a 1 unit change in area given an average location.\\
-\item $\beta_2$ (Location1): The difference in expected net rent for two equivalent apartments when one is in average location "0" and one is in good location "1". As $\beta_2 > 0$ expected net rent increases if location is changed from "0" to "1" (average to top), all else equal.\\
-\item $\beta_3$ (Location2): The difference in expected net rent for two equivalent apartments when one is in location "0" and one is in location "2". As $\beta_3 > 0$ expected net rent increases if location is changed from "0" to "2" (average to top), all else equal.\\
+\item $\beta_0$ (Intercept): Expected net rent in Eur for an apartment with area being 0 in average location.\\
+\item $\beta_ 1$ (Area): A change in expected rent in Eur for a 1 unit change in area given an average location.\\
+\item $\beta_2$ (Location1): The difference in expected rent for two equivalent apartments when one is in Location0 and other in Location1. As $\beta_2 > 0$ expected rent increases if location is changed from 0 to 1 (average to good), all else equal.\\
+\item $\beta_3$ (Location2): The difference in expected rent for two equivalent apartments when one is in Location0 and other in Location2. As $\beta_3 > 0$ expected rent increases if location is changed from 0 to 2.\\
 \item $\beta_4$ (Location1:area): The additional change in expected net rent in Eur for a 1 unit change in area, given Location1. Hence the total change for change in area in good Location would be $\beta_1+\beta_4$.\\
 \item $\beta_5$ (Location2:area): The additional change in expected net rent in Eur for a 1 unit change in area, given Location2. Hence the total change for change in area in top Location would be $\beta_1+\beta_5$.\\
 \item $\beta_6$ (Yearc): A change in expected net rent in Eur for a 1 yearc change of an apartment.
 \end{itemize}
->>>>>>> 68c7a4273e5b0b4141e7e3002d0c920b8408b356
 
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
