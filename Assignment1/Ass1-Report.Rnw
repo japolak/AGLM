@@ -372,6 +372,7 @@ segments(year_agg$Group.1, year_agg$x[,"mean"]+year_agg$x[,"sd"],
 
 plot(rent~area, data=munich, xlab="Area", ylab="Rent")
 plot(rent~location, data=munich, xlab="Location", ylab="Rent")
+hist(munich$rent, xlab="Rent", main = "")
 
 @
 
