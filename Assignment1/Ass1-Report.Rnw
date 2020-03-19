@@ -9,6 +9,7 @@
 \usepackage{indentfirst}
 \usepackage{fancyhdr}
 \usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{enumitem}
 
 % No indents in whole document
@@ -152,12 +153,12 @@ The table below shows the scores of the first test (maximum score 10 points) in 
 \end{center}
 
 1)
-Two-sample t-test is an often used method for comparing mean scores of two groups. The one-way analysis of variance (ANOVA), also known as one-factor ANOVA, is an extension of independent two-samples t-test for comparing means in a situation where there are more than two groups. This corresponds to our situation.\\
+The aim is to compare means of the different groups. If we would be comparing only two groups, we would use two-sample t-test. For the situation where there is more than two groups, identified by a factor we can the one-way/one-factor analysis of variance (ANOVA). This corresponds to our situation and it tests if at least one group is different than others.\\
 
 The Assumptions of the ANOVA are following:
 \begin{itemize}
-\item The observations ${y_{ij}}$ represent N iid realizations of the data generating process $Y_{ij} = \mu + \alpha_j + \epsilon_{ij}$; \\
-\item Errors $\epsilon_{ij}$ are iid and normally distributed, i.e. $\epsilon_{ij} \sim N(0, \sigma^2)$ which implies that $Y_{ij} \sim N(\mu + \alpha_j, \sigma^2)$ for every group $j = 1,...,M$.
+\item The observations ${y_{ij}}$ represent $N$ iid realizations of the data generating process $Y_{ij} = \mu + \alpha_j + \epsilon_{ij}$; \\
+\item Errors $\epsilon_{ij}$ are iid and normally distributed, i.e. $\epsilon_{ij} \sim \mathcal{N}(0, \sigma^2)$ which implies that $Y_{ij} \sim \mathcal{N}(\mu + \alpha_j, \sigma^2)$ for every group $j = 1,...,M$.
 \end{itemize}
 
 The Hypothesis tested in ANOVA is the following:
@@ -317,7 +318,7 @@ library(multcomp)
 summary(glht(fit, linfct = mcp(mixing = "Tukey")))
 @
 
-In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has the smallest compressive strength out of the mixing techniques considered.
+In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has significantly smallest compressive strength out of the mixing techniques considered.
 
 Hence, the answer to the main question in this task is yes, there is evidence in the data that the mixing technique does affect the compressive strength of the concrete, and more specifically, based on further analysis, we would not recommend the use mixing technique 4 for concrete in practice.
 
@@ -331,21 +332,20 @@ Consider the data set munich.csv. The data set contains information on therent p
 \item location:  quality of location according to an expert assessment (0 = average, 1 = good, 2 = top)
 \end{itemize}
 
-1)
+1) Here we read the data into R and interpret the location variable as factor. Furthermore we visualize the data by showing relation of each variable to the predicted variable rent.
 <<t4-data>>=
 munich <- read.csv("munich.csv")
 munich$location <- factor(munich$location)
 
-
 @
 
 
-<<t4-discuss>>=
+<<t4-discuss, echo=FALSE>>=
 par(mfrow=c(2,2))
 year_agg <- aggregate(munich$rent, list(munich$yearc),
                       function(x) c(mean=mean(x), sd=sd(x)))
-plot(year_agg$Group.1, year_agg$x[,"mean"], xlab="year",
-     ylab="rent: mean +- 1 sd", ylim=c(0, 1300))
+plot(year_agg$Group.1, year_agg$x[,"mean"], xlab="Yearc",
+     ylab="Rent: mean +- 1 sd", ylim=c(0, 1300))
 segments(year_agg$Group.1-0.25, year_agg$x[,"mean"]+year_agg$x[,"sd"],
           year_agg$Group.1+0.25, year_agg$x[,"mean"]+year_agg$x[,"sd"],col="grey")
 segments(year_agg$Group.1-0.25, year_agg$x[,"mean"]-year_agg$x[,"sd"],
@@ -353,26 +353,22 @@ segments(year_agg$Group.1-0.25, year_agg$x[,"mean"]-year_agg$x[,"sd"],
 segments(year_agg$Group.1, year_agg$x[,"mean"]+year_agg$x[,"sd"],
          year_agg$Group.1,year_agg$x[,"mean"]-year_agg$x[,"sd"],col="grey")
 
-
-plot(rent~area, data=munich)
-plot(rent~location, data=munich)
-
+plot(rent~area, data=munich, xlab="Area", ylab="Rent")
+plot(rent~location, data=munich, xlab="Location", ylab="Rent")
+hist(munich$rent, xlab="Rent", main="")
 
 @
 2)
-From the above plots, we can already come to the reasonable conclusion that there is a relationship between variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model should be adequate for the analysis.
+From the above plots, we can already come to the reasonable conclusion that there is a relationship between variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model could be adequate for the analysis. To see whether the assumptions of the linear model hold, we analyse the resituals. The quality of the fit could be infered from the $R^2$ value. \\
 
-3)
+3) Here, we estimate the model,
+\[ Y = \beta_0 + \beta_1 X_{\text{area}}+ \beta_2 X_{\text{loc:good}} + \beta_3 X_{\text{loc:top}} + \beta_4 X_{\text{yearc}} + \beta_5 X_{\text{loc:good}} X_{\text{area}} + \beta_6 X_{\text{loc:top}}  X_{\text{area}} \]
 <<t4-model>>=
-
 f1 <- lm(rent~area*location + yearc, data=munich)
-par(mfrow=c(2,2))
-plot(f1)
-
+par(mfrow=c(2,2)) ; plot(f1)
 @
 
-4)
-From the 'Residuals vs Fitted' plot in the top left, we see that the assumption of zero-mean errors does not have major violations. There is some deviation as the trend line drifts away from zero for larger fitted values, but this can be explained by the lack of data in that area of the plot. \\
+4) From the 'Residuals vs Fitted' plot in the top left, we see that the assumption of zero-mean errors does not have major violations. There is some deviation as the trend line drifts away from zero for larger fitted values, but this can be explained by the lack of data in that area of the plot. \\
 
 The 'Normal Q-Q' plot is concerning because the residuals show right-skewed distribution rather than normal. The deviation is not extremely severe, however, there is valid evidence against the normality assumption. \\
 
@@ -380,38 +376,32 @@ In the 'Scale-Location' graph, we see a clear violation of the homoscedasticity 
 
 Finally, in the 'Residuals vs Leverage' plot we can see that the majority of the datapoints have low leverage and a relatively small Cook's distance. There is just one point, in row 3909, which has a high leverage as well as a high Cook's distance. This datapoint is borderline influential as its Cook's distance is around 0.5, and it should be looked at in more detail as the analysis progresses beyond this initial phase.\\
 
-The conclusion from the residual analysis is that there are issues with the assumptions of the linear model with respect to the homoscedasticity assumption and also with respect to the normality assumption. A very good idea in this case would be to look at the variables and perform a log-transformation on the right-skewed variables. Log-transformation can stabilize the variance and solve the heteroscedasticity issue, and also it can deal with the right-skewed distribution by bringing it closer to the normal distribution. So, the log-transformation could potentially solve both problems, and we will address this later.
+The conclusion from the residual analysis is that there are issues with the assumptions of the linear model with respect to the homoscedasticity assumption and also with respect to the normality assumption. A very good idea in this case would be to look at the variables and perform a log-transformation on the right-skewed variables. Log-transformation can stabilize the variance and solve the heteroscedasticity issue, and also it can deal with the right-skewed distribution by bringing it closer to the normal distribution. So, the log-transformation could potentially solve both problems, and we will address this later. \\
 
-5)
+5) Below we display and interpret the model results.
 <<t4-summary>>=
 summary(f1)
-
 @
 
+The model results confirm our reasoning that there is a linear relationship between the variable rent and the three variables (area, location, and yearc). Both area and yearc have a very low p-value which means that there is strong evidence that they have a linear association with the outcome variable rent. Location has a high p-value which would at first glance suggest that it doesn't have a significant relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is possible that the 'information' given by location is captured in this interaction. It is a good practice to leave the 'main effect' of the variable in the model when its interaction with another variable is included, so we keep the variable location because of its interaction with area.\\
 
-The model results confirm our reasoning that there is a linear relationship between the variable rent and the three variables (area, location, and yearc). Both area and yearc have a very low p-value which means that there is strong evidence that they have a linear association with the outcome variable rent. Location has a high p-value which would at first glance suggest that it doesn't have a significant relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is possible that the 'information' given by location is captured in this interaction. It is a good practice to leave the 'main effect' of the variable in the model when its interaction with another variable is included, so we keep the variable location because of its interaction with area.
-
-6)
+6) First we fit a linear model including only the variable $area$ and display the results.
 <<t4-compare>>=
-
 f2 <- lm(rent~area, data=munich)
 summary(f2)
 @
 
-
+We can see that the adjusted $R^2$ coefficient for this model is only $0.35$, whereas for the model before it had value $0.46$. Note that we use adjusted $R^2$ so that we can compare models with different number of variables. Since the smaller model is nested within the bigger one, we can also compare the model using analysis of variance.
 
 <<t4-anova>>=
-
 anova(f2, f1)
-
 @
 
 This analysis shows that the larger model with area, location, yearc, and the interaction between area and location is significantly better than the smaller model with just area. The Residual Sum of Squares is significantly lower, leading to a very low p-value that gives a significant result and a very strong evidence against the null hypothesis that the coefficients on location, yearc and area:location are all equal to zero simultaneously.
 
 \pagebreak
 
-7)
-Additional imporvement to the model with the log-transformation:
+7) Additional imporvement to the model with the log-transformation:
 
 <<t4-logtransform, fig.height=4>>=
 
