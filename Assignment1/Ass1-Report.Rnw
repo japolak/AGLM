@@ -131,6 +131,8 @@ Hence, the F-statistic has a value of \Sexpr{f}. To evaluate the test, and decid
 
 The p-value is \Sexpr{p}, which is lower than the standard significance level $\alpha=0.05$ and therefore, we can reject the null hypothesis $H_0 : \beta_1 = \beta_2 = 0$. In other words, there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the model with all the covariates is better than the one with just the intercept. This test indicates that the linear model is suitable for explaining a significant portion of the variance in the outcome variable.
 
+\pagebreak
+
 \section*{Task 2}
 
 The table below shows the scores of the first test (maximum score 10 points) in a beginning German course. Students in the course are grouped as follows:
@@ -174,6 +176,9 @@ We reject the null hypothesis when the value of the F-statistic is large. More s
 \\
 
 In the example above we have three groups, i.e. $M = 3$ and eight data points, $N = 8$.With the code below, we specify the data and compute common statistics for each group.
+
+\pagebreak
+
 <<t2-data>>=
 X <- data.frame("grade" = c(4,6,8,1,5,9,10,5),
                 "group" = c("A","A","A","B","B","C","C","C"))
@@ -234,6 +239,8 @@ summary(fit4)
 
 @
 
+\pagebreak
+
 Case (2):\\
 Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistic to be smaller. The main reason is that the numerator of the F-statistic, $SSReg$, which represents the variance between groups, decreases when the estimated group means are closer to each other. \\
 
@@ -246,6 +253,7 @@ Suppose you have the same means and standard deviations as these data, but the s
 5)
 The p-value is defined as the probability of observing equal or more extreme value that the test statistic for the distribution under the null hypothesis. In the case of F-test, p-value is the probability of observing equal or larger value than the observed F-statistic for the corresponding F-distribution under the null hypothesis. This means that if the F-statistic were to increase, the p-value would decrease because the probability of observing equal or larger value than the F-statistic would decrease. Opposite happens if the F-statistic were to decrease. Therefore, in case (2) we would expect the p-value to increase, and in cases (3) and (4) we would expect p-value to decerase.
 
+\pagebreak
 
 \section*{Task 3}
 
@@ -307,11 +315,13 @@ plot(fit, which = c(1,2))
 summary(fit)
 @
 
-Before interpreting the results, we first examine the validity of the model assumptions about the errors. The Tukey-Anscombe plot shows that there are no major deviations from the zero-mean and homoscedasticity assumptions on the errors, and the Normal QQ-plot doesn't show any apparent deviation from the normality assumption on the errors. Therefore, we can conclude that the assumptions about the model are not refuted by the residual analysis, and we can proceed to interpret the results.
+Before interpreting the results, we first examine the validity of the model assumptions about the errors. The Tukey-Anscombe plot shows that there are no major deviations from the zero-mean and homoscedasticity assumptions on the errors, and the Normal QQ-plot doesn't show any apparent deviation from the normality assumption on the errors. Therefore, we can conclude that the assumptions about the model are not refuted by the residual analysis, and we can proceed to interpret the results. \\
 
 From the summary we can see that the F-statistics is 12.73, which is quite large for F-distribution with 3 and 12 degrees of freedom. This is also evident from the p-value being 0.0005, which is very small and we would therefore reject the null hypothesis that the group means are all the same. Therefore, we can conclude there is strong evidence that for at least one mixing technique, the mean compressive strength differs from the others. However, we cannot conclude much more from the global F-test. To yield more information about where the differences come from, we perform the multiple pairwise-comparison, to determine if the differences in the means between specific group pairs are statistically significant. \\
 
 As the ANOVA test is significant, we can compute Tukey Honest Significant Differences for performing multiple pairwise-comparison between the group means. We use Tukey HSD method which accounts for multiple testing correction as now we have more simultaneous tests and we have to account for that. For fitting, we use the function \verb+glht()+ [in \verb+multcomp+ package], where glht stands for general linear hypothesis tests.
+
+\pagebreak
 
 <<t3-pairwise-comparison>>=
 library(multcomp)
@@ -321,12 +331,15 @@ summary(glht(fit, linfct = mcp(mixing = "Tukey")))
 
 In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that there is evidence in the data that the mixing technique 4 has the smallest mean compressive strength out of the mixing techniques considered.\\
 
-In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has significantly smallest compressive strength out of the mixing techniques considered.
+In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has significantly smallest compressive strength out of the mixing techniques considered. \\
 
 
 Hence, the answer to the main question in this task is yes, there is evidence in the data that the mixing technique does affect the compressive strength of the concrete, and more specifically, based on further analysis, we would not recommend the use of mixing technique 4 in practice.
 
+\pagebreak
+
 \section*{Task 4}
+
 Consider the data set munich.csv. The data set contains information on therent prices of apartments in Munich.  The variables in the data set are:
 
 \begin{itemize}
@@ -336,7 +349,7 @@ Consider the data set munich.csv. The data set contains information on therent p
 \item location:  quality of location according to an expert assessment (0 = average, 1 = good, 2 = top)
 \end{itemize}
 
-1) Here we read the data into R and interpret the location variable as factor. Furthermore we visualize the data by showing relation of each variable to the predicted variable rent.
+1) Here we read the data into R and interpret the location variable as factor. Furthermore, we visualize the data by showing relation of each variable to the predicted variable rent.
 <<t4-data>>=
 munich <- read.csv("munich.csv")
 munich$location <- factor(munich$location)
@@ -359,35 +372,39 @@ segments(year_agg$Group.1, year_agg$x[,"mean"]+year_agg$x[,"sd"],
 
 plot(rent~area, data=munich, xlab="Area", ylab="Rent")
 plot(rent~location, data=munich, xlab="Location", ylab="Rent")
-hist(munich$rent, xlab="Rent", main="")
 
 @
 
-2) From the above plots, we can already come to a reasonable conclusion that there is a relationship between the variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model should be adequate for the analysis.\\
+\pagebreak
 
-From the above plots, we can already come to the reasonable conclusion that there is a relationship between variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model could be adequate for the analysis. To see whether the assumptions of the linear model hold, we analyse the resituals. The quality of the fit could be infered from the $R^2$ value. \\
+2) From the above plots, we can already come to a reasonable conclusion that there is a relationship between the variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model should be adequate for the analysis.\\
 
 
 3) Here, we estimate the model described below.
-\[ Y = \beta_0 + \beta_1 X_{\text{area}}+ \beta_2 X_{\text{loc:good}} + \beta_3 X_{\text{loc:top}} + \beta_4 X_{\text{yearc}} + \beta_5 X_{\text{loc:good}} X_{\text{area}} + \beta_6 X_{\text{loc:top}}  X_{\text{area}} \]
+\[ Y = \beta_0 + \beta_1 X_{\text{area}}+ \beta_2 X_{\text{loc:good}} + \beta_3 X_{\text{loc:top}} + \beta_4 X_{\text{loc:good}} X_{\text{area}} + \beta_5 X_{\text{loc:top}}  X_{\text{area}} + \beta_6 X_{\text{yearc}} \]
 
-We can interpret the coefficients following way:
+We can interpret the coefficients in the following way:
 \begin{itemize}
-\item $\beta_0$ (Intercept): Expected net rent in Eur for an apartment with area being 0 in average location.\\
-\item $\beta_ 1$ (Area): A change in expected rent in Eur for a 1 unit change in area given an average location.\\
-\item $\beta_2$ (Location1): The difference in expected rent for two equivalent apartments when one is in Location0 and other in Location1. As $\beta_2 > 0$ expected rent increases if location is changed from 0 to 1 (average to good), all else equal.\\
-\item $\beta_3$ (Location2): The difference in expected rent for two equivalent apartments when one is in Location0 and other in Location2. As $\beta_3 > 0$ expected rent increases if location is changed from 0 to 2.\\
-\item $\beta_4$ (Location1:area): The additional change in expected net rent in Eur for a 1 unit change in area, given Location1. Hence the total change for change in area in good Location would be $\beta_1+\beta_4$.\\
-\item $\beta_5$ (Location2:area): The additional change in expected net rent in Eur for a 1 unit change in area, given Location2. Hence the total change for change in area in top Location would be $\beta_1+\beta_5$.\\
-\item $\beta_6$ (Yearc): A change in expected net rent in Eur for a 1 yearc change of an apartment.
+\item $\beta_0$ (Intercept): Expected net rent in Eur for an apartment with area = 0, yearc = 0 and location = "average".\\
+\item $\beta_ 1$ (Area): A change in the expected net rent in Eur for a 1 unit (1 square meter) increase in area, given location = "average".\\
+\item $\beta_2$ (Location1): The difference in the expected net rent between an apartment with location = "good", and an apartment with location = "average", given that everything else (area, yearc) is equal. If $\beta_2 > 0$ then the expected net rent is larger in the Location1 than in the Location0 given everything else is the same. \\
+\item $\beta_3$ (Location2): The difference in the expected net rent between an apartment with location = "top", and an apartment with location = "average", given that everything else (area, yearc) is equal. If $\beta_3 > 0$ then the expected net rent is larger in the Location2 than in the Location0 given everything else is the same.\\
+\item $\beta_4$ (Location1:area): The additional change in the expected net rent in Eur for a 1 unit (1 square meter) increase in area, given location = "good". Hence the total change in the expected net rent for 1 unit (1 square meter) increase in area when location = "good" would be $\beta_1+\beta_4$.\\
+\item $\beta_5$ (Location2:area): The additional change in the expected net rent in Eur for a 1 unit (1 square meter) increase in area, given location = "top". Hence the total change in the expected net rent for 1 unit (1 square meter) increase in area when location = "top" would be $\beta_1+\beta_5$.\\
+\item $\beta_6$ (Yearc): A change in the expected net rent in Eur for a 1 unit (1 year) increase in yearc.
 \end{itemize}
 
-<<t4-model>>=
+\pagebreak
+
+4)
+Prior to interpreting the results of the model, it is necessary to perform the residual analysis in order to see if the assumptions of the fitted linear model hold.
+
+<<t4-model, fig.height=6>>=
 f1 <- lm(rent~area*location + yearc, data=munich)
 par(mfrow=c(2,2)) ; plot(f1)
 @
 
-4) From the 'Residuals vs Fitted' plot in the top left, we see that the assumption of zero-mean errors does not have major violations. There is some deviation as the trend line drifts away from zero for larger fitted values, but this can be explained by the lack of data in that area of the plot. \\
+From the 'Residuals vs Fitted' plot in the top left, we see that the assumption of zero-mean errors does not have major violations. There is some deviation as the trend line drifts away from zero for larger fitted values, but this can be explained by the lack of data in that area of the plot. \\
 
 The 'Normal Q-Q' plot is concerning because the residuals show right-skewed distribution rather than the normal distribution. The deviation is not extremely severe, however, there is valid evidence against the normality assumption. \\
 
@@ -402,7 +419,9 @@ The conclusion from the residual analysis is that there are issues with the assu
 summary(f1)
 @
 
-The model results confirm our reasoning that there is a linear relationship between the variable rent and the three variables (area, location, and yearc). Both area and yearc have a very low p-value which means that there is strong evidence that they have a linear association with the outcome variable rent. Location has a high p-value which would at first glance suggest that it doesn't have a significant relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is possible that the 'information' given by location is captured in this interaction. It is a good practice to leave the 'main effect' of the variable in the model when its interaction with another variable is included, so we keep the variable location because of its interaction with area.\\
+The model results confirm our reasoning that there is a linear relationship between the variable rent and the three variables (area, location, and yearc). Both area and yearc have a very low p-value which means that there is strong evidence that they have a linear association with the outcome variable rent. Location has a high p-value which would at first glance suggest that it doesn't have a significant relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is possible that the 'information' given by location is captured in this interaction. It is a good practice to leave the 'main effect' of the variable in the model when its interaction with another variable is included, so we keep the variable location because of its interaction with area. The quality of the fit could be inferred from the $R^2$ value and we can say that around $45.75 \%$ of the sample variance in net rent can be explained by the linear combination of variables area, location, yearc, and interaction between area and location . \\
+
+\pagebreak
 
 6) First we fit a linear model including only the variable $area$ and display the results.
 <<t4-compare>>=
