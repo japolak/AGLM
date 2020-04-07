@@ -36,14 +36,11 @@ summary(admission)
 # Histograms showing the distribution of the variables
 histData <- gather(admission, key=key, value=value)
 histData$value <- as.integer(histData$value)
-pdf("histEx3.pdf", width=8,height=5)
-plot1 = ggplot(histData, aes(value)) +
+plot1= ggplot(histData, aes(value)) +
   geom_histogram(bins = 10, color= "black", fill="grey70") +
-  facet_wrap(~key, scales = "free_x", nrow = 2,
-             ncol = 2) +
+  facet_wrap(~key, scales = "free_x", nrow = 2, ncol = 2) +
   theme_bw()
 plot1
-
 # Scatter matrix
 panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
   usr <- par("usr")
