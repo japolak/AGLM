@@ -14,7 +14,7 @@
 #-----------------------------------------------------------------------------------------------------
 # Setting directory and loading packages
 #-----------------------------------------------------------------------------------------------------
-setwd("...")
+setwd("~/Data/github/AGLM/Course_Material")
 library(ggplot2)
 library(tidyr)
 library(car)
@@ -37,12 +37,12 @@ summary(admission)
 histData <- gather(admission, key=key, value=value)
 histData$value <- as.integer(histData$value)
 pdf("histEx3.pdf", width=8,height=5)
-ggplot(histData, aes(value)) +
+plot1 = ggplot(histData, aes(value)) +
   geom_histogram(bins = 10, color= "black", fill="grey70") +
   facet_wrap(~key, scales = "free_x", nrow = 2,
              ncol = 2) +
   theme_bw()
-dev.off()
+plot1
 
 # Scatter matrix
 panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...) {
@@ -106,7 +106,7 @@ residualPlots(mod1, type = "deviance", pch=20, smooth=list(col="red"))
 # Outliers, leverage, Cook's distance
 influenceIndexPlot(mod1,vars=c("Studentized", "hat", "Cook"), id=list(n=c(4)))
 outlierTest(mod1) # Testing outliers
-CookThreshold <- 5/400*qchisq(0.05,1,lower.tail=FALSE) # Cook´s distance threshold for GLM
+CookThreshold <- 5/400*qchisq(0.05,1,lower.tail=FALSE) # Cook?s distance threshold for GLM
 CookThreshold
 
 # Are 198 and 156 really influential?
@@ -235,4 +235,4 @@ summary(mod2)
 titanic <- read.csv("titanic.csv",header=TRUE)
 modTitanic <- glm(cbind(Survived,Died)~.,data=titanic,family="binomial")
 summary(modTitanic) 
-
+w
