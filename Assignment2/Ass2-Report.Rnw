@@ -73,395 +73,61 @@ options(formatR.arrow=TRUE,width=90)
 
 \section*{Task 1}
 
-A multiple linear regression model has been estimated to study the relationship between $Y =$ violent crime rate (per 100,000 people), $X_1 =$ poverty rate (percentage with income below the poverty line) and $X_2 =$ percentage living in urban area. Data are collected in 51 cities in the U.S.\\
+The following table contains the estimates of a logistic regression model.
 
-1)
-The relevant equations that relate estimates, standard error, T-statistic, R-squared and Sum of Squares of residuals (SSR), regression (SSReg), and total (SST) are the following:
+<<t1-comps, include=FALSE>>=
+x1 <- -0.868
+z_x1 <- -2.365
+x1_se <- x1 / z_x1
+or_x1 <- exp(x1)
 
-  \[ \frac{\hat{\beta_j}}{se(\hat{\beta_j})} = \text{t-value} \qquad R^2 = \frac{\SSReg}{\SST}= 1-\frac{\SSR}{\SST}  \qquad \SST = \SSReg + \SSR
-\]
 
-We plug in the corresponding information that is already provided and compute the missing values.
 
-<<t1-table, echo=TRUE, include=TRUE, eval=TRUE, results='hold'>>=
-a <- -498.683 / 140.988
-b <- 4.885 * 6.677
-c <- 9.112 / 6.900
-d <- 1841257.15 / (1 - 0.5708)
-e <- d - 1841257.15
+x2 <- 2.404
+or_x2 <- exp(x2)
+x2_se <- 0.601
+
+l_ci_x2 <- exp(x2-qnorm(0.975)*x2_se)
+h_ci_x2 <- exp(x2+qnorm(0.975)*x2_se)
+
+l_ci_x3 <- 0.010
+h_ci_x3 <- 0.074
+
+x3 <- (log(l_ci_x3) + log(h_ci_x3)) / 2
+x3_se <- (- log(l_ci_x3) + log(h_ci_x3)) /(2*qnorm(0.975))
+z_x3 <- x3/x3_se
+
+or_x3 <- exp(x3)
 @
 
-The table below reports the output with filled in missing information.
-
 \begin{center}
-\begin{tabular}{ l r r r r }
+\begin{tabular}{ l r r r r r r r}
  \hline
-            & Est.            & s.e.              & t-value         & p-value \\
+            & & & & & & \multicolumn{2}{c}{95\% C.I. for OR}\\
  \hline
- Intercept  & -498.683  & 140.988 & $^{a\;}$\Sexpr{round(a,3)} & 0.009 \\
- $X_1$      & $^{b\;}$\Sexpr{round(b,3)} & 6.677  & 4.885     & 0.001 \\
- $X_2$      & 9.112  & $^{c\;}$\Sexpr{round(c,3)} & 6.900      & 0.001 \\
+            & Est.            & s.e.              & z         & p-value & OR & lower & higher\\
  \hline
- $R^2$      & 0.5708            & & & \\
- SSReg      & $^{e\;}$\Sexpr{format(e,scientific=FALSE,nsmall=2)} & & & \\
- SSR        & 1841257.15        & & & \\
- SSTotal    & $^{d\;}$\Sexpr{format(d,scientific=FALSE,nsmall=2)} & & & \\
+ $X_1$      & -0.868 & {\bf \Sexpr{round(x1_se, 3)}}  & -2.365     & 0.018 & {\bf \Sexpr{round(or_x1, 3)}} & 0.205 & 0.865 \\
+ $X_2$      & 2.404  & 0.601 & 4.000     & <0.001 & {\bf \Sexpr{round(or_x2, 3)}} & {\bf \Sexpr{round(l_ci_x2, 3)}} & {\bf \Sexpr{round(h_ci_x2, 3)}} \\
+ $X_3$      & {\bf \Sexpr{round(x3, 3)}}  & {\bf \Sexpr{round(x3_se, 3)}} & {\bf \Sexpr{round(z_x3, 3)}}    & <0.001 & {\bf \Sexpr{round(or_x3, 3)}} & 0.010 & 0.074 \\
  \hline
 \end{tabular}
 \end{center}
 
-2)
-The coefficient of determination $R^2$ is equal to $0.5708$. This value measures the proportion of the variance in $Y$ explained by the fitted model. Hence, 57.08 \% of the sample variability of $Y$ can be explained by the linear combination of given $X_j$'s for the given data sample. \\
+Fill in the missing information
+(Please report formulas and computation.)
+\begin{align*}
+\text{s.e.}_{X_1}=\frac{X_1}{z_{X_1}}=\frac{\Sexpr{round(x1, 3)}}{\Sexpr{round(z_x1, 3)}}=\Sexpr{round(x1_se, 3)}\\
+\text{OR}_{X_1}=e^{X_1}=e^{\Sexpr{round(x1, 3)}}=\Sexpr{round(or_x1, 3)}\\
+\text{OR}_{X_2}=e^{X_2}=e^{\Sexpr{round(x2, 3)}}=\Sexpr{round(or_x2, 3)}\\
+\text{lower}_{X_2}=e^{X_2 - z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} - \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(l_ci_x2, 3)}\\
+\text{lower}_{X_2}=e^{X_2 + z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} + \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(h_ci_x2, 3)}\\
+X_3=\frac{\ln \text{lower}_{X_3}+ \ln \text{higher}_{X_3}}{2} = \frac{\Sexpr{round(l_ci_x3, 3)}+ \ln \Sexpr{round(h_ci_x3, 3)}}{2} = \Sexpr{round(x3, 3)}\\
+\text{s.e.}_{X_3}=\frac{- \ln \text{lower}_{X_3}+ \ln \text{higher}_{X_3}}{2 \times z_{0.975}} = \frac{- \Sexpr{round(l_ci_x3, 3)}+ \ln \Sexpr{round(h_ci_x3, 3)}}{2 \times \Sexpr{round(qnorm(0.975), 3)}} = \Sexpr{round(x3_se, 3)}\\
+\text{z}_{X_3}=\frac{X_3}{\text{s.e.}_{X_3}}=\frac{\Sexpr{round(x3, 3)}}{\Sexpr{round(x3_se, 3)}}=\Sexpr{round(z_x3, 3)}\\
+\text{OR}_{X_3}=e^{X_3}=e^{\Sexpr{round(x3, 3)}}=\Sexpr{round(or_x3, 3)}\\
+\end{align*}
 
-3)
-The global F-test tests a null hypothesis that all regression coefficients are simultaneously 0. In a mathematical notation, $H_0 : \beta_1 = \beta_2 = 0$. To evaluate the overall F-test we use the statistic in the equation below which has, under the above null hypothesis, F-distribution with corresponding degrees of freedom.
-\[ F = \frac{\SSReg/p}{\SSR/(n-(p+1))} \sim F_{p,n-(p+1)}
-\]
 
-The data are collected in 51 cities, so $n=51$ and we have 2 predictors, so $p=2$. Other values we can easily obtain from the filled table above.
-<<t1-statistic, include=TRUE>>=
-(f = (e / 2) / (1841257.15 / (51-(2+1)) ))
-@
-
-Hence, the F-statistic has a value of \Sexpr{f}. To evaluate the test, and decide on whether we reject or accept $H_0$, we can compute its p-value. The p-value represents the probability of observing equal or more extreme value than the observed F-statistic, for the corresponding F-distribution under the null hypothesis. We reject the null hypothesis if the p-value is lower than the pre-determined significance level of the test $\alpha$, which is generally chosen to be $\alpha = 0.05$
-
-<<t1-pvalue, include=TRUE>>=
-(p = pf(f,2,48,lower.tail = FALSE))
-@
-
-The p-value is \Sexpr{p}, which is lower than the standard significance level $\alpha=0.05$ and therefore, we can reject the null hypothesis $H_0 : \beta_1 = \beta_2 = 0$. In other words, there is a significant evidence against the null hypothesis that all regression coefficients are simultaneously zero. Hence, the model with all the covariates is better than the one with just the intercept. This test indicates that the linear model is suitable for explaining a significant portion of the variance in the outcome variable.
-
-\pagebreak
-
-\section*{Task 2}
-
-The table below shows the scores of the first test (maximum score 10 points) in a beginning German course. Students in the course are grouped as follows:
-\begin{itemize}
-\item Group A: Never studied foreign language before, but have good English skills\\
-\item Group B: Never studied foreign language before, have poor English skills\\
-\item Group C: Studied other foreign language
-\end{itemize}
-
-\begin{center}
-\begin{tabular}{ c c c }
- \hline
- Group A & Group B & Group C \\
- \hline
- 4 & 1 & 9 \\
- 6 & 5 & 10 \\
- 8 &   & 5 \\
- \hline
-\end{tabular}
-\end{center}
-
-1)
-The aim is to compare means of the different groups. If we would be comparing only two groups, we would use two-sample t-test. For the situation where there is more than two groups, identified by a factor we can the one-way/one-factor analysis of variance (ANOVA). This corresponds to our situation and it tests if at least one group is different than others.\\
-
-The Assumptions of the ANOVA are following:
-\begin{itemize}
-\item The observations ${y_{ij}}$ represent $N$ iid realizations of the data generating process $Y_{ij} = \mu + \alpha_j + \epsilon_{ij}$; \\
-\item Errors $\epsilon_{ij}$ are iid and normally distributed, i.e. $\epsilon_{ij} \sim \mathcal{N}(0, \sigma^2)$ which implies that $Y_{ij} \sim \mathcal{N}(\mu + \alpha_j, \sigma^2)$ for every group $j = 1,...,M$.
-\end{itemize}
-
-The Hypothesis tested in ANOVA is the following:
-\begin{itemize}
-\item Null hypothesis: the means of the different groups are equal, i.e. $H_0 : \mu_1 = \mu_2 = ... = \mu_M$; \\
-\item Alternative hypothesis: At least one group mean is different than the others.
-\end{itemize}
-
-The F-test is used for testing the null hypothesis that all of the group means are equal. In ANOVA, the F-statistic is computed as the ratio of the variance between groups ($SSReg = \sum_{j = 1}^{M} n_j (\bar{y_j} - \bar{y})^2)$) and the variance within groups ($SSR = \sum_{j = 1}^{M} \sum_{i = 1}^{n_j} (y_{ij} - \bar{y_j})^2)$), both divided by the corresponding degrees of freedom. Intuitively, the larger is the variance between groups relative to the variance within groups, the more evidence we have against the null hypothesis that the group means are equal. Formally, the F-statistic under the null hypothesis is given by:
-\[ F = \frac{\SSReg/(M - 1)}{\SSR/(N - M)} \sim F_{M - 1,N - M}
-\]
-We reject the null hypothesis when the value of the F-statistic is large. More specifically, we compute the p-value, i.e. the probability of observing equal or more extreme value than the observed F-statistic, for the corresponding F-distribution under the null hypothesis, and then we reject the null hypothesis if the p-value is lower than the pre-determined significance level $\alpha$, with $\alpha = 0.05$ in general.
-\\
-
-In the example above we have three groups, i.e. $M = 3$ and eight data points, $N = 8$.With the code below, we specify the data and compute common statistics for each group.
-
-\pagebreak
-
-<<t2-data>>=
-X <- data.frame("grade" = c(4,6,8,1,5,9,10,5),
-                "group" = c("A","A","A","B","B","C","C","C"))
-
-library(dplyr)
-data.frame(group_by(X, group) %>%
-  summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade)))
-@
-
-These can be easily visualised with a boxplot (left) or a group means plot with errorbars signifying one standard deviation (right). The main observation we conclude from these plots is the large estimated variance within groups, which is caused mainly by having just a few observations.
-
-<<t2-plots, echo=FALSE, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
-boxplot(grade ~ group, data=X, col=2:5, frame = FALSE, xlab = "Groups", ylab="Grade")
-points(grade ~ group, data=X,pch=20)
-
-Xplot <- X
-out = group_by(Xplot, group) %>%
-  summarise( count = n(), mean = mean(grade), var = var(grade), sd = sd(grade))
-Xplot$mean <- c(rep(out$mean[1],3),rep(out$mean[2],2),rep(out$mean[3],3))
-Xplot$sd <- c(rep(out$sd[1],3),rep(out$sd[2],2),rep(out$sd[3],3))
-ggplot(Xplot) +
-  geom_errorbar(aes(x= group, ymin= mean-sd, ymax = mean+sd, width=0.3, color=group)) +
-  geom_point(aes(x=group, y= mean, color=group),size=5,shape=3) +
-  geom_point(aes(x = group, y = grade), size=2) +
-  xlab("Groups") +
-  ylab("Grade") +
-  theme_bw() +
-  theme(axis.line = element_line(colour = "black", size=.5),
-        panel.border = element_rect(colour = "white"))
-
-@
-
-Finally, below we compute the ANOVA tests with our data using the function \verb+aov()+.
-
-<<t2-aov>>=
-fit <- aov(grade ~ group, data = X)
-summary(fit)
-@
-
-The p-value of 0.177 indicates that we cannot reject the null hypothesis that the group means are different at significance level $\alpha = 0.05$, even though the estimated means seem different. The main reason for the lack of evidence against the null hypothesis, despite differences in estimated means, is the high variance in estimation caused by having only a few observations. Intuitively, having small data sample leaves more room for the possibility that the estimated differences happened due to the variance in estimation, and not due to the existance of true differences, and that is why it is harder to reject the null hypothesis that there are no differences. Formally, this uncertainty in the estimation caused by small data sample is quantified by the low degrees of freedom in the denominator of the F-distribution which makes the F-statistic smaller compared to the case when we have more data, and also makes the shape of the F-distribution such that we require higher F-statistic to reject the null hypothesis at given significance level compared to the case when we have more data. \\
-
-<<t2-modified-data, echo=FALSE, include=FALSE>>=
-set.seed(352144)
-X2 <- data.frame("grade" = c(4,6,8,9,5,9,10,5),
-                 "group" = c("A","A","A","B","B","C","C","C"))
-X3 <- data.frame("grade" = c(5,6,7,1.73,4.27,9.6,8,6.4),
-                 "group" = c("A","A","A","B","B","C","C","C"))
-X4 <- data.frame("grade" = c(rnorm(30,6,2),rnorm(20,3,2.83),rnorm(30,8,2.65)),
-                 "group" = c(rep(c("A","B","C"),c(30,20,30))))
-fit2 <- aov(grade ~ group, data = X2)
-summary(fit2)
-
-fit3 <- aov(grade ~ group, data = X3)
-summary(fit3)
-
-fit4 <- aov(grade ~ group, data = X4)
-summary(fit4)
-
-@
-
-\pagebreak
-
-Case (2):\\
-Suppose that the first observation in the second group was actually 9, not 1. Then, the standard deviations are the same, but the sample means are 6, 7 and 8, rather than 6, 3 and 8. In this situation, we would expect the F-test statistic to be smaller. The main reason is that the numerator of the F-statistic, $SSReg$, which represents the variance between groups, decreases when the estimated group means are closer to each other. \\
-
-Case (3):\\
-Suppose you have the same means as these data, but the sample standard deviations were 1.0, 1.8 and 1.6, instead of the actual 2.0, 2.8 and 2.6. In this situation, we would expect the F-test statistic to be larger. The main reason is that the denominator of the F-statistic, $SSR$, which represents the variance within groups, decreases directly when the above decrease in variance within groups happens.\\
-
-Case (4):\\
-Suppose you have the same means and standard deviations as these data, but the sample size were 30, 20 and 30, instead of 3, 2 and 3. In this case, we would expect the F-test statistic to be larger. The main reason is that the F-distribution with which we would be comparing our F-test statistic would be with 2 and 77 degrees of freedom. The variance between groups would still has the same number of degrees of freedom because the number of groups hasn't changed. However, the variance within groups would then have 77 degrees of freedom compared to previously having only 5 degrees of freedom. Therefore, we would be dividing $SSR$ by 77 instead of 5, which would result in a signigicantly larger F-statistic.\\
-
-5)
-The p-value is defined as the probability of observing equal or more extreme value that the test statistic for the distribution under the null hypothesis. In the case of F-test, p-value is the probability of observing equal or larger value than the observed F-statistic for the corresponding F-distribution under the null hypothesis. This means that if the F-statistic were to increase, the p-value would decrease because the probability of observing equal or larger value than the F-statistic would decrease. Opposite happens if the F-statistic were to decrease. Therefore, in case (2) we would expect the p-value to increase, and in cases (3) and (4) we would expect p-value to decerase.
-
-\pagebreak
-
-\section*{Task 3}
-
-The compressive strength of concrete is being studied, and four different mixing techniques are being investigated. The following data have been collected. For each mixing technique, 4 compressive strength measurements (in pounds per square inch) have been recorded.\\
-
-\begin{center}
-\begin{tabular}{ l c c c c}
- \hline
- & \multicolumn{4}{c}{Compressive Strength} \\
- \hline
- Mixing & 1 & 2 & 3 & 4 \\
- \hline
- 1 & 3129 & 3000 & 2865 & 2890 \\
- 2 & 3200 & 3300 & 2975 & 3150 \\
- 3 & 2800 & 2900 & 2985 & 3050 \\
- 4 & 2600 & 2700 & 2600 & 2765 \\
- \hline
-\end{tabular}
-\end{center}
-
-1) In this task we perform the same one-factor Analysis of Variance as in previous task, in order to answer the question of whether the mixing technique has influence on the compressive strength of the concrete. We load the data into R in the following way and subsequently visualise it with same techniques as before. From the plots we can clearly see that some mixing techniques are quite different to others.
-
-<<t3-data>>=
-X <- data.frame("strength"=c(3129,3000,2865,2890,
-                             3200,3300,2975,3150,
-                             2800,2900,2985,3050,
-                             2600,2700,2600,2765),
-                "mixing"=rep(c("1","2","3","4"),c(4,4,4,4)) )
-@
-
-
-<<t3-plots, echo=FALSE, fig.width=4, fig.height=4, out.width='.4\\linewidth'>>=
-boxplot(strength ~ mixing,data=X, xlab="Mixing technique", ylab="Compressive Strength", frame=FALSE, col=c(2,3,5,6))
-points(strength ~ mixing, data=X,pch=20)
-
-Xplot <- X
-out = group_by(Xplot, mixing) %>%
-  summarise( count = n(), mean = mean(strength), var = var(strength), sd = sd(strength))
-Xplot$mean <- c(rep(out$mean[1],4),rep(out$mean[2],4),rep(out$mean[3],4),rep(out$mean[4],4))
-Xplot$sd <- c(rep(out$sd[1],4),rep(out$sd[2],4),rep(out$sd[3],4),rep(out$sd[4],4))
-ggplot(Xplot) +
-  geom_errorbar(aes(x= mixing, ymin= mean-sd, ymax = mean+sd, width=0.3, color=mixing)) +
-  geom_point(aes(x= mixing, y= mean, color=mixing),size=5,shape=3) +
-  geom_point(aes(x = mixing, y = strength), size=2) +
-  xlab("Mixing technique") +
-  ylab("Compressive Strength") +
-  theme_bw() +
-  theme(axis.line = element_line(colour = "black", size=.5),
-        panel.border = element_rect(colour = "white"))
-
-@
-
-Below, we perform the Analysis of Variance using again \verb+aov()+ function.\\
-
-<<t3-anova, fig.height=4>>=
-fit <- aov(strength ~ mixing, data = X)
-par(mfrow = c(1,2))
-plot(fit, which = c(1,2))
-summary(fit)
-@
-
-Before interpreting the results, we first examine the validity of the model assumptions about the errors. The Tukey-Anscombe plot shows that there are no major deviations from the zero-mean and homoscedasticity assumptions on the errors, and the Normal QQ-plot doesn't show any apparent deviation from the normality assumption on the errors. Therefore, we can conclude that the assumptions about the model are not refuted by the residual analysis, and we can proceed to interpret the results. \\
-
-From the summary we can see that the F-statistics is 12.73, which is quite large for F-distribution with 3 and 12 degrees of freedom. This is also evident from the p-value being 0.0005, which is very small and we would therefore reject the null hypothesis that the group means are all the same. Therefore, we can conclude there is strong evidence that for at least one mixing technique, the mean compressive strength differs from the others. However, we cannot conclude much more from the global F-test. To yield more information about where the differences come from, we perform the multiple pairwise-comparison, to determine if the differences in the means between specific group pairs are statistically significant. \\
-
-As the ANOVA test is significant, we can compute Tukey Honest Significant Differences for performing multiple pairwise-comparison between the group means. We use Tukey HSD method which accounts for multiple testing correction as now we have more simultaneous tests and we have to account for that. For fitting, we use the function \verb+glht()+ [in \verb+multcomp+ package], where glht stands for general linear hypothesis tests.
-
-\pagebreak
-
-<<t3-pairwise-comparison>>=
-library(multcomp)
-summary(glht(fit, linfct = mcp(mixing = "Tukey")))
-@
-
-
-In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that there is evidence in the data that the mixing technique 4 has the smallest mean compressive strength out of the mixing techniques considered.\\
-
-In the output we can see the individual comparisons between all groups with the p-value being adjusted for multiple testing such that in controls for the family-wise error rate. We can see that the largest difference is between mixing techniques 4 and 2, where the estimate for the difference between those two is $-490$ with p-value being significant at all levels. The differences between mixing techniques 4 - 1 and 4 - 3 are also significant at level 0.05. With the estimated difference between both of them are negative, we can conclude that the mixing technique 4 has significantly smallest compressive strength out of the mixing techniques considered. \\
-
-
-Hence, the answer to the main question in this task is yes, there is evidence in the data that the mixing technique does affect the compressive strength of the concrete, and more specifically, based on further analysis, we would not recommend the use of mixing technique 4 in practice.
-
-\pagebreak
-
-\section*{Task 4}
-
-Consider the data set munich.csv. The data set contains information on therent prices of apartments in Munich.  The variables in the data set are:
-
-\begin{itemize}
-\item rent:  net rent per month (in Euro) \\
-\item area:  living area in square meters \\
-\item yearc: year of construction \\
-\item location:  quality of location according to an expert assessment (0 = average, 1 = good, 2 = top)
-\end{itemize}
-
-1) Here we read the data into R and interpret the location variable as factor. Furthermore, we visualize the data by showing relation of each variable to the predicted variable rent.
-<<t4-data>>=
-munich <- read.csv("munich.csv")
-munich$location <- factor(munich$location)
-
-@
-
-
-<<t4-discuss, echo=FALSE, fig.width=9, fig.height=9, out.width='.9\\linewidth'>>=
-par(mfrow=c(2,2))
-year_agg <- aggregate(munich$rent, list(munich$yearc),
-                      function(x) c(mean=mean(x), sd=sd(x)))
-plot(year_agg$Group.1, year_agg$x[,"mean"], xlab="Yearc",
-     ylab="Rent: mean +- 1 sd", ylim=c(0, 1300))
-segments(year_agg$Group.1-0.25, year_agg$x[,"mean"]+year_agg$x[,"sd"],
-          year_agg$Group.1+0.25, year_agg$x[,"mean"]+year_agg$x[,"sd"],col="grey")
-segments(year_agg$Group.1-0.25, year_agg$x[,"mean"]-year_agg$x[,"sd"],
-          year_agg$Group.1+0.25, year_agg$x[,"mean"]-year_agg$x[,"sd"],col="grey")
-segments(year_agg$Group.1, year_agg$x[,"mean"]+year_agg$x[,"sd"],
-         year_agg$Group.1,year_agg$x[,"mean"]-year_agg$x[,"sd"],col="grey")
-
-plot(rent~area, data=munich, xlab="Area", ylab="Rent")
-plot(rent~location, data=munich, xlab="Location", ylab="Rent")
-hist(munich$rent, xlab="Rent", main = "")
-
-@
-
-\pagebreak
-
-2) From the above plots, we can already come to a reasonable conclusion that there is a relationship between the variable rent and variables area, location and yearc, that could be well explained by the linear model. In other words, there seems to be a linear relationship between rent and variables area, location and yearc, which means that the linear model should be adequate for the analysis.\\
-
-
-3) Here, we estimate the model described below.
-\[ Y = \beta_0 + \beta_1 X_{\text{area}}+ \beta_2 X_{\text{loc:good}} + \beta_3 X_{\text{loc:top}} + \beta_4 X_{\text{loc:good}} X_{\text{area}} + \beta_5 X_{\text{loc:top}}  X_{\text{area}} + \beta_6 X_{\text{yearc}} \]
-
-We can interpret the coefficients in the following way:
-\begin{itemize}
-\item $\beta_0$ (Intercept): Expected net rent in Eur for an apartment with area = 0, yearc = 0 and location = "average".\\
-\item $\beta_ 1$ (Area): A change in the expected net rent in Eur for a 1 unit (1 square meter) increase in area, given location = "average".\\
-\item $\beta_2$ (Location1): The difference in the expected net rent between an apartment with location = "good", and an apartment with location = "average", given that everything else (area, yearc) is equal. If $\beta_2 > 0$ then the expected net rent is larger in the Location1 than in the Location0 given everything else is the same. \\
-\item $\beta_3$ (Location2): The difference in the expected net rent between an apartment with location = "top", and an apartment with location = "average", given that everything else (area, yearc) is equal. If $\beta_3 > 0$ then the expected net rent is larger in the Location2 than in the Location0 given everything else is the same.\\
-\item $\beta_4$ (Location1:area): The additional change in the expected net rent in Eur for a 1 unit (1 square meter) increase in area, given location = "good". Hence the total change in the expected net rent for 1 unit (1 square meter) increase in area when location = "good" would be $\beta_1+\beta_4$.\\
-\item $\beta_5$ (Location2:area): The additional change in the expected net rent in Eur for a 1 unit (1 square meter) increase in area, given location = "top". Hence the total change in the expected net rent for 1 unit (1 square meter) increase in area when location = "top" would be $\beta_1+\beta_5$.\\
-\item $\beta_6$ (Yearc): A change in the expected net rent in Eur for a 1 unit (1 year) increase in yearc.
-\end{itemize}
-
-\pagebreak
-
-4)
-Prior to interpreting the results of the model, it is necessary to perform the residual analysis in order to see if the assumptions of the fitted linear model hold.
-
-<<t4-model, fig.height=6>>=
-f1 <- lm(rent~area*location + yearc, data=munich)
-par(mfrow=c(2,2)) ; plot(f1)
-@
-
-From the 'Residuals vs Fitted' plot in the top left, we see that the assumption of zero-mean errors does not have major violations. There is some deviation as the trend line drifts away from zero for larger fitted values, but this can be explained by the lack of data in that area of the plot. \\
-
-The 'Normal Q-Q' plot is concerning because the residuals show right-skewed distribution rather than the normal distribution. The deviation is not extremely severe, however, there is valid evidence against the normality assumption. \\
-
-In the 'Scale-Location' graph, we see a clear violation of the homoscedasticity assumption as we have evidence for heteroscedastic residuals because the variance of residuals appears to get larger as the fitted values get larger (which we can also observe in the first plot). It could be argued again that this deviation of the trend line from the expected behaviour is partly due to having just a few datapoints in that area of the plot, but here the evidence of violation is substantial even in parts where we have sufficient data.\\
-
-Finally, in the 'Residuals vs Leverage' plot we can see that the majority of the datapoints have low leverage and a relatively small Cook's distance. There is just one point, in row 3909, which has a high leverage as well as a high Cook's distance. This datapoint is borderline influential as its Cook's distance is around 0.5, and it should be looked at in more detail as the analysis progresses beyond this initial phase.\\
-
-The conclusion from the residual analysis is that there are issues with the assumptions of the linear model with respect to the homoscedasticity assumption and also with respect to the normality assumption. A very good idea in this case would be to look at the variables and perform a log-transformation on the right-skewed variables. Log-transformation can stabilize the variance and solve the heteroscedasticity issue, and also it can deal with the right-skewed distribution by bringing it closer to the normal distribution. So, the log-transformation could potentially solve both problems, and we will address this later. \\
-
-5) Below we display and interpret the model results.
-<<t4-summary>>=
-summary(f1)
-@
-
-The model results confirm our reasoning that there is a linear relationship between the variable rent and the three variables (area, location, and yearc). Both area and yearc have a very low p-value which means that there is strong evidence that they have a linear association with the outcome variable rent. Location has a high p-value which would at first glance suggest that it doesn't have a significant relationship with the rent value, however we can see that the interaction between location and area has a low p-value, so it is possible that the 'information' given by location is captured in this interaction. It is a good practice to leave the 'main effect' of the variable in the model when its interaction with another variable is included, so we keep the variable location because of its interaction with area. The quality of the fit could be inferred from the $R^2$ value and we can say that around $45.75 \%$ of the sample variance in net rent can be explained by the linear combination of variables area, location, yearc, and interaction between area and location . \\
-
-\pagebreak
-
-6) First we fit a linear model including only the variable $area$ and display the results.
-<<t4-compare>>=
-f2 <- lm(rent~area, data=munich)
-summary(f2)
-@
-
-We can see that the adjusted $R^2$ coefficient for this model is only $0.35$, whereas for the model before it had value $0.46$. Note that we use adjusted $R^2$ so that we can compare models with different number of variables. Since the smaller model is nested within the bigger one, we can also compare the model using analysis of variance.
-
-<<t4-anova>>=
-anova(f2, f1)
-@
-
-This analysis shows that the larger model with area, location, yearc, and the interaction between area and location is significantly better than the smaller model with just area. The Residual Sum of Squares is significantly lower, leading to a very low p-value that gives a significant result and a very strong evidence against the null hypothesis that the coefficients on location, yearc and area:location are all equal to zero simultaneously.
-
-\pagebreak
-
-7) Additional imporvement to the model with the log-transformation:
-
-<<t4-logtransform, fig.height=4>>=
-
-par(mfrow = c(1,3))
-hist(munich$rent)
-hist(munich$area)
-hist(munich$yearc)
-
-@
-
-The histograms indicate that we could benefit from the log-transformation on rent and area.
-
-<<t4-logfit>>=
-
-f3 <- lm(log(rent)~log(area)*location + yearc, data=munich)
-par(mfrow=c(2,2))
-plot(f3)
-summary(f3)
-
-@
-
-The residual analysis seems much better and the heteroscedasticity issue is resolved. There is a minor problem again with the QQ-plot because now the residuals show left-skewed distribution. However, left-skew creates less problems than the right-skew, and it also seems less severe than before. The analysis shows that all of the variables are significant now, however, the R-squared has slightly dropped compared to the previous analysis. In conclusion, compared to the previous analysis without transformation, the log-transformation does not yield a better fit in terms of explaining the variance in rent, but it does substantially improve the violations of the linear model assumptions, especially with respect to the heteroscedasticity which is non-existent after the transformation.
 
 \end{document}
