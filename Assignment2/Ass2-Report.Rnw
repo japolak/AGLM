@@ -11,6 +11,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{enumitem}
+\usepackage{amsmath}
 
 % No indents in whole document
 \setlength\parindent{0pt}
@@ -39,7 +40,7 @@
 % Global Settings of R-code
 <<setup, include=FALSE, cache=FALSE>>=
 # Install these packages if you don't have them already
-#install.packages("knitr","dplyr","ggplot2","multcomp")
+# install.packages("knitr","dplyr","ggplot2","multcomp")
 library(dplyr)
 library(multcomp)
 library(ggplot2)
@@ -146,8 +147,143 @@ Firstly, it is important to explain which hypotheses can be tested, i.e. for whi
 \item $H_0 : \beta_{j1} = ... = \beta_{j(M-1)} = c \quad vs. \quad H_1: at \ least \ one \ \beta_{jm} \neq c, \ \forall m$, where $c \in \mathbb{R} $ is some constant. This is a variation of the second hypothesis test that was introduced in the lecture. Instead of testing if all of the parameters associated with variable j are zero, which would mean that variable j has no significant influence on the outcome variable, we can test that all of the parameters associated with variable j have the same effect $c \in \mathbb{R} $, on the odds relative to the reference group M. For example, having three groups, and group 3 as the reference, we might be interested if the increase in variable j results in the same change in the odds for group 1 relative to group 3 and for group 2 relative to group 3.
 \item $H_0 : \beta_{1m} = ... = \beta_{pm} = 0 \quad vs. \quad H_1: at \ least \ one \ \beta_{jm} \neq 0, \ \forall j$. This hypothesis test would test if the variables in the model have any influence on the odds between group m and reference group M. We might be interested in this question if we suspect that for a specific group m the variables in the model don't affect the odds of m happening relative to M happening.
 \item $H_0 : \beta_{j_{1}m} - \beta_{j_{2}m} =  0 \quad vs. \quad H_1: \beta_{j_{1}m} - \beta_{j_{2}m} \neq 0$ This hypothesis test would test if the effect of the variable $j_1$ and the variable $j_2$ on the odds of group m relative to reference group M is the same.
-\end{enumerate} \\
+\end{enumerate}
+
 There are many more possibilities for hypotheses tests. So, if we have a question of interest we can define a hypothesis test for that question, and likelihood theory allows us to construct asymptotic pivots for testing all sorts of hypotheses and thus answering all sorts of questions of interest.
+
+
+\section*{Task 4}
+\textbf{Q1. Write down the formulation of the MNRM assuming “fish” as reference category}\\
+
+The general form can be written as:
+
+\begin{multline*}
+logit[\pi_m(x)] = log[\frac{\pi_m(x)}{\pi_M(x)}] = \beta_{0m} + \beta_{1m}X_{lakeHancock} + \beta_{2m}X_{lakeOklawaha}\\ + \beta_{3m}X_{lakeTrafford} + \beta_{4m}X_{sexMale} +\beta_{5m}X_{sizeSmall}
+\end{multline*}
+
+Where m $\in$ \{invertebrate, reptile, bird, other\} and M = fish. \\
+
+For example, using reptile we have:
+
+\begin{multline*}
+logit[\pi_{reptile}(x)] = log[\frac{\pi_{reptile}(x)}{\pi_{fish}(x)}] = \beta_{0,reptile} + \beta_{1,reptile}X_{lakeHancock} + \beta_{2,reptile}X_{lakeOklawaha}\\ + \beta_{3,reptile}X_{lakeTrafford} + \beta_{4,reptile}X_{sexMale} +\beta_{5,reptile}X_{sizeSmall}
+\end{multline*} \\
+
+\textbf{Q2. Estimate the model using R. Interpret the parameters of the log-odds of reptile vs fish}\\
+<<t4-q2_data, include=FALSE>>=
+library(nnet)
+library(tidyverse)
+
+data <- read.csv("alligator.csv")
+data$food <- relevel(data$food, "fish")
+@
+
+<<t4-q2, include=TRUE>>=
+fit <- multinom(food ~ lake + sex + size, data, weights = count)
+
+@
+
+<<t4-table, include=FALSE>>=
+output <- summary(fit)
+z <- output$coefficients/output$standard.errors
+p <- (1 - pnorm(abs(z), 0, 1))*2
+resbird <-cbind(output$coefficients[1,],output$standard.errors[1,],z[1,],p[1,],exp(output$coefficients[1,]))
+resinvert <- cbind(output$coefficients[2,],output$standard.errors[2,],z[2,],p[2,],exp(output$coefficients[2,]))
+resother <- cbind(output$coefficients[3,],output$standard.errors[3,],z[3,],p[3,],exp(output$coefficients[3,]))
+resreptile <- cbind(output$coefficients[4,],output$standard.errors[4,],z[4,],p[4,],exp(output$coefficients[4,]))
+
+summary <- rbind(resbird, resinvert, resother, resreptile)
+summary <- round(summary,digits=3)
+colnames(summary) <- c("Est.","Std. Errors","z stat","p value","RRR")
+
+summary <- data.frame(logit=c(rep("Bird vs. Fish",6),rep("Invertebrate vs. Fish",6),rep("Other vs. Fish",6),rep("Reptile vs. Fish",6)),
+                  param=rep(rownames(resbird),4) , summary)
+rownames(summary) <- NULL
+@
+
+<<t4-q2_summary, include=TRUE>>=
+
+print(summary)
+
+@
+
+
+Above is the table to estimated parameters for the MNRM, using fish as the reference category. Below is a subset of this table with just the parameters for reptile vs fish, and their respective statistics:\\
+
+
+<<t4-q2_summary_subset, include=TRUE>>=
+print(summary[summary[,"logit"]=="Reptile vs. Fish",])
+@
+
+Now we can interpret these:
+
+
+$\beta_{0,reptile}$ = -2.859: This indicates that the odds for the food of choice of a large female alligator from lake George to be a reptile is expected to change by a factor of $e^{-2.859}$ when compared to the odds of the same alligator's food choice being fish.\\
+
+
+$\beta_{1,reptile}$ = 1.129: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{1.129}$ if the lake variable is equal to Lake Hancock, while controlling for all other variables in the model. The p-value for this level is given as 0.841, but this should not lead us to belief to think that this whole variable is not significant as this is just one level in the categorical variable. We would need to do a global test for significance by removing this variable from a model fit and comparing the two models to get a reading on the significance or otherwise of this variable. The same can be said for the remaining two levels of this lake variable below.\\
+
+
+$\beta_{2,reptile}$ = 2.530: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{2.530}$ if the lake variable is equal to Lake Oklawaha, while controlling for all other variables in the model \\
+
+
+$\beta_{3,reptile}$ = 3.061: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{3.061}$ if the lake variable is equal to Lake Trafford, while controlling for all other variables in the model \\
+
+$\beta_{4,reptile}$ = -0.628: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{-0.628}$ if the sex of the alligator is male, while controlling for all other variables in the model. The p-value for this variable can be read directly as 0.360 which, if using the usual 5\% level of signifcance would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the other variables in the model.  \\
+
+$\beta_{5,reptile}$ = -0.557: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{-0.557}$ if alligator is classes as small in size, while controlling for all other variables in the model. Again, this p-value can be read directly as 0.389 and again, this would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the opther variables in the model.\\
+
+
+
+\textbf{Q3. What is the odds ratio of bird versus other for an alligator of small size relative to an alligator of large size?  Interpret this odds ratio}\\
+
+The odds ratio here can be given by:
+
+\[OR = \frac{\frac{P(Y=bird | alligator=small)}{P(Y=bird | alligator = large)}}{\frac{P(Y=other | alligator=small)}{P(Y=other | alligator = large)}} = \frac{e^{\beta_{5, bird}}}{e^{\beta_{5, other}}} = e^{\beta_{5, bird} - \beta_{5, other}} = e^{-0.730 - 0.291} = e^{-1.021} = 0.360\]
+
+This signifies that the odds for an alligator's food choice to be bird relative to it being other is expected to change by a factor of 0.360 when the alligator is noted to be of size small instead of large. \\
+
+\textbf{Q4. Test the global significance of the variable lake.}\\
+
+<<t4-q4, include=TRUE>>=
+
+fit2 <- update(fit, ~ . - lake)
+anova(fit, fit2, test="Chisq")
+@
+
+Here we use the update() function to remove the `lake' variable from the model, and we then produce an anova table to compare the fit of the two models. We are testing the following:
+
+\[H_0: \beta_{1,m} = \beta_{2,m} = \beta_{3,m} = 0 ; \forall m \in \{invertebrate, reptile, bird, other\}\]
+
+versus
+
+\[H_0: \beta_{jm} \neq 0 ; \text{ for at least one combination of } j=1, 2, 3 and m \in \{invertebrate, reptile, bird, other\}\]
+
+In words, we are testing the null hypothesis that the beta values for each level of the categorical variable `lake' is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.\\
+
+
+The testing distribution that is used is the chi-squared distribution and in this case we are testing with 12 degrees of freedom. The test statistic has a value of 50.318, which leads to a p-value of 1.228e-06. This signifies strong  evidence against the null hypothesis, and therefore we can reject the null hypothesis that the lake variable is not significant in this model set-up. \\
+
+\textbf{Q5. Test the fit of the model}\\
+Here we fit a model with just the intercept and compare the deviance of the full model with the deviance of this intercept-only model. The hypotheses we are testing is:
+
+\[H_0: \beta_{jm} = 0 ; \forall j=1,...,6; m \in \{invertebrate, reptile, bird, other\}\]
+
+and
+
+\[H_0: \beta_{jm} \neq 0 ; \text{for at least one} j=1,...,6; m \in \{invertebrate, reptile, bird, other\}\]
+
+In words, we are testing the null hypothesis that the beta values for variable in the dataset is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.
+
+
+<<t4-q5, include=TRUE>>=
+
+fit.null <- multinom(food ~ 1, data, weights = count)
+anova(fit.null, fit, test="Chisq")
+@
+
+
+Again, the testing distribution used is the chi-squared distribution and in this case we are testing with 20 degrees of freedom. From this, we can see that the p-value for this test is 6.723e-07. Assuming we are testing at the 5\% significance level, then we can again reject the null hypothesis, in this case the null hypothesis that all beta-values are equal to zero.
 
 
 \end{document}
