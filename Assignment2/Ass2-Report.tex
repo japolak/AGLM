@@ -169,6 +169,7 @@ Firstly, it is important to explain which hypotheses can be tested, i.e. for whi
 
 There are many more possibilities for hypotheses tests. So, if we have a question of interest we can define a hypothesis test for that question, and likelihood theory allows us to construct asymptotic pivots for testing all sorts of hypotheses and thus answering all sorts of questions of interest.
 
+\newpage
 
 \section*{Task 4}
 \textbf{Q1. Write down the formulation of the MNRM assuming “fish” as reference category}\\
@@ -214,31 +215,31 @@ logit[\pi_{reptile}(x)] = log[\frac{\pi_{reptile}(x)}{\pi_{fish}(x)}] = \beta_{0
 \hlkwd{print}\hlstd{(summary)}
 \end{alltt}
 \begin{verbatim}
-##                    logit        param   Est. Std..Errors z.stat p.value    RRR
-## 1          Bird vs. Fish  (Intercept) -1.702       0.769 -2.213   0.027  0.182
-## 2          Bird vs. Fish  lakeHancock  0.575       0.795  0.723   0.469  1.777
-## 3          Bird vs. Fish lakeOklawaha -0.551       1.210 -0.455   0.649  0.577
-## 4          Bird vs. Fish lakeTrafford  1.237       0.866  1.428   0.153  3.445
-## 5          Bird vs. Fish      sexmale -0.606       0.689 -0.880   0.379  0.545
-## 6          Bird vs. Fish    sizesmall -0.730       0.652 -1.120   0.263  0.482
-## 7  Invertebrate vs. Fish  (Intercept) -1.167       0.534 -2.187   0.029  0.311
-## 8  Invertebrate vs. Fish  lakeHancock -1.781       0.623 -2.857   0.004  0.169
-## 9  Invertebrate vs. Fish lakeOklawaha  0.913       0.476  1.918   0.055  2.492
-## 10 Invertebrate vs. Fish lakeTrafford  1.156       0.493  2.345   0.019  3.177
-## 11 Invertebrate vs. Fish      sexmale -0.463       0.396 -1.171   0.242  0.629
-## 12 Invertebrate vs. Fish    sizesmall  1.336       0.411  3.250   0.001  3.805
-## 13        Other vs. Fish  (Intercept) -1.721       0.631 -2.726   0.006  0.179
-## 14        Other vs. Fish  lakeHancock  0.767       0.569  1.348   0.178  2.152
-## 15        Other vs. Fish lakeOklawaha  0.026       0.778  0.033   0.973  1.026
-## 16        Other vs. Fish lakeTrafford  1.558       0.626  2.490   0.013  4.748
-## 17        Other vs. Fish      sexmale -0.253       0.466 -0.542   0.588  0.777
-## 18        Other vs. Fish    sizesmall  0.291       0.460  0.632   0.528  1.337
-## 19      Reptile vs. Fish  (Intercept) -2.859       1.146 -2.496   0.013  0.057
-## 20      Reptile vs. Fish  lakeHancock  1.129       1.193  0.947   0.344  3.094
-## 21      Reptile vs. Fish lakeOklawaha  2.530       1.122  2.255   0.024 12.557
-## 22      Reptile vs. Fish lakeTrafford  3.061       1.130  2.710   0.007 21.350
-## 23      Reptile vs. Fish      sexmale -0.628       0.685 -0.916   0.360  0.534
-## 24      Reptile vs. Fish    sizesmall -0.557       0.647 -0.862   0.389  0.573
+##                    logit        param   Est. Std..Errors z.stat p.value
+## 1          Bird vs. Fish  (Intercept) -1.702       0.769 -2.213   0.027
+## 2          Bird vs. Fish  lakeHancock  0.575       0.795  0.723   0.469
+## 3          Bird vs. Fish lakeOklawaha -0.551       1.210 -0.455   0.649
+## 4          Bird vs. Fish lakeTrafford  1.237       0.866  1.428   0.153
+## 5          Bird vs. Fish      sexmale -0.606       0.689 -0.880   0.379
+## 6          Bird vs. Fish    sizesmall -0.730       0.652 -1.120   0.263
+## 7  Invertebrate vs. Fish  (Intercept) -1.167       0.534 -2.187   0.029
+## 8  Invertebrate vs. Fish  lakeHancock -1.781       0.623 -2.857   0.004
+## 9  Invertebrate vs. Fish lakeOklawaha  0.913       0.476  1.918   0.055
+## 10 Invertebrate vs. Fish lakeTrafford  1.156       0.493  2.345   0.019
+## 11 Invertebrate vs. Fish      sexmale -0.463       0.396 -1.171   0.242
+## 12 Invertebrate vs. Fish    sizesmall  1.336       0.411  3.250   0.001
+## 13        Other vs. Fish  (Intercept) -1.721       0.631 -2.726   0.006
+## 14        Other vs. Fish  lakeHancock  0.767       0.569  1.348   0.178
+## 15        Other vs. Fish lakeOklawaha  0.026       0.778  0.033   0.973
+## 16        Other vs. Fish lakeTrafford  1.558       0.626  2.490   0.013
+## 17        Other vs. Fish      sexmale -0.253       0.466 -0.542   0.588
+## 18        Other vs. Fish    sizesmall  0.291       0.460  0.632   0.528
+## 19      Reptile vs. Fish  (Intercept) -2.859       1.146 -2.496   0.013
+## 20      Reptile vs. Fish  lakeHancock  1.129       1.193  0.947   0.344
+## 21      Reptile vs. Fish lakeOklawaha  2.530       1.122  2.255   0.024
+## 22      Reptile vs. Fish lakeTrafford  3.061       1.130  2.710   0.007
+## 23      Reptile vs. Fish      sexmale -0.628       0.685 -0.916   0.360
+## 24      Reptile vs. Fish    sizesmall -0.557       0.647 -0.862   0.389
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
@@ -253,24 +254,24 @@ Above is the table to estimated parameters for the MNRM, using fish as the refer
 \hlkwd{print}\hlstd{(summary[summary[,}\hlstr{"logit"}\hlstd{]}\hlopt{==}\hlstr{"Reptile vs. Fish"}\hlstd{,])}
 \end{alltt}
 \begin{verbatim}
-##               logit        param   Est. Std..Errors z.stat p.value    RRR
-## 19 Reptile vs. Fish  (Intercept) -2.859       1.146 -2.496   0.013  0.057
-## 20 Reptile vs. Fish  lakeHancock  1.129       1.193  0.947   0.344  3.094
-## 21 Reptile vs. Fish lakeOklawaha  2.530       1.122  2.255   0.024 12.557
-## 22 Reptile vs. Fish lakeTrafford  3.061       1.130  2.710   0.007 21.350
-## 23 Reptile vs. Fish      sexmale -0.628       0.685 -0.916   0.360  0.534
-## 24 Reptile vs. Fish    sizesmall -0.557       0.647 -0.862   0.389  0.573
+##               logit        param   Est. Std..Errors z.stat p.value
+## 19 Reptile vs. Fish  (Intercept) -2.859       1.146 -2.496   0.013
+## 20 Reptile vs. Fish  lakeHancock  1.129       1.193  0.947   0.344
+## 21 Reptile vs. Fish lakeOklawaha  2.530       1.122  2.255   0.024
+## 22 Reptile vs. Fish lakeTrafford  3.061       1.130  2.710   0.007
+## 23 Reptile vs. Fish      sexmale -0.628       0.685 -0.916   0.360
+## 24 Reptile vs. Fish    sizesmall -0.557       0.647 -0.862   0.389
 \end{verbatim}
 \end{kframe}
 \end{knitrout}
 
-Now we can interpret these:
+Now we can interpret these as follows:\\
 
 
-$\beta_{0,reptile}$ = -2.859: This indicates that the odds for the food of choice of a large female alligator from lake George to be a reptile is expected to change by a factor of $e^{-2.859}$ when compared to the odds of the same alligator's food choice being fish.\\
+$\beta_{0,reptile}$ = -2.859: This indicates that the odds that the food of choice of a large female alligator from lake George is a reptile is expected to change by a factor of $e^{-2.859}$ when compared to the odds that the same alligator's food choice is fish.\\
 
 
-$\beta_{1,reptile}$ = 1.129: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{1.129}$ if the lake variable is equal to Lake Hancock, while controlling for all other variables in the model. The p-value for this level is given as 0.841, but this should not lead us to belief to think that this whole variable is not significant as this is just one level in the categorical variable. We would need to do a global test for significance by removing this variable from a model fit and comparing the two models to get a reading on the significance or otherwise of this variable. The same can be said for the remaining two levels of this lake variable below.\\
+$\beta_{1,reptile}$ = 1.129: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{1.129}$ if the lake variable is equal to Lake Hancock, while controlling for all other variables in the model. The p-value for this level is given as 0.344, but this should not lead us to belief that this whole variable is not significant as this is just one level in the categorical variable. We would need to do a global test for significance by removing this variable from the model fit and comparing the two models to get a reading on the significance of this variable. The same can be said for the remaining two levels of this lake variable below.\\
 
 
 $\beta_{2,reptile}$ = 2.530: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{2.530}$ if the lake variable is equal to Lake Oklawaha, while controlling for all other variables in the model \\
@@ -278,7 +279,7 @@ $\beta_{2,reptile}$ = 2.530: This indicates that the odds for reptile relative t
 
 $\beta_{3,reptile}$ = 3.061: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{3.061}$ if the lake variable is equal to Lake Trafford, while controlling for all other variables in the model \\
 
-$\beta_{4,reptile}$ = -0.628: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{-0.628}$ if the sex of the alligator is male, while controlling for all other variables in the model. The p-value for this variable can be read directly as 0.360 which, if using the usual 5\% level of signifcance would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the other variables in the model.  \\
+$\beta_{4,reptile}$ = -0.628: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{-0.628}$ if the sex of the alligator is male, while controlling for all other variables in the model. The p-value for this variable can be read directly as 0.360 which, if using the usual 5\% level of signifcance, would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the other variables in the model.  \\
 
 $\beta_{5,reptile}$ = -0.557: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{-0.557}$ if alligator is classes as small in size, while controlling for all other variables in the model. Again, this p-value can be read directly as 0.389 and again, this would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the opther variables in the model.\\
 
@@ -326,7 +327,7 @@ Here we use the update() function to remove the `lake' variable from the model, 
 
 versus
 
-\[H_0: \beta_{jm} \neq 0 ; \text{ for at least one combination of } j=1, 2, 3 and m \in \{invertebrate, reptile, bird, other\}\]
+\[H_0: \beta_{jm} \neq 0 ; \text{ for at least one combination of } j=1, 2, 3 \text{ and } m \in \{invertebrate, reptile, bird, other\}\]
 
 In words, we are testing the null hypothesis that the beta values for each level of the categorical variable `lake' is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.\\
 
