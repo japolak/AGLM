@@ -222,7 +222,7 @@ Now we can interpret these as follows:\\
 $\beta_{0,reptile}$ = -2.859: This indicates that the odds that the food of choice of a large female alligator from lake George is a reptile is expected to change by a factor of $e^{-2.859}$ when compared to the odds that the same alligator's food choice is fish.\\
 
 
-$\beta_{1,reptile}$ = 1.129: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{1.129}$ if the lake variable is equal to Lake Hancock, while controlling for all other variables in the model. The p-value for this level is given as 0.344, but this should not lead us to belief that this whole variable is not significant as this is just one level in the categorical variable. We would need to do a global test for significance by removing this variable from the model fit and comparing the two models to get a reading on the significance of this variable. The same can be said for the remaining two levels of this lake variable below.\\
+$\beta_{1,reptile}$ = 1.129: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{1.129}$ if the lake variable is equal to Lake Hancock, while controlling for all other variables in the model. The p-value for this level is given as 0.344, but this should not lead us to believe that this whole variable is not significant as this is just one level in the categorical variable. We would need to do a global test for significance by removing this variable from the model fit and comparing the two models to get a reading on the significance of this variable. The same can be said for the remaining two levels of this lake variable below.\\
 
 
 $\beta_{2,reptile}$ = 2.530: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{2.530}$ if the lake variable is equal to Lake Oklawaha, while controlling for all other variables in the model \\
@@ -260,7 +260,7 @@ versus
 
 \[H_0: \beta_{jm} \neq 0 ; \text{ for at least one combination of } j=1, 2, 3 \text{ and } m \in \{invertebrate, reptile, bird, other\}\]
 
-In words, we are testing the null hypothesis that the beta values for each level of the categorical variable `lake' is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.\\
+In words, we are testing the null hypothesis that the beta values for each level of the categorical variable `lake' are equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.\\
 
 
 The testing distribution that is used is the chi-squared distribution and in this case we are testing with 12 degrees of freedom. The test statistic has a value of 50.318, which leads to a p-value of 1.228e-06. This signifies strong  evidence against the null hypothesis, and therefore we can reject the null hypothesis that the lake variable is not significant in this model set-up. \\
@@ -274,7 +274,7 @@ and
 
 \[H_0: \beta_{jm} \neq 0 ; \text{ for at least one } j=1,...,6; m \in \{invertebrate, reptile, bird, other\}\]
 
-In words, we are testing the null hypothesis that the beta values for variable in the dataset is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.
+In words, we are testing the null hypothesis that the beta values for each variable in the dataset is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.
 
 
 <<t4-q5, include=TRUE>>=
