@@ -5,3 +5,5 @@ Grab*.pdf
 *.gz
 *-concordance.tex
 .Rproj.user
+*.pdf
+*.tex
