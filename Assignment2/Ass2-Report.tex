@@ -1,5 +1,55 @@
 %% Do not edit preable unless you know what you are doing.
-\documentclass{article}
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 \usepackage[sc]{mathpazo}
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
@@ -38,17 +88,7 @@
 }
 
 % Global Settings of R-code
-<<setup, include=FALSE, cache=FALSE>>=
-# Install these packages if you don't have them already
-# install.packages("knitr","dplyr","ggplot2","multcomp")
-library(dplyr)
-library(multcomp)
-library(ggplot2)
-library(knitr)
-# set global chunk options
-opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
-options(formatR.arrow=TRUE,width=90)
-@
+
 
 % Mathematics Operators for Ease of Notation
 \DeclareMathOperator{\SSR}{SSR}
@@ -63,6 +103,7 @@ options(formatR.arrow=TRUE,width=90)
 
 
 %% ---------- BEGIN DOCUMENT -----------------------------------------------
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
 %\SweaveOpts{concordance=TRUE}
 
@@ -76,30 +117,7 @@ options(formatR.arrow=TRUE,width=90)
 
 The following table contains the estimates of a logistic regression model.
 
-<<t1-comps, include=FALSE>>=
-x1 <- -0.868
-z_x1 <- -2.365
-x1_se <- x1 / z_x1
-or_x1 <- exp(x1)
 
-
-
-x2 <- 2.404
-or_x2 <- exp(x2)
-x2_se <- 0.601
-
-l_ci_x2 <- exp(x2-qnorm(0.975)*x2_se)
-h_ci_x2 <- exp(x2+qnorm(0.975)*x2_se)
-
-l_ci_x3 <- 0.010
-h_ci_x3 <- 0.074
-
-x3 <- (log(l_ci_x3) + log(h_ci_x3)) / 2
-x3_se <- (- log(l_ci_x3) + log(h_ci_x3)) /(2*qnorm(0.975))
-z_x3 <- x3/x3_se
-
-or_x3 <- exp(x3)
-@
 
 \begin{center}
 \begin{tabular}{ l r r r r r r r}
@@ -108,9 +126,9 @@ or_x3 <- exp(x3)
  \hline
             & Est.            & s.e.              & z         & p-value & OR & lower & higher\\
  \hline
- $X_1$      & -0.868 & {\bf \Sexpr{round(x1_se, 3)}}  & -2.365     & 0.018 & {\bf \Sexpr{round(or_x1, 3)}} & 0.205 & 0.865 \\
- $X_2$      & 2.404  & 0.601 & 4.000     & <0.001 & {\bf \Sexpr{round(or_x2, 3)}} & {\bf \Sexpr{round(l_ci_x2, 3)}} & {\bf \Sexpr{round(h_ci_x2, 3)}} \\
- $X_3$      & {\bf \Sexpr{round(x3, 3)}}  & {\bf \Sexpr{round(x3_se, 3)}} & {\bf \Sexpr{round(z_x3, 3)}}    & <0.001 & {\bf \Sexpr{round(or_x3, 3)}} & 0.010 & 0.074 \\
+ $X_1$      & -0.868 & {\bf 0.367}  & -2.365     & 0.018 & {\bf 0.42} & 0.205 & 0.865 \\
+ $X_2$      & 2.404  & 0.601 & 4.000     & <0.001 & {\bf 11.067} & {\bf 3.408} & {\bf 35.943} \\
+ $X_3$      & {\bf -3.604}  & {\bf 0.511} & {\bf -7.059}    & <0.001 & {\bf 0.027} & 0.010 & 0.074 \\
  \hline
 \end{tabular}
 \end{center}
@@ -118,15 +136,15 @@ or_x3 <- exp(x3)
 Fill in the missing information
 (Please report formulas and computation.)
 \begin{align*}
-\text{s.e.}_{X_1}=\frac{X_1}{z_{X_1}}=\frac{\Sexpr{round(x1, 3)}}{\Sexpr{round(z_x1, 3)}}=\Sexpr{round(x1_se, 3)}\\
-\text{OR}_{X_1}=e^{X_1}=e^{\Sexpr{round(x1, 3)}}=\Sexpr{round(or_x1, 3)}\\
-\text{OR}_{X_2}=e^{X_2}=e^{\Sexpr{round(x2, 3)}}=\Sexpr{round(or_x2, 3)}\\
-\text{lower}_{X_2}=e^{X_2 - z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} - \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(l_ci_x2, 3)}\\
-\text{lower}_{X_2}=e^{X_2 + z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} + \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(h_ci_x2, 3)}\\
-X_3=\frac{\ln \text{lower}_{X_3}+ \ln \text{higher}_{X_3}}{2} = \frac{\Sexpr{round(l_ci_x3, 3)}+ \ln \Sexpr{round(h_ci_x3, 3)}}{2} = \Sexpr{round(x3, 3)}\\
-\text{s.e.}_{X_3}=\frac{- \ln \text{lower}_{X_3}+ \ln \text{higher}_{X_3}}{2 \times z_{0.975}} = \frac{- \Sexpr{round(l_ci_x3, 3)}+ \ln \Sexpr{round(h_ci_x3, 3)}}{2 \times \Sexpr{round(qnorm(0.975), 3)}} = \Sexpr{round(x3_se, 3)}\\
-\text{z}_{X_3}=\frac{X_3}{\text{s.e.}_{X_3}}=\frac{\Sexpr{round(x3, 3)}}{\Sexpr{round(x3_se, 3)}}=\Sexpr{round(z_x3, 3)}\\
-\text{OR}_{X_3}=e^{X_3}=e^{\Sexpr{round(x3, 3)}}=\Sexpr{round(or_x3, 3)}\\
+\text{s.e.}_{X_1}=\frac{X_1}{z_{X_1}}=\frac{-0.868}{-2.365}=0.367\\
+\text{OR}_{X_1}=e^{X_1}=e^{-0.868}=0.42\\
+\text{OR}_{X_2}=e^{X_2}=e^{2.404}=11.067\\
+\text{lower}_{X_2}=e^{X_2 - z_{0.975} \times \text{s.e.}_{X_2}}=e^{2.404 - 1.96\times 0.601}=3.408\\
+\text{lower}_{X_2}=e^{X_2 + z_{0.975} \times \text{s.e.}_{X_2}}=e^{2.404 + 1.96\times 0.601}=35.943\\
+X_3=\frac{\ln \text{lower}_{X_3}+ \ln \text{higher}_{X_3}}{2} = \frac{0.01+ \ln 0.074}{2} = -3.604\\
+\text{s.e.}_{X_3}=\frac{- \ln \text{lower}_{X_3}+ \ln \text{higher}_{X_3}}{2 \times z_{0.975}} = \frac{- 0.01+ \ln 0.074}{2 \times 1.96} = 0.511\\
+\text{z}_{X_3}=\frac{X_3}{\text{s.e.}_{X_3}}=\frac{-3.604}{0.511}=-7.059\\
+\text{OR}_{X_3}=e^{X_3}=e^{-3.604}=0.027\\
 \end{align*}
 
 \section*{Task 2}
@@ -171,50 +189,81 @@ logit[\pi_{reptile}(x)] = log[\frac{\pi_{reptile}(x)}{\pi_{fish}(x)}] = \beta_{0
 \end{multline*} \\
 
 \textbf{Q2. Estimate the model using R. Interpret the parameters of the log-odds of reptile vs fish}\\
-<<t4-q2_data, include=FALSE>>=
-library(nnet)
-library(tidyverse)
 
-data <- read.csv("alligator.csv")
-data$food <- relevel(data$food, "fish")
-@
 
-<<t4-q2, include=TRUE>>=
-fit <- multinom(food ~ lake + sex + size, data, weights = count)
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit} \hlkwb{<-} \hlkwd{multinom}\hlstd{(food} \hlopt{~} \hlstd{lake} \hlopt{+} \hlstd{sex} \hlopt{+} \hlstd{size, data,} \hlkwc{weights} \hlstd{= count)}
+\end{alltt}
+\begin{verbatim}
+## # weights:  35 (24 variable)
+## initial  value 352.466903 
+## iter  10 value 270.967533
+## iter  20 value 268.934907
+## final  value 268.932740 
+## converged
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
-@
 
-<<t4-table, include=FALSE>>=
-output <- summary(fit)
-z <- output$coefficients/output$standard.errors
-p <- (1 - pnorm(abs(z), 0, 1))*2
-resbird <-cbind(output$coefficients[1,],output$standard.errors[1,],z[1,],p[1,])
-resinvert <- cbind(output$coefficients[2,],output$standard.errors[2,],z[2,],p[2,])
-resother <- cbind(output$coefficients[3,],output$standard.errors[3,],z[3,],p[3,])
-resreptile <- cbind(output$coefficients[4,],output$standard.errors[4,],z[4,],p[4,])
 
-summary <- rbind(resbird, resinvert, resother, resreptile)
-summary <- round(summary,digits=3)
-colnames(summary) <- c("Est.","Std. Errors","z stat","p value")
-
-summary <- data.frame(logit=c(rep("Bird vs. Fish",6),rep("Invertebrate vs. Fish",6),rep("Other vs. Fish",6),rep("Reptile vs. Fish",6)),
-                  param=rep(rownames(resbird),4) , summary)
-rownames(summary) <- NULL
-@
-
-<<t4-q2_summary, include=TRUE>>=
-
-print(summary)
-
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{print}\hlstd{(summary)}
+\end{alltt}
+\begin{verbatim}
+##                    logit        param   Est. Std..Errors z.stat p.value
+## 1          Bird vs. Fish  (Intercept) -1.702       0.769 -2.213   0.027
+## 2          Bird vs. Fish  lakeHancock  0.575       0.795  0.723   0.469
+## 3          Bird vs. Fish lakeOklawaha -0.551       1.210 -0.455   0.649
+## 4          Bird vs. Fish lakeTrafford  1.237       0.866  1.428   0.153
+## 5          Bird vs. Fish      sexmale -0.606       0.689 -0.880   0.379
+## 6          Bird vs. Fish    sizesmall -0.730       0.652 -1.120   0.263
+## 7  Invertebrate vs. Fish  (Intercept) -1.167       0.534 -2.187   0.029
+## 8  Invertebrate vs. Fish  lakeHancock -1.781       0.623 -2.857   0.004
+## 9  Invertebrate vs. Fish lakeOklawaha  0.913       0.476  1.918   0.055
+## 10 Invertebrate vs. Fish lakeTrafford  1.156       0.493  2.345   0.019
+## 11 Invertebrate vs. Fish      sexmale -0.463       0.396 -1.171   0.242
+## 12 Invertebrate vs. Fish    sizesmall  1.336       0.411  3.250   0.001
+## 13        Other vs. Fish  (Intercept) -1.721       0.631 -2.726   0.006
+## 14        Other vs. Fish  lakeHancock  0.767       0.569  1.348   0.178
+## 15        Other vs. Fish lakeOklawaha  0.026       0.778  0.033   0.973
+## 16        Other vs. Fish lakeTrafford  1.558       0.626  2.490   0.013
+## 17        Other vs. Fish      sexmale -0.253       0.466 -0.542   0.588
+## 18        Other vs. Fish    sizesmall  0.291       0.460  0.632   0.528
+## 19      Reptile vs. Fish  (Intercept) -2.859       1.146 -2.496   0.013
+## 20      Reptile vs. Fish  lakeHancock  1.129       1.193  0.947   0.344
+## 21      Reptile vs. Fish lakeOklawaha  2.530       1.122  2.255   0.024
+## 22      Reptile vs. Fish lakeTrafford  3.061       1.130  2.710   0.007
+## 23      Reptile vs. Fish      sexmale -0.628       0.685 -0.916   0.360
+## 24      Reptile vs. Fish    sizesmall -0.557       0.647 -0.862   0.389
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 
 Above is the table to estimated parameters for the MNRM, using fish as the reference category. Below is a subset of this table with just the parameters for reptile vs fish, and their respective statistics:\\
 
 
-<<t4-q2_summary_subset, include=TRUE>>=
-print(summary[summary[,"logit"]=="Reptile vs. Fish",])
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{print}\hlstd{(summary[summary[,}\hlstr{"logit"}\hlstd{]}\hlopt{==}\hlstr{"Reptile vs. Fish"}\hlstd{,])}
+\end{alltt}
+\begin{verbatim}
+##               logit        param   Est. Std..Errors z.stat p.value
+## 19 Reptile vs. Fish  (Intercept) -2.859       1.146 -2.496   0.013
+## 20 Reptile vs. Fish  lakeHancock  1.129       1.193  0.947   0.344
+## 21 Reptile vs. Fish lakeOklawaha  2.530       1.122  2.255   0.024
+## 22 Reptile vs. Fish lakeTrafford  3.061       1.130  2.710   0.007
+## 23 Reptile vs. Fish      sexmale -0.628       0.685 -0.916   0.360
+## 24 Reptile vs. Fish    sizesmall -0.557       0.647 -0.862   0.389
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Now we can interpret these as follows:\\
 
@@ -246,11 +295,31 @@ This signifies that the odds for an alligator's food choice to be bird relative 
 
 \textbf{Q4. Test the global significance of the variable lake.}\\
 
-<<t4-q4, include=TRUE>>=
-
-fit2 <- update(fit, ~ . - lake)
-anova(fit, fit2, test="Chisq")
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit2} \hlkwb{<-} \hlkwd{update}\hlstd{(fit,} \hlopt{~} \hlstd{.} \hlopt{-} \hlstd{lake)}
+\end{alltt}
+\begin{verbatim}
+## # weights:  20 (12 variable)
+## initial  value 352.466903 
+## iter  10 value 294.669539
+## final  value 294.091727 
+## converged
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(fit, fit2,} \hlkwc{test}\hlstd{=}\hlstr{"Chisq"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## Likelihood ratio tests of Multinomial Models
+## 
+## Response: food
+##               Model Resid. df Resid. Dev   Test    Df LR stat.      Pr(Chi)
+## 1        sex + size       308   588.1835                                   
+## 2 lake + sex + size       296   537.8655 1 vs 2    12 50.31797 1.228388e-06
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 Here we use the update() function to remove the `lake' variable from the model, and we then produce an anova table to compare the fit of the two models. We are testing the following:
 
@@ -277,11 +346,30 @@ and
 In words, we are testing the null hypothesis that the beta values for each variable in the dataset is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.
 
 
-<<t4-q5, include=TRUE>>=
-
-fit.null <- multinom(food ~ 1, data, weights = count)
-anova(fit.null, fit, test="Chisq")
-@
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{fit.null} \hlkwb{<-} \hlkwd{multinom}\hlstd{(food} \hlopt{~} \hlnum{1}\hlstd{, data,} \hlkwc{weights} \hlstd{= count)}
+\end{alltt}
+\begin{verbatim}
+## # weights:  10 (4 variable)
+## initial  value 352.466903 
+## final  value 302.181462 
+## converged
+\end{verbatim}
+\begin{alltt}
+\hlkwd{anova}\hlstd{(fit.null, fit,} \hlkwc{test}\hlstd{=}\hlstr{"Chisq"}\hlstd{)}
+\end{alltt}
+\begin{verbatim}
+## Likelihood ratio tests of Multinomial Models
+## 
+## Response: food
+##               Model Resid. df Resid. Dev   Test    Df LR stat.      Pr(Chi)
+## 1                 1       316   604.3629                                   
+## 2 lake + sex + size       296   537.8655 1 vs 2    20 66.49745 6.723387e-07
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 
 Again, the testing distribution used is the chi-squared distribution and in this case we are testing with 20 degrees of freedom. From this, we can see that the p-value for this test is 6.723e-07. Assuming we are testing at the 5\% significance level, then we can again reject the null hypothesis, in this case the null hypothesis that all beta-values are equal to zero.
