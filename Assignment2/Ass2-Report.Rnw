@@ -153,6 +153,110 @@ There are many more possibilities for hypotheses tests. So, if we have a questio
 
 \newpage
 
+\section*{Task 3}
+\textbf{Q1. }
+
+The website blablabla.com sells magazine subscriptions. The related company is going to plan a large e-mail marketing campaign. All of the e-mails that will be sent will go to customers that have previously bought a magazine subscription at blablabla.com and who have not opted out of receiving e-mails. \\
+
+The magazines advertised in each e-mail will be automatically selected for each customer when the e-mail is generated in order to maximize the probability that the customer will buy. The website blablabla.com will only include ads for three magazines in each e-mail in a row at the top of the message so that it is likely that the ads will appear in the e-mail preview (and therefore actually be viewed without the receiver actually having to open the e-mail). Moreover, the managers believe that including more ads is ineffective. \\
+
+To evaluate the efficacy of the campaign, the company run an experiment. They sent 673 e-mails to customers containing the ad for the “Art with you” magazine and recorded whether or not the customer purchased this magazine. \\
+
+The company has also collected data on the customers by matching the in- formation provided by third party data (which can be purchased from data sources such as the credit scoring agencies) and the recipient of the e-mails when he/she made a purchase at blablabla.com. \\
+
+\textbf{Q1. Estimate a logistic regression model, with Buy as the dependent variable and Gender, Not Employed, Income and Own as explanatory variables. Is there any explanatory variable you would remove from the model? On the basis of which test? Remove the variable(s) and named the resulting model as Model 1.}
+
+<<>>=
+magazine <- read.csv("magazine.csv",header=TRUE)
+model_0 <- glm(Buy~Is.Female+Unemployed+Income+Own,family="binomial", data = magazine)
+summary(model_0)
+drop1(model_0,test="Chisq")
+@
+
+
+From the above summary of glm model, it seems that the variable “Unemployed” is not significant at 5\% level (p-value $= 0.8045 >> 0.05$ ). The summary function performs a Wald test. This is the result of a two sided test testing of hypothesis $H_0 : \beta_{Unemployed} = 0$ vs. $H_1: \beta_{Unemployed} \neq 0.$ The test statistic is computed as $W = Estimate/Std.Error$ and compares it to standard normal distribution. \\
+
+The same result would be found by using \textbf{drop1} function and performing Likelihood ratio test. LRT compares whether the difference in log likelihoods of a full model and a nested smaller model is significant. The model that fits better has a higher log-likelihood so the test statistic is computed as $D = 2(LL_0 - LL_{drop1})$ follows a Chisq distribution with the degrees of freedom being the difference in number of variables. It is indicative of an input variable that is in some way important to include in a good model. We see that all smaller models are significantly different from the full model, besides the model without Unemployment. Hence, the model without Unemployment is not significantly different from the model with Unemployment, which means the smaller model without it is just as good. \\
+
+The \textbf{drop1} function also shows AIC criterion for the models obtained by dropping one term. Leaving all the variables in the model gives an AIC of $234.53$. The AIC can be improved (ie. decreased) by dropping “Unemployed”, resulting in a new AIC of $232.59$. \\
+
+<<>>=
+model1 <- glm(Buy~Is.Female+Income+Own,family="binomial",data = magazine)
+summary(model1)
+@
+
+Now all the parameters are significantly different from 0 (at $\alpha = 0.05$) in the summary.\\
+
+\textbf{Q2. Add to Model 1 the variables PrevArt and PrevCinema. Name the re- sulting model as Model2. Compare Model 1 and Model 2 using an ap- propriate test and comment on the results.}
+
+<<>>=
+model2 <- update(model1,.~.+Prev.Art.Mag+Prev.Cinema.Mag)
+summary(model2)
+anova(model1,model2,test="Chisq")
+@
+
+We compare the two models with the anova function and a chi-squared-test. The statistics $G$ takes value $6.7045$, has $\chi^2$ distribution and p-value $0.035$. Thus at significance level $\alpha = 0.05$ we reject $H_0 : \beta_{PrevArt} = \beta_{PrevCin} = 0$ and conclude that Model 2 including PrevArt and PrevCin has a better fit than Model 1. \\
+
+Remark: from the summary output of Model 2 one sees that PrevCin is probably not significantly different from 0. The following checks the Model 2a which adds only “PrevArt” to Model 1.
+
+<<>>=
+model2a <- update(model1,.~.+Prev.Art.Mag)
+summary(model2a)
+anova(model1,model2a,test="Chisq")
+anova(model2a,model2,test="Chisq")
+@
+
+One sees that the step from Model 1 to Model 2a (adding PrevArt) yields significant (simultaneous) statistics at $\alpha = 0.05$, whereas adding PrevCin (Model 2a to Model 2) does not test as significant at $\alpha = 0.05$: we cannot reject $H_0 : \beta_{PrevCin} = 0$. Thus probably only adding PrevArt would be a better choice than adding PrevArt and PrevCin simultaneously. It is essential to notice, that this is not a contradiction to the above test results of $H_0 : \beta_{PrevArt} = \beta_{PrevCin} = 0$, as the alternative hypothesis is “at least one $\beta$ is not equal to 0”. Thus, $\beta_{PrevCin}$ could still be equal 0 given this $\alpha$ and data. One should also note that in this kind of several hypothesis testing, we should be adjusting to the p-values accroding to multiple testing procedure or control for a family wise error rate.\\
+
+
+\textbf{Q3. The data set includes many potential explanatory variables. Automatic procedures to select the “best” model are implemented in any software. One of this procedure is called “backward elimination”. Select the “best” model. Interpret the parameters describing the re-lation between Buy and all the selected explanatory variables.}
+
+<<blabla, results=FALSE>>=
+fullmodel<- glm(Buy ~.,family='binomial', data=magazine)
+mod.fin <- step(fullmodel, direction = 'backward')
+@
+
+<<>>=
+summary(mod.fin)
+odds_inc <- exp(1000*mod.fin$coefficients["Income"])
+odds_fem <- exp(mod.fin$coefficients["Is.Female"])
+odds_ret <- exp(mod.fin$coefficients["Is.Retired"])
+odds_res <- exp(mod.fin$coefficients["Residence.Length"])
+odds_dual <- exp(mod.fin$coefficients["Dual.Income"])
+odds_min <- exp(mod.fin$coefficients["Minors"])
+odds_own <- exp(mod.fin$coefficients["Own"])
+odds_house <- exp(mod.fin$coefficients["House"])
+odds_whi <- exp(mod.fin$coefficients["White"])
+odds_eng <- exp(mod.fin$coefficients["English"])
+odds_prart <- exp(mod.fin$coefficients["Prev.Art.Mag"])
+@
+
+The step()-function using the backward eliminations selects the following parameters as the best model based on the lowest AIC of $208.04$:\\
+
+\textbf{Income} $\beta_{Income}$ = \Sexpr{mod.fin$coefficients["Income"]}: An increase in income by 1000, increases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Income} * 1000)= \Sexpr{odds_inc}$.\\
+
+\textbf{Is.Female} $\beta_{Is.Female}$ = \Sexpr{mod.fin$coefficients["Is.Female"]}: The customer being female increases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Is.Female})=\Sexpr{odds_fem}$ \\
+
+\textbf{Is.Retired} $\beta_{Is.Retired}$ = \Sexpr{mod.fin$coefficients["Is.Retired"]}: The customer being retired decreases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Is.Retired})=\Sexpr{odds_ret}$\\
+
+\textbf{Residence.Length} $\beta_{Residence.Length}$ = \Sexpr{mod.fin$coefficients["Residence.Length"]}: An increase of the length of residence in the current city by 1 year, increases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Residence.Length})=\Sexpr{odds_res}$\\
+
+\textbf{Dual.Income} $\beta_{Dual.Income}$ = \Sexpr{mod.fin$coefficients["Dual.Income"]}: If the household considered has a dual income, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Dual.Income})=\Sexpr{odds_dual}$ \\
+
+\textbf{Minors} $\beta_{Minors}$ = \Sexpr{mod.fin$coefficients["Minors"]}: If children under the age of 18 are living in the household of the customer, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Minors})=\Sexpr{odds_min}$\\
+
+\textbf{Own} $\beta_{Own}$ = \Sexpr{mod.fin$coefficients["Own"]}: If the customer owns his residence, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Own})=\Sexpr{odds_own}$\\
+
+\textbf{House} $\beta_{House}$ = \Sexpr{mod.fin$coefficients["House"]}: If the customer reside in a single family house, the odds to buy the magazine are decreased multiplicatively by the factor $\exp(\beta_{House})= \Sexpr{odds_house}$\\
+
+\textbf{White} $\beta_{White}$ = \Sexpr{mod.fin$coefficients["White"]}: If the customer’s race is white, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{White})=\Sexpr{odds_whi}$\\
+
+\textbf{English} $\beta_{English}$ = \Sexpr{mod.fin$coefficients["English"]}: If the customer’s native language is english, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{English})= \Sexpr{odds_eng}$\\
+
+\textbf{Prev.Art.Mag} $\beta_{Prev.Art.Mag}$ = \Sexpr{mod.fin$coefficients["Prev.Art.Mag"]}: If the customer has previously bought an art magazine, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Prev.Art.Mag}) =\Sexpr{odds_prart}$\\
+
+Remark: This interpretation is only valid if we're controlling for all other variables. This means that we change only one variable in question to obtain above interpretation, while holding all other variables constant.
+
 \section*{Task 4}
 \textbf{Q1. Write down the formulation of the MNRM assuming “fish” as reference category}\\
 
