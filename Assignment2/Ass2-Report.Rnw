@@ -122,7 +122,7 @@ Fill in the missing information
 \text{OR}_{X_1}=e^{X_1}=e^{\Sexpr{round(x1, 3)}}=\Sexpr{round(or_x1, 3)}\\
 \text{OR}_{X_2}=e^{X_2}=e^{\Sexpr{round(x2, 3)}}=\Sexpr{round(or_x2, 3)}\\
 \text{lower}_{X_2}=e^{X_2 - z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} - \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(l_ci_x2, 3)}\\
-\text{lower}_{X_2}=e^{X_2 - z_{0.025} \times \text{s.e.}_{X_2}}=e^{X_2 + z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} + \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(h_ci_x2, 3)}\\
+\text{higher}_{X_2}=e^{X_2 - z_{0.025} \times \text{s.e.}_{X_2}}=e^{X_2 + z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} + \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(h_ci_x2, 3)}\\
 X_3=\frac{\ln (\text{lower}_{X_3})+ \ln (\text{higher}_{X_3})}{2} = \frac{\ln (\Sexpr{round(l_ci_x3, 3)}) + \ln (\Sexpr{round(h_ci_x3, 3)})}{2} = \Sexpr{round(x3, 3)}\\
 \text{s.e.}_{X_3}=\frac{- \ln (\text{lower}_{X_3}) + \ln (\text{higher}_{X_3})}{2 \times z_{0.975}} = \frac{- \ln (\Sexpr{round(l_ci_x3, 3)}) + \ln (\Sexpr{round(h_ci_x3, 3)})}{2 \times \Sexpr{round(qnorm(0.975), 3)}} = \Sexpr{round(x3_se, 3)}\\
 \text{z}_{X_3}=\frac{X_3}{\text{s.e.}_{X_3}}=\frac{\Sexpr{round(x3, 3)}}{\Sexpr{round(x3_se, 3)}}=\Sexpr{round(z_x3, 3)}\\
