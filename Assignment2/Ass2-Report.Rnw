@@ -195,7 +195,7 @@ summary(model2)
 anova(model1,model2,test="Chisq")
 @
 
-We compare the two models with the anova function and a chi-squared-test. The statistics $G$ takes value $6.7045$, has $\chi^2$ distribution and p-value $0.035$. Thus at significance level $\alpha = 0.05$ we reject $H_0 : \beta_{PrevArt} = \beta_{PrevCin} = 0$ and conclude that Model 2 including PrevArt and PrevCin has a better fit than Model 1. \\
+We compare the two models with the anova function and a chi-squared-test. The statistics $G$ takes value $6.7045$, has $\chi^2$ distribution and p-value $0.035$. Thus at significance level $\alpha = 0.05$ we reject $H_0 : \beta_{PrevArt} = \beta_{PrevCin} = 0$ in favor of the alternative $H_1 :$ at least one of $\beta_{PrevArt}, \beta_{PrevCin}$ is different from 0, and conclude that Model 2 including PrevArt and PrevCin has a better fit than Model 1. \\
 
 Remark: from the summary output of Model 2 one sees that PrevCin is probably not significantly different from 0. The following checks the Model 2a which adds only “PrevArt” to Model 1.
 
@@ -233,27 +233,27 @@ odds_prart <- exp(mod.fin$coefficients["Prev.Art.Mag"])
 
 The step()-function using the backward eliminations selects the following parameters as the best model based on the lowest AIC of $208.04$:\\
 
-\textbf{Income} $\beta_{Income}$ = \Sexpr{mod.fin$coefficients["Income"]}: An increase in income by 1000, increases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Income} * 1000)= \Sexpr{odds_inc}$.\\
+\textbf{Income} $\beta_{Income}$ = \Sexpr{mod.fin$coefficients["Income"]}: An increase in income by 1000, increases multiplicatively the odds of buying the magazine by the factor $\exp(\beta_{Income} * 1000)= \Sexpr{odds_inc}$.\\
 
-\textbf{Is.Female} $\beta_{Is.Female}$ = \Sexpr{mod.fin$coefficients["Is.Female"]}: The customer being female increases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Is.Female})=\Sexpr{odds_fem}$ \\
+\textbf{Is.Female} $\beta_{Is.Female}$ = \Sexpr{mod.fin$coefficients["Is.Female"]}: The customer being female increases multiplicatively the odds of buying the magazine by the factor $\exp(\beta_{Is.Female})=\Sexpr{odds_fem}$, compared to customer being male. \\
 
-\textbf{Is.Retired} $\beta_{Is.Retired}$ = \Sexpr{mod.fin$coefficients["Is.Retired"]}: The customer being retired decreases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Is.Retired})=\Sexpr{odds_ret}$\\
+\textbf{Is.Retired} $\beta_{Is.Retired}$ = \Sexpr{mod.fin$coefficients["Is.Retired"]}: The customer being retired decreases multiplicatively the odds of buying the magazine by the factor $\exp(\beta_{Is.Retired})=\Sexpr{odds_ret}$, compared to customer not being retired. \\
 
-\textbf{Residence.Length} $\beta_{Residence.Length}$ = \Sexpr{mod.fin$coefficients["Residence.Length"]}: An increase of the length of residence in the current city by 1 year, increases the odds multiplicatively to buy the magazine by the factor $\exp(\beta_{Residence.Length})=\Sexpr{odds_res}$\\
+\textbf{Residence.Length} $\beta_{Residence.Length}$ = \Sexpr{mod.fin$coefficients["Residence.Length"]}: An increase of the length of residence in the current city by 1 year, increases multiplicatively the odds of buying the magazine by the factor $\exp(\beta_{Residence.Length})=\Sexpr{odds_res}$.\\
 
-\textbf{Dual.Income} $\beta_{Dual.Income}$ = \Sexpr{mod.fin$coefficients["Dual.Income"]}: If the household considered has a dual income, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Dual.Income})=\Sexpr{odds_dual}$ \\
+\textbf{Dual.Income} $\beta_{Dual.Income}$ = \Sexpr{mod.fin$coefficients["Dual.Income"]}: If the household considered has a dual income, the odds of buying the magazine are increased multiplicatively by the factor $\exp(\beta_{Dual.Income})=\Sexpr{odds_dual}$, compared to household not having dual income. \\
 
-\textbf{Minors} $\beta_{Minors}$ = \Sexpr{mod.fin$coefficients["Minors"]}: If children under the age of 18 are living in the household of the customer, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Minors})=\Sexpr{odds_min}$\\
+\textbf{Minors} $\beta_{Minors}$ = \Sexpr{mod.fin$coefficients["Minors"]}: If children under the age of 18 are living in the household of the customer, the odds of buying the magazine are increased multiplicatively by the factor $\exp(\beta_{Minors})=\Sexpr{odds_min}$, compared to household without children under 18. \\
 
-\textbf{Own} $\beta_{Own}$ = \Sexpr{mod.fin$coefficients["Own"]}: If the customer owns his residence, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Own})=\Sexpr{odds_own}$\\
+\textbf{Own} $\beta_{Own}$ = \Sexpr{mod.fin$coefficients["Own"]}: If the customer owns his/her residence, the odds of buying the magazine are increased multiplicatively by the factor $\exp(\beta_{Own})=\Sexpr{odds_own}$, compared to when the customer does not own his/her residence.\\
 
-\textbf{House} $\beta_{House}$ = \Sexpr{mod.fin$coefficients["House"]}: If the customer reside in a single family house, the odds to buy the magazine are decreased multiplicatively by the factor $\exp(\beta_{House})= \Sexpr{odds_house}$\\
+\textbf{House} $\beta_{House}$ = \Sexpr{mod.fin$coefficients["House"]}: If the customer reside in a single family house, the odds of buying the magazine are decreased multiplicatively by the factor $\exp(\beta_{House})= \Sexpr{odds_house}$, compared to if the customer doesn't reside in a single family house.\\
 
-\textbf{White} $\beta_{White}$ = \Sexpr{mod.fin$coefficients["White"]}: If the customer’s race is white, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{White})=\Sexpr{odds_whi}$\\
+\textbf{White} $\beta_{White}$ = \Sexpr{mod.fin$coefficients["White"]}: If the customer’s race is white, the odds of buying the magazine are increased multiplicatively by the factor $\exp(\beta_{White})=\Sexpr{odds_whi}$, compared to if the customer's race is not white.\\
 
-\textbf{English} $\beta_{English}$ = \Sexpr{mod.fin$coefficients["English"]}: If the customer’s native language is english, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{English})= \Sexpr{odds_eng}$\\
+\textbf{English} $\beta_{English}$ = \Sexpr{mod.fin$coefficients["English"]}: If the customer’s native language is English, the odds of buying the magazine are increased multiplicatively by the factor $\exp(\beta_{English})= \Sexpr{odds_eng}$, compared to when customer's native language in not English. \\
 
-\textbf{Prev.Art.Mag} $\beta_{Prev.Art.Mag}$ = \Sexpr{mod.fin$coefficients["Prev.Art.Mag"]}: If the customer has previously bought an art magazine, the odds to buy the magazine are increased multiplicatively by the factor $\exp(\beta_{Prev.Art.Mag}) =\Sexpr{odds_prart}$\\
+\textbf{Prev.Art.Mag} $\beta_{Prev.Art.Mag}$ = \Sexpr{mod.fin$coefficients["Prev.Art.Mag"]}: If the customer has previously bought an art magazine, the odds of buying the magazine are increased multiplicatively by the factor $\exp(\beta_{Prev.Art.Mag}) =\Sexpr{odds_prart}$, compared to if the customer did not previously buy an art magazine. \\
 
 Remark: This interpretation is only valid if we're controlling for all other variables. This means that we change only one variable in question to obtain above interpretation, while holding all other variables constant.
 
@@ -323,20 +323,20 @@ print(summary[summary[,"logit"]=="Reptile vs. Fish",])
 Now we can interpret these as follows:\\
 
 
-$\beta_{0,reptile}$ = -2.859: This indicates that the odds that the food of choice of a large female alligator from lake George is a reptile is expected to change by a factor of $e^{-2.859}$ when compared to the odds that the same alligator's food choice is fish.\\
+$\beta_{0,reptile}$ = -2.859: This indicates that for a large female alligator from lake George the odds that the food of choice of is reptile vs. fish are $e^{-2.859} = 0.0573$\\
 
 
-$\beta_{1,reptile}$ = 1.129: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{1.129}$ if the lake variable is equal to Lake Hancock, while controlling for all other variables in the model. The p-value for this level is given as 0.344, but this should not lead us to believe that this whole variable is not significant as this is just one level in the categorical variable. We would need to do a global test for significance by removing this variable from the model fit and comparing the two models to get a reading on the significance of this variable. The same can be said for the remaining two levels of this lake variable below.\\
+$\beta_{1,reptile}$ = 1.129: This indicates that when the alligator lives at the Lake Hancock the odds that the food of choice is reptile vs. fish increase multiplicatively by the factor $e^{1.129} = 3.0925$, compared to when the alligator lives at the Lake George, while controlling for all other variables in the model (size and sex). The p-value for this level is given as 0.344, but this should not lead us to believe that this whole variable is not significant as this is just one level in the categorical variable. We would need to do a global test for significance by removing this variable from the model fit and comparing the two models to get a reading on the significance of this variable. The same can be said for the remaining two levels of this lake variable below.\\
 
 
-$\beta_{2,reptile}$ = 2.530: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{2.530}$ if the lake variable is equal to Lake Oklawaha, while controlling for all other variables in the model \\
+$\beta_{2,reptile}$ = 2.530: This indicates that when the alligator lives at the Lake Oklawaha the odds that the food of choice is reptile vs. fish increase multiplicatively by the factor $e^{2.530} = 12.553$, compared to when the alligator lives at the Lake George, while controlling for all other variables in the model (size and sex). \\
 
 
-$\beta_{3,reptile}$ = 3.061: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{3.061}$ if the lake variable is equal to Lake Trafford, while controlling for all other variables in the model \\
+$\beta_{3,reptile}$ = 3.061: This indicates that when the alligator lives at the Lake Trafford the odds that the food of choice is reptile vs. fish increase multiplicatively by the factor $e^{3.061} = 21.349$, compared to when the alligator lives at the Lake George, while controlling for all other variables in the model (size and sex). \\
 
-$\beta_{4,reptile}$ = -0.628: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{-0.628}$ if the sex of the alligator is male, while controlling for all other variables in the model. The p-value for this variable can be read directly as 0.360 which, if using the usual 5\% level of signifcance, would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the other variables in the model.  \\
+$\beta_{4,reptile}$ = -0.628: This indicates that when the alligator is male the odds that the food of choice is reptile vs. fish decrease multiplicatively by the factor $e^{-0.628} = 0.5336$, compared to when the alligator is female, while controlling for all other variables in the model (size and lake). The p-value for this variable can be read directly as 0.360 which, if using the usual 5\% level of signifcance, would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the other variables in the model.  \\
 
-$\beta_{5,reptile}$ = -0.557: This indicates that the odds for reptile relative to fish is expected to change by a factor of $e^{-0.557}$ if alligator is classes as small in size, while controlling for all other variables in the model. Again, this p-value can be read directly as 0.389 and again, this would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the opther variables in the model.\\
+$\beta_{5,reptile}$ = -0.557: This indicates that when the alligator is small the odds that the food of choice is reptile vs. fish decrease multiplicatively by the factor $e^{-0.557} = 0.5729$, compared to when the alligator is large, while controlling for all other variables in the model (sex and lake). Again, this p-value can be read directly as 0.389 and again, this would lead to us failing to reject the hypothesis that the value of this parameter is equal to zero, given all the opther variables in the model.\\
 
 
 
@@ -346,7 +346,8 @@ The odds ratio here can be given by:
 
 \[OR = \frac{\frac{P(Y=bird | alligator=small)}{P(Y=bird | alligator = large)}}{\frac{P(Y=other | alligator=small)}{P(Y=other | alligator = large)}} = \frac{e^{\beta_{5, bird}}}{e^{\beta_{5, other}}} = e^{\beta_{5, bird} - \beta_{5, other}} = e^{-0.730 - 0.291} = e^{-1.021} = 0.360\]
 
-This signifies that the odds for an alligator's food choice to be bird relative to it being other is expected to change by a factor of 0.360 when the alligator is noted to be of size small instead of large. \\
+
+This indicates that when the alligator is small the odds that the food of choice is bird vs. other decrease multiplicatively by the factor $0.360$, compared to when the alligator is large, while controlling for all other variables in the model (sex and lake).  \\
 
 \textbf{Q4. Test the global significance of the variable lake.}\\
 
@@ -362,12 +363,12 @@ Here we use the update() function to remove the `lake' variable from the model, 
 
 versus
 
-\[H_0: \beta_{jm} \neq 0 ; \text{ for at least one combination of } j=1, 2, 3 \text{ and } m \in \{invertebrate, reptile, bird, other\}\]
+\[H_1: \beta_{jm} \neq 0 ; \text{ for at least one combination of } j=1, 2, 3 \text{ and } m \in \{invertebrate, reptile, bird, other\}\]
 
 In words, we are testing the null hypothesis that the beta values for each level of the categorical variable `lake' are equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.\\
 
 
-The testing distribution that is used is the chi-squared distribution and in this case we are testing with 12 degrees of freedom. The test statistic has a value of 50.318, which leads to a p-value of 1.228e-06. This signifies strong  evidence against the null hypothesis, and therefore we can reject the null hypothesis that the lake variable is not significant in this model set-up. \\
+The testing distribution that is used is the chi-squared distribution and in this case we are testing with 12 degrees of freedom. The test statistic has a value of 50.318, which leads to a p-value of 1.228e-06. This indicates a strong evidence against the null hypothesis, and at the significance level $\alpha = 0.05$, we can reject the null hypothesis that the variable $lake$ is not significant in explaining the primary food choice of alligators. \\
 
 \textbf{Q5. Test the fit of the model}\\
 Here we fit a model with just the intercept and compare the deviance of the full model with the deviance of this intercept-only model. The hypotheses we are testing is:
@@ -376,7 +377,7 @@ Here we fit a model with just the intercept and compare the deviance of the full
 
 and
 
-\[H_0: \beta_{jm} \neq 0 ; \text{ for at least one } j=1,...,6; m \in \{invertebrate, reptile, bird, other\}\]
+\[H_1: \beta_{jm} \neq 0 ; \text{ for at least one } j=1,...,6; m \in \{invertebrate, reptile, bird, other\}\]
 
 In words, we are testing the null hypothesis that the beta values for each variable in the dataset is equal to zero for each of the Y-values, versus the alternative that at least one of the beta values is not equal to zero.
 
@@ -388,7 +389,7 @@ anova(fit.null, fit, test="Chisq")
 @
 
 
-Again, the testing distribution used is the chi-squared distribution and in this case we are testing with 20 degrees of freedom. From this, we can see that the p-value for this test is 6.723e-07. Assuming we are testing at the 5\% significance level, then we can again reject the null hypothesis, in this case the null hypothesis that all beta-values are equal to zero.
+Again, the testing distribution used is the chi-squared distribution and in this case we are testing with 20 degrees of freedom. From the test output, we can see that the p-value for this test is 6.723e-07. This indicates a strong evidence against the null hypothesis, and at the significance level $\alpha = 0.05$, we can reject the null hypothesis that the variables $lake$, $size$ and $sex$ are jointly not significant in explaining the primary food choice of alligators.
 
 
 \end{document}
