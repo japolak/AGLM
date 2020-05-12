@@ -7,3 +7,4 @@ Grab*.pdf
 .Rproj.user
 *.pdf
 *.tex
+*.DS_Store
