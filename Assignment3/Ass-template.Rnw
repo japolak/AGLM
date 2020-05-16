@@ -1,0 +1,198 @@
+%% LyX 2.2.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you  know what you are doing.
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{amsmath}
+
+% Margins of the document
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+
+% Header and footer for all pages
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{Page \thepage}
+
+% Header and footer for first page
+\fancypagestyle{plain}{%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyhf{}%
+  \rhead{ETH Zurich}
+  \lhead{Applied Generalized Linear Models \\ Spring Semester 2020}
+  \rfoot{Page \thepage}
+}
+
+%% Global Settings
+<<setup, include=FALSE, cache=FALSE>>=
+library(knitr)
+# set global chunk options
+opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
+options(formatR.arrow=TRUE,width=90)
+@
+
+%% ---------- BEGIN DOCUMENT -----------------------------------------------
+\begin{document}
+
+%% Tiltle
+\title{Assignment 3}
+\author{Milan Kuzmanovic, Mark McMahon \\ Martin Kotuliak, Jakub Polak}
+\date{\today}
+
+\maketitle
+
+\section*{Task 3}
+
+<<t3-setup, include=FALSE, cache=FALSE>>=
+library(ggplot2)
+library(MASS)
+library(reshape2)
+library(tidyverse)
+library(car)
+library(sandwich)
+
+medpar <- read.csv("medpar.csv")
+
+medpar$hmo <- factor(medpar$hmo, levels=c("0", "1"), labels=c("private", "hmo"))
+medpar$white <- factor(medpar$white, levels=c("0", "1"), labels=c("non-white", "white"))
+medpar$age80 <- factor(medpar$age80, levels=c("0", "1"), labels=c("<80", ">80"))
+medpar$type <- factor(medpar$type, levels=c("1", "2", "3"), labels=c("elective", "urgent", "emergency"))
+@
+
+The data set medpar.csv is an excerpt from US national Medicare inpatient hospital database. It contains 1495 observations on the following variables:
+
+\begin{itemize}
+\item los: length of hospital stay (in days)
+\item hmo: patient belongs to a Health Maintenance Organization (1), or private
+pay (0)
+\item white: patient identifies themselves as primarily Caucasian (1) in comparison to non-white (0)
+\item age80: patient age 80 and over (1), or age < 80 (0)
+\item type: a three-level explanatory variable related to the type of admission
+(1 = elective, 2 = urgent, and 3 = emergency)
+\end{itemize}
+
+We would like to investigate whether there is an association between the length of hospital stay and the other variables.
+
+\begin{enumerate}
+\item Import the data. Based on the descriptive statistics, do you expect that there is a significant relation between \texttt{los} and \texttt{type}? Justify your answer.
+
+<<t3-expl_anal, fig.height=3, echo=FALSE, fig.cap="\\label{fig:boxplot}Boxplot showing relationship between los and type">>=
+ggplot(medpar, aes(x=type, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
+@
+
+From the boxplot in \autoref{fig:boxplot} we can see that mean, median, top quartiles and top extremes are all rising with how serious is the type of the visit. On the other hand bottom quartile and bottom extreme values are on the same level between types of stay. There might be different reason for low extremes between the stays. For elective stay the short stay is expected due to nature of procedures. However for emergency, low stay might mean that a patient died.
+
+In order to see if means of the length of stay between types of stay are signifficantly different, we fit a ANOVA model.
+
+<<t3-aov>>=
+mod0 <- aov(los ~ type, data=medpar)
+summary(mod0)
+@
+
+P-value of \texttt{<2e-16} shows that we can reject null hypothesis that means of types are the same.
+
+\item Estimate a Poisson regression model with los as dependent variable and type as explanatory variable. Name this model Model 1. Interpret the parameters of the model (including the intercept).
+
+<<t3-sim_poi>>=
+mod1 <- glm(los ~ type, family="poisson", data=medpar)
+summary(mod1)
+@
+
+Null hypothesis for each explanatory variable is that the factor is 0. Looking at the p-value, all are below 0.05 therefore we can reject the null hypothesis.
+
+To get expected value $E[Y|\mathbf{x}]$ in poisson regression model:
+
+$$
+E[Y|\mathbf{x}] = \lambda= = e^{\beta_{intercept} + \beta_{urgent}x_{urgent} + \beta_{emergency}x_{emergency}}
+$$
+
+For individual type of stays, we get following predicted values for length of stay:
+
+<<t3-predicted>>=
+predict(mod1, newdata = data.frame(type=factor(c(1,2,3), levels=c("1", "2", "3"), labels=c("elective", "urgent", "emergency"))), type="response")
+@
+
+Where columns corresponds to los for elective stay, urgent stay and emergency stay respectively. We can see that length of emergency stay is the longest and elective the shortests as expected. Difference between elective and urgent is 2.37 days and difference between urgent and emergency is 7.04. Even though difference in factors is low, since expected value of poisson regression is exponential function, differences in lenghts of stay are large.
+
+\item Add to the model in (2) the explanatory variables age80, hmo and white. Name the resulting model Model 2. Test whether Model 2 has a better fit than Model 1.
+
+<<t3-comp_poi>>=
+mod2 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar)
+summary(mod2)
+anova(mod1, mod2, test="Chisq")
+@
+
+At p-value of 1.86e-10 we can reject null hypothesis and conclude second model performs better. The difference of deviances of two models is greater than 95th quantile for $\chi^2_3$.
+
+<<t3-lev, fig.height=6, echo=FALSE, fig.cap="\\label{fig:outliers}Outliers">>=
+influenceIndexPlot(mod1,vars=c("Studentized", "Cook"), id=list(n=c(2)), main="")
+influenceIndexPlot(mod2,vars=c("Studentized", "Cook"), id=list(n=c(2)), main="")
+@
+
+From diagnostic plots we can find out we have two levarage points.
+
+<<t3-lev2>>=
+medpar[c(1452, 1466),]
+@
+
+These are two patients which stayed in the hospital for a very long period. We will see in latter subquestion negative binomial models which accounts for data with greater variance.
+
+\item Interpret the parameter related to the variable age80.
+
+For patients with age greater than 80, we see shorter stay in hospitals by factor of -0.05471.
+
+<<t3-age_anal, fig.height=3, echo=FALSE, fig.cap="\\label{fig:boxplot2}Boxplot showing relationship between los and type with respect to age group">>=
+ggplot(medpar, aes(x=type:age80, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
+@
+
+From \autoref{fig:boxplot2} we can conclude that the greatest difference between two age groups is for emergency stay. Older patients stay shorter time in hospitals in case of emergency. With that in mind simple explanation is the death of patients. Older patients have a higher chance of dying in the hospitals.
+
+\item Test whether the equi-dispersion assumption is matched by the data. If that
+is not the case:
+\begin{enumerate}
+\item Estimate an adequate model including all the explanatory variables. Name this model Model 3.
+\item Compare the results of Model 2 and Model 3. Are they the same?
+\end{enumerate}
+
+<<t3-over, echo=FALSE>>=
+with(medpar, tapply(los, type, function(x) {
+  sprintf("M (Var) = %1.2f (%1.2f)", mean(x), var(x))
+}))
+with(medpar, tapply(los, white, function(x) {
+  sprintf("M (Var) = %1.2f (%1.2f)", mean(x), var(x))
+}))
+with(medpar, tapply(los, age80, function(x) {
+  sprintf("M (Var) = %1.2f (%1.2f)", mean(x), var(x))
+}))
+with(medpar, tapply(los, hmo, function(x) {
+  sprintf("M (Var) = %1.2f (%1.2f)", mean(x), var(x))
+}))
+@
+
+We see a case of overdispersion in our data. We can fit a negative binomial regression model which has a dispersion parameter $\theta$ to better fit the variance of data.
+
+<<t3-nbm>>=
+mod3 <- glm.nb(los ~ type + white + age80 + hmo, data=medpar)
+summary(mod3)
+@
+
+The dispersion parameter $\theta$ is equal to . Variance of the data is $\lambda + \frac{\lambda^2}{\theta}$. Finally we compare two tests:
+
+<<t3-nbm_comp>>=
+anova(mod2, mod3, test="Chisq")
+@
+
+We see that deviance of 3rd model is lower than that of mod2, for the same number of parameters. We therefore prioritize 3rd model over second one.
+
+<<t3-nbm_anal>>=
+influenceIndexPlot(mod3,vars=c("Studentized", "Cook"), id=list(n=c(2)), main=NULL)
+@
+ We see that negative binomial model accounts for higher variance and fits model such that we do not have levarege points anymore. Moreover comparing studentized residuals we see that fit of this model is overall better than the one of model 2.
+\end{enumerate}
+
+\end{document}
