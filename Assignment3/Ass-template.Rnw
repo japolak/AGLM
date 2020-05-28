@@ -88,9 +88,6 @@ freq$married <- factor(freq$married,
                        labels = c("never married","married","divorced"))
 @
 
-\\
-\\
-\\
 (2) Consider the OLRM intercept model having Q2 as the dependent variable (i.e. the OLRM without explanatory variables). Write down the formula of the model and compute the estimate of the intercept parameters without estimating the model.\\
 \\
 The general form can be written as:
@@ -189,7 +186,7 @@ data.frame(round(cbind(out$coefficients, pvalue = p, OR = OR),5))
 
 
 \section*{Task 3}
-\\
+
 <<t3-setup, include=FALSE, cache=FALSE>>=
 library(ggplot2)
 library(MASS)
@@ -197,6 +194,7 @@ library(reshape2)
 library(tidyverse)
 library(car)
 library(sandwich)
+library(AER)
 
 medpar <- read.csv("medpar.csv")
 
@@ -281,9 +279,9 @@ anova(mod1, mod2, test="Chisq")
 
 At p-value of 1.86e-10 we can reject null hypothesis and conclude second model performs better. The difference of deviances of two models is greater than 95th quantile for $\chi^2_3$.
 
-<<t3-lev, fig.height=6, echo=FALSE, fig.cap="\\label{fig:outliers}Outliers">>=
-influenceIndexPlot(mod1,vars=c("Studentized", "Cook"), id=list(n=c(2)), main="")
-influenceIndexPlot(mod2,vars=c("Studentized", "Cook"), id=list(n=c(2)), main="")
+<<t3-lev, fig.width=8, fig.height=5.5, out.width="8.5in", out.width="6in", echo=FALSE, fig.cap="\\label{fig:outliers}Diagnostic plots for model1 and model2 respectively">>=
+influenceIndexPlot(mod1,vars=c("Studentized", "hat", "Cook"), id=list(n=c(2)))
+influenceIndexPlot(mod2,vars=c("Studentized", "hat", "Cook"), id=list(n=c(2)))
 @
 
 From diagnostic plots we can find out we have two levarage points. They might greatly influence estimates in our models.
@@ -326,29 +324,27 @@ with(medpar, tapply(los, hmo, function(x) {
 }))
 @
 
-We see a case of overdispersion in our data. We can fit a negative binomial regression model which has a dispersion parameter $\theta$ to better fit the variance of data.
+We see a case of overdispersion in our data. We can test it following test:
+
+<<t3-overdisp>>=
+dispersiontest(mod2,alternative="greater",trafo=2)
+@
+
+We reject the null hypotheses that our data are equidispersed since p-value is <0.05, therefore, true dispersion parameter $\alpha$ is non zero. We can fit a negative binomial regression model which has a dispersion parameter $\theta$ (different from $\alpha$) to better fit the variance of data.
 
 <<t3-nbm>>=
 mod3 <- glm.nb(los ~ type + white + age80 + hmo, data=medpar)
 summary(mod3)
 @
 
-The dispersion parameter $\theta$ is equal to 2.2458 with standard error 0.0999. Variance of the data is $\lambda + \frac{\lambda^2}{\theta}$. Finally we compare two tests using Likelihood ratio test. Since $\theta=1/\alpha$ null hypothesis and alternative hypothesis are different for LRT:
+The dispersion parameter $\theta$ is equal to 2.2458 with standard error 0.0999. Variance of the data is $\lambda + \frac{\lambda^2}{\theta}$. When comparing estimates of model2 and model3 we see that their absolute value is smaller for model3. That is because model3 does not need to compensate larger variance with larger estimates.
 
-$$
-H_0:\theta=\infty \qquad vs. \qquad H_1:\theta< \infty
-$$
+Morover we see that for model3, we cannot reject null hypothesis for hmo, age80 nad white parameters that they are equal to 0.
 
-<<t3-nbm_comp>>=
-pchisq((-2 * (logLik(mod2) - logLik(mod3)))[1], df = 1, lower.tail = FALSE)
+<<t3-nbm_anal, fig.width=8, fig.height=5.5, out.width="8.5in", out.width="6in", echo=FALSE, fig.cap="\\label{fig:outliers2}Diagnostic plots for negative binomial model">>=
+influenceIndexPlot(mod3,vars=c("Studentized", "hat", "Cook"), id=list(n=c(2)), main=NULL)
 @
-
-We see that p-value is 0, therefore we can reject null hypothesis. We conclude that model3 models the data better. We can reject that the data are equidisperse.
-
-<<t3-nbm_anal>>=
-influenceIndexPlot(mod3,vars=c("Studentized", "Cook"), id=list(n=c(2)), main=NULL)
-@
- We see that negative binomial model accounts for higher variance and fits model such that we do not have levarege points anymore. Moreover comparing studentized residuals we see that fit of this model is overall better than the one of model 2.
+Comparing Diagnostic plots \autoref{fig:outliers} and \autoref{fig:outliers} we see that we do not observe two levarege points for negative binomial model. Negative binomial model accounts for higher variance and from studentized residuals we see that fit of this model is overall better than the one of model2.
 \end{enumerate}
 
 \end{document}
