@@ -85,16 +85,16 @@ We would like to investigate whether there is an association between the length 
 ggplot(medpar, aes(x=type, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
 @
 
-From the boxplot in \autoref{fig:boxplot} we can see that mean, median, top quartiles and top extremes are all rising with how serious is the type of the visit. On the other hand bottom quartile and bottom extreme values are on the same level between types of stay. There might be different reason for low extremes between the stays. For elective stay the short stay is expected due to nature of procedures. However for emergency, low stay might mean that a patient died.
+From the boxplot in \autoref{fig:boxplot} we can see that mean, median, top quartiles and top extremes are all rising with how serious the type of the visit is. On the other hand bottom quartile and bottom extreme values are on the same level between types of stay. There might be different reason for low extremes between the stays. For elective stay the short stay is expected due to nature of procedures. However for emergency, low stay might mean that a patient died.
 
-In order to see if means of the length of stay between types of stay are signifficantly different, we fit a ANOVA model.
+In order to see if the means of the length of stay between the types of stay are signifficantly different, we fit a ANOVA model.
 
 <<t3-aov>>=
 mod0 <- aov(los ~ type, data=medpar)
 summary(mod0)
 @
 
-P-value of \texttt{<2e-16} shows that we can reject null hypothesis that means of types are the same.
+P-value of \texttt{<2e-16} shows that we can reject null hypothesis that the means of types are the same.
 
 \item Estimate a Poisson regression model with los as dependent variable and type as explanatory variable. Name this model Model 1. Interpret the parameters of the model (including the intercept).
 
@@ -114,12 +114,22 @@ $$
 For individual type of stays, we get following predicted values for length of stay:
 
 <<t3-predicted>>=
-predict(mod1, newdata = data.frame(type=factor(c(1,2,3), levels=c("1", "2", "3"), labels=c("elective", "urgent", "emergency"))), type="response")
+predict(mod1, newdata = data.frame(type=factor(c(1,2,3),
+                                   levels=c("1", "2", "3"),
+                                   labels=c("elective", "urgent", "emergency"))),
+                                   type="response")
 @
 
-Where columns corresponds to los for elective stay, urgent stay and emergency stay respectively. We can see that length of emergency stay is the longest and elective the shortests as expected. Difference between elective and urgent is 2.37 days and difference between urgent and emergency is 7.04. Even though difference in factors is low, since expected value of poisson regression is exponential function, differences in lenghts of stay are large.
+Where columns corresponds to los for elective stay, urgent stay and emergency stay respectively. We can see that length of emergency stay is the longest and elective the shortests as expected. The difference between elective and urgent is 2.37 days and the difference between urgent and emergency is 7.04. Even though the difference in factors is low, since expected value of poisson regression is a exponential function, the differences in the lenghts of stay are large.
 
 \item Add to the model in (2) the explanatory variables age80, hmo and white. Name the resulting model Model 2. Test whether Model 2 has a better fit than Model 1.
+
+To compare the two models we can use Likelihood Ratio Test (LRT). We define two hypotheses:
+
+$$
+H_0:\beta_{white}=\beta_{age80}=\beta_{hmo}=0 \qquad vs. \qquad H_1:\beta_{white}\neq 0 \; \text{or} \; \beta_{age80}\neq 0  \; \text{or} \; \beta_{hmo}\neq 0
+$$
+
 
 <<t3-comp_poi>>=
 mod2 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar)
@@ -134,7 +144,7 @@ influenceIndexPlot(mod1,vars=c("Studentized", "Cook"), id=list(n=c(2)), main="")
 influenceIndexPlot(mod2,vars=c("Studentized", "Cook"), id=list(n=c(2)), main="")
 @
 
-From diagnostic plots we can find out we have two levarage points.
+From diagnostic plots we can find out we have two levarage points. They might greatly influence estimates in our models.
 
 <<t3-lev2>>=
 medpar[c(1452, 1466),]
@@ -150,7 +160,7 @@ For patients with age greater than 80, we see shorter stay in hospitals by facto
 ggplot(medpar, aes(x=type:age80, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
 @
 
-From \autoref{fig:boxplot2} we can conclude that the greatest difference between two age groups is for emergency stay. Older patients stay shorter time in hospitals in case of emergency. With that in mind simple explanation is the death of patients. Older patients have a higher chance of dying in the hospitals.
+From \autoref{fig:boxplot2} we can conclude that the greatest difference between two age groups is for emergency stay. Older patients stay shorter time in hospitals in case of emergency. With that in mind simple explanation is the death of patients. Older patients have a higher chance of dying in the hospitals. Therefore, final length of stay will be actually shorter.
 
 \item Test whether the equi-dispersion assumption is matched by the data. If that
 is not the case:
@@ -181,13 +191,17 @@ mod3 <- glm.nb(los ~ type + white + age80 + hmo, data=medpar)
 summary(mod3)
 @
 
-The dispersion parameter $\theta$ is equal to . Variance of the data is $\lambda + \frac{\lambda^2}{\theta}$. Finally we compare two tests:
+The dispersion parameter $\theta$ is equal to 2.2458 with standard error 0.0999. Variance of the data is $\lambda + \frac{\lambda^2}{\theta}$. Finally we compare two tests using Likelihood ratio test. Since $\theta=1/\alpha$ null hypothesis and alternative hypothesis are different for LRT:
+
+$$
+H_0:\theta=\infty \qquad vs. \qquad H_1:\theta< \infty
+$$
 
 <<t3-nbm_comp>>=
-anova(mod2, mod3, test="Chisq")
+pchisq((-2 * (logLik(mod2) - logLik(mod3)))[1], df = 1, lower.tail = FALSE)
 @
 
-We see that deviance of 3rd model is lower than that of mod2, for the same number of parameters. We therefore prioritize 3rd model over second one.
+We see that p-value is 0, therefore we can reject null hypothesis. We conclude that model3 models the data better. We can reject that the data are equidisperse.
 
 <<t3-nbm_anal>>=
 influenceIndexPlot(mod3,vars=c("Studentized", "Cook"), id=list(n=c(2)), main=NULL)

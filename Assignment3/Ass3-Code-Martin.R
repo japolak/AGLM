@@ -54,6 +54,6 @@ summary(mod2)
 summary(mod3)
 
 
-mod4 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar, subset=medpar[-c(1452,1466),])
+mod4 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar, subset=-c(1452,1466))
 summary(mod4)
 summary(mod1)
