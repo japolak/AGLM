@@ -46,8 +46,150 @@ options(formatR.arrow=TRUE,width=90)
 
 \maketitle
 
-\section*{Task 3}
+\section*{Task 1}
 
+(1) Import the data. Recode the variable race so that all the categories that have a frequency lower than 100 are combined into the category "other". Recode missing values in the dataset into NA.
+<<t1-setup, include=TRUE, echo=TRUE >>=
+library(MASS)
+freq <- read.csv("frequency.csv")
+
+# Recoding "0" as "NA"
+for (i in 1:nrow(freq)) {
+  for (j in 1:ncol(freq)) {
+    freq[i,j] <- ifelse(freq[i,j] == 0, NA, freq[i,j])
+  }
+}
+
+# Recoding variable race
+low <- as.numeric(names(table(freq$race)[which(table(freq$race) < 100)]))
+for (i in 1:nrow(freq)) {
+  freq$race[i] <- ifelse(freq$race[i] %in% low, 17, freq$race[i])
+}
+
+# Creating factors from nominal and ordinal variables
+freq$Q2 <- factor(freq$Q2,
+                  levels = c("1","2","3","4","5"),
+                  labels = c("never", "rarely", "occasionally", "often", "always"))
+freq$education <- factor(freq$education,
+                         levels = c("1","2","3","4"),
+                         labels = c("less than high school", "high school",
+                                    "university degree", "graduate degree"))
+freq$urban <- factor(freq$urban,
+                     levels = c("1","2","3"),
+                     labels = c("rural", "suburban", "urban"))
+freq$gender <- factor(freq$gender,
+                      levels = c("1","2","3"),
+                      labels = c("male", "female", "other"))
+freq$race <- factor(freq$race,
+                    levels = c("11","16","17"),
+                    labels = c("asian", "white","other"))
+freq$married <- factor(freq$married,
+                       levels = c("1","2","3"),
+                       labels = c("never married","married","divorced"))
+@
+
+\\
+\\
+\\
+(2) Consider the OLRM intercept model having Q2 as the dependent variable (i.e. the OLRM without explanatory variables). Write down the formula of the model and compute the estimate of the intercept parameters without estimating the model.\\
+\\
+The general form can be written as:
+\begin{align*}
+log[\frac{P(Y \leq m)}{P(Y > m)}] = \beta_{0m}
+\end{align*}
+Where m $\in$ \{never, rarely, occasionally, often\}, so this is a model with just 4 intecept parameters. More specifically, the model is given by the following 4 equations:
+\begin{align*}
+log[\frac{P(Y \leq "never")}{P(Y > "never")}] = \beta_{0never}
+\end{align*}
+representing the log-odds of "never" vs. "rarely", "occasionally", "often" and "always".
+\begin{align*}
+log[\frac{P(Y \leq "rarely")}{P(Y > "rarely")}] = \beta_{0rarely}
+\end{align*}
+representing the log-odds of "never" and "rarely" vs. "occasionally", "often" and "always".
+\begin{align*}
+log[\frac{P(Y \leq "occasionally")}{P(Y > "occasionally")}] = \beta_{0occasionally}
+\end{align*}
+representing the log-odds of "never", "rarely" and "occasionally" vs. "often" and "always".
+\begin{align*}
+log[\frac{P(Y \leq "often")}{P(Y > "often")}] = \beta_{0often}
+\end{align*}
+representing the log-odds of "never", "rarely", "occasionally" and "often" vs. "always".\\
+\\
+The intercepts are easily obtained without estimating the model because in the absence of explanatory variables the odds are equal to the empirical odds obtained by counting the number of instances of two events. So, the intercept parameters are equal to log of empirical odds:
+<<t1-intercepts, include=TRUE, echo=TRUE >>=
+beta_never <- log(sum(na.omit(as.numeric(freq$Q2) <= 1))/sum(na.omit(as.numeric(freq$Q2) > 1)))
+beta_rarely <- log(sum(na.omit(as.numeric(freq$Q2) <= 2))/sum(na.omit(as.numeric(freq$Q2) > 2)))
+beta_occasionally <- log(sum(na.omit(as.numeric(freq$Q2) <= 3))/sum(na.omit(as.numeric(freq$Q2) > 3)))
+beta_often <- log(sum(na.omit(as.numeric(freq$Q2) <= 4))/sum(na.omit(as.numeric(freq$Q2) > 4)))
+@
+We have:\\
+\begin{align*}
+ \beta_{0never} = \Sexpr{round(beta_never, 3)}\\
+ \beta_{0rarely} = \Sexpr{round(beta_rarely, 3)}\\
+ \beta_{0occasionallt} = \Sexpr{round(beta_occasionally, 3)}\\
+ \beta_{0often} = \Sexpr{round(beta_often, 3)}\\
+\end{align*}\\
+\\
+(3) Use the backward selection procedure to select the best fitting OLRM. The code we used in the practical session on OLRM returns an error. Explain why the error occurs and correct the code so that you can select the best fitting model.
+<<t1-beckward-selection, include=TRUE, echo=TRUE >>=
+mod.full <- polr(Q2~., data = freq)
+mod.fin <- step(mod.full, direction = "backward")
+@
+The reason for the error can be read off in the error message. The $polr()$ function is not equipped to handle missing values. There are two main ways of treating missing values. One is discarding the rows that contain missing values, and the other is data imputation. If there are not many data points with missing values then removing the rows with missing values is a reasonable practice. However, if the a lot of data goes to waste by removing rows with some missing values, then imputation might be better. We first try the first method as it is easier to implement and does not require selcting the imputation procedure.
+<<t1-backward, include=TRUE, echo=TRUE >>=
+freq2 <- na.omit(freq)
+dim(freq)
+dim(freq2)
+@
+We see that we lose around $6.5\%$ of the data by removing all rows with any missing values, which should not disturb the fit as it is only a small fraction of the data, and hence we choose to remove missing values instead of impute them.
+<<t1-beckward2, include=TRUE, echo=TRUE >>=
+mod.full <- polr(Q2~., data = freq2)
+mod.fin <- step(mod.full, direction = "backward")
+@
+We use the $step()$ function which selects the best model based on the AIC criterion. The best model in terms of AIC is the one with explanatory variables age, gender, eduaction and race. \\
+\\
+(4) Consider the best fitting OLRM returned by the backward selection procedure. Test its goodness of fit using an adequate test.\\
+\\
+The formula of the best fitting model $mod.fin$ is the following:
+\begin{align*}
+log[\frac{P(Y \leq m)}{P(Y > m)}] = \beta_{0m} + \beta_{1}X_{age} + \beta_{2}D_{female} + \beta_{3}D_{gender:other} + \\
+\beta_{4}D_{highschool} + \beta_{5}D_{university} + \beta_{6}D_{graduate} + \beta_{7}D_{white} + \beta_{8}D_{race:other}
+\end{align*}
+In order to test the fit of the best fitting model by selction via AIC, we need to perform a Likelihood ratio test and compare the deviance between model with just an intercept and the the best fitting model. The LRT has a test statistic
+\begin{align*}
+G = Dev(mod.empty) - Dev(mod.fin)
+\end{align*}
+which has asymptotic $\chi_4^2$ distribution under the null hypothesis
+\begin{align*}
+H_0: \beta_{1} = \beta_{2} = \beta_{3} = \beta_{4} = \beta_{5} = \beta_{6} = \beta_{7} = \beta_{8} = 0
+\end{align*}
+since the best fitting model "mod.fin" has 4 explanatory variables. We are testing the above null hypothesis versus the alternative hypothesis:
+\begin{align*}
+At \: least \: one \: \beta_j \neq 0, \: for \: j = 1,2,3,4,5,6,7,8
+\end{align*}
+The code below performs the test:
+<<t1-model-fit, include=TRUE, echo=TRUE >>=
+mod.empty <- polr(Q2~1, data = freq2)
+anova(mod.empty, mod.fin, test = "Chisq")
+@
+We have the value of the G statistic equal to $\Sexpr{round(anova(mod.empty, mod.fin, test = "Chisq")$`LR stat.`[2], 3)}$ and the corresponding p-value equal to $\Sexpr{round(anova(mod.empty, mod.fin, test = "Chisq")$`Pr(Chi)`[2])}$, which is close to zero and much lower than the general significance level 0.05. Hence, at significance level $\alpha = 5\%$, we reject the null hypothesis and conclude that the best model selected by AIC $mod.fin$ has a better fit than the model with just an intecept $mod.empty$.\\
+\\
+(5) Interpret the model coefficients.\\
+\\
+First we need to address the significance of the coefficient estimates, since only those that are statistically significantly different from zero deserve an interpretation of the value of the estimate. The fact that this model is the best model by AIC criterion is a strong indication that the explanatory variables are all significant. In fact, because the explanatory variables are multi-level factors, we have two notions of significance, i.e. one related to significance of the factor as a whole, and the other related to significance of the differences between the factor levels of the same explanatory variable. The significance of factor explanatory variables as a whole can be examined with $drop1()$ function and this one determines whether an explanatory variable as a whole is significant, i.e. is any of the coefficients related to this variable significantly different from zero. The significance of the individual coefficient estimates is examined with $summary()$ function and it relates to significance of the difference between reference category of explanatory factor and its other levels. Note that if explanatory factor as a whole is significant, we have to include all of its levels in the model, regardless of whether some levels are not significantly different from the reference level.
+<<t1-significance, include=TRUE, echo=TRUE >>=
+drop1(mod.fin, test = "Chisq")
+out <- summary(mod.fin)
+out$coefficients[1:8,c(1,3)] <- -out$coefficients[1:8,c(1,3)]
+p <- (1 - pnorm(abs(out$coefficients[,3]), 0, 1))*2
+OR <- c(exp(out$coefficients[,1]))
+data.frame(round(cbind(out$coefficients, pvalue = p, OR = OR),5))
+@
+
+
+
+\section*{Task 3}
+\\
 <<t3-setup, include=FALSE, cache=FALSE>>=
 library(ggplot2)
 library(MASS)
