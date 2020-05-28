@@ -1,0 +1,221 @@
+%% Do not edit preable unless you know what you are doing.
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{dsfont}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+% No indents in whole document
+\setlength\parindent{0pt}
+
+% Gaps between item is itemize
+\setitemize{itemsep=-1em,topsep=0.5em,parsep=0em,partopsep=0pt}
+
+% Margins of the document
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+
+% Header and footer for all pages
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{Page \thepage}
+
+% Header and footer for first page
+\fancypagestyle{plain}{%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyhf{}%
+  \rhead{ETH Zurich}
+  \lhead{Applied Generalized Linear Models \\ Spring Semester 2020}
+  \rfoot{Page \thepage}
+}
+
+% Global Settings of R-code
+<<setup, include=FALSE, cache=FALSE>>=
+# Install these packages if you don't have them already
+# install.packages("knitr","dplyr","ggplot2","multcomp")
+library(dplyr)
+library(multcomp)
+library(ggplot2)
+library(knitr)
+# set global chunk options
+opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
+options(formatR.arrow=TRUE,width=90)
+@
+
+% Mathematics Operators for Ease of Notation
+\DeclareMathOperator{\SSR}{SSR}
+\DeclareMathOperator{\SSReg}{SSReg}
+\DeclareMathOperator{\SST}{SST}
+
+% Bad Box settings
+\hbadness=10000
+\vbadness=\maxdimen
+\vfuzz=30pt
+\hfuzz=30pt
+
+
+%% ---------- BEGIN DOCUMENT -----------------------------------------------
+\begin{document}
+%\SweaveOpts{concordance=TRUE}
+
+%% Tiltle
+\title{Assignment 4}
+\author{Jakub Polak}
+\date{\today}
+\maketitle
+
+\section*{Task 1}
+
+The table below reports the R output of an ordinal logistic regression model.
+
+<<t1-comps, include=FALSE>>=
+x1 <- -0.868
+z_x1 <- -2.365
+x1_se <- x1 / z_x1
+or_x1 <- exp(x1)
+x2 <- 2.404
+or_x2 <- exp(x2)
+x2_se <- 0.601
+l_ci_x2 <- exp(x2-qnorm(0.975)*x2_se)
+h_ci_x2 <- exp(x2+qnorm(0.975)*x2_se)
+l_ci_x3 <- 0.010
+h_ci_x3 <- 0.074
+x3 <- (log(l_ci_x3) + log(h_ci_x3)) / 2
+x3_se <- (- log(l_ci_x3) + log(h_ci_x3)) /(2*qnorm(0.975))
+z_x3 <- x3/x3_se
+or_x3 <- exp(x3)
+
+
+
+b1 = 0.94; z1 = 7.91;
+s1 = b1/z1
+or1 = exp(b1)
+
+s2 = 0.38; z2 = -0.13;
+b2 = z2*s2;
+
+b3 = 0.02; s3 = 0.02;
+z3 = b3/s3
+
+or5 = 3.42; z5 = 9.46;
+b5 = log(3.42)
+s5 = b5/z5
+@
+
+\begin{center}
+\begin{tabular}{ l r r r r r}
+ \hline
+            & Est.            & s.e.              & z-value       & p-value     & OR \\
+ \hline
+ $X_1$      & 0.94            & \Sexpr{round(s1, 3)} & 7.91          & <0.001      & \Sexpr{round(or1, 3)} \\
+ $X_2$      & \Sexpr{round(b2, 3)} & 0.38            & -0.13         & 0.89        & 0.95 \\
+ $X_3$      & 0.02            & 0.02              & \Sexpr{round(z3, 3)}              & 0.35        & 1.02 \\
+ \hline
+ low|medium & 0.22            & 0.11              & 2.00          & 0.045       & 1.25 \\
+ medium|high& \Sexpr{round(b5, 3)} & \Sexpr{round(s5, 3)} & 9.46          & <0.001      & 3.42 \\
+ \hline
+\end{tabular}
+\end{center}
+
+Fill in the missing information and report the computation.
+
+\begin{align*}
+\text{s.e.}(\beta_1) = \frac{\beta_1}{Z_{X_1}} = \frac{\Sexpr{round(b1, 3)}}{\Sexpr{round(z1, 3)}} = \Sexpr{round(s1, 3)} \\
+\text{OR}_{X_1}=e^{\beta_1}=e^{\Sexpr{round(b1, 3)}}=\Sexpr{round(or1, 3)}\\
+\beta_2 = \text{s.e.}(\beta_2) \times Z_{X_2} = \Sexpr{round(s2, 3)} \times \Sexpr{round(z2, 3)} = \Sexpr{round(b2, 3)}\\
+Z_{X_3} = \frac{\beta_3}{\text{s.e.}(\beta_3)} = \frac{\Sexpr{round(b3, 3)}}{\Sexpr{round(s3, 3)}} = \Sexpr{round(z3, 3)} \\
+\beta_{\text{medium|high}} = \ln (\text{OR}_{\text{medium|high}}) = \ln (\Sexpr{round(or5, 3)}) = \Sexpr{round(b5, 3)} \\
+\text{s.e.}_{\text{medium|high}}= \frac{\beta_{\text{medium|high}}}{Z_{\text{medium|high}}} = \frac{\Sexpr{round(b5, 3)}}{\Sexpr{round(z5, 3)}} = \Sexpr{round(s5, 3)}
+\end{align*}
+
+\section*{Task 2}
+Let Y=buying a product (0= no, 1= undecided, 2= yes), $X_1=$gender (0= male, 1= female), and $X_2=$ area of residence (0= countryside, 1= city). The table below reports the estimates of a multinomial logistic regression model where the reference category is “no”.
+
+\begin{center}
+\begin{tabular}{l | l l | l l}
+\hline
+ & \multicolumn{2}{c |}{yes vs no} & \multicolumn{2}{c}{undecided vs no} \\
+ & Est. & Std. Err. & Est. & Std. Err. \\
+ \hline
+ Intercept & $1.225^{***}$ & 0.128 & -$0.487^{**}$ & 0.183 \\
+ $X_1$ (female) & $0.419^{*}$ & 0.171 & 0.105 & 0.247 \\
+ $X_2$ (city) & -0.342 & 0.237 & -0.271 & 0.354 \\
+ \hline
+ \end{tabular}
+ \end{center}
+
+Write down the general formula of the log-odds with reference category "no" corresponding to the model estimated in the table above. Note that $X_1$ is a dummy variable for a "female" and $X_2$ is dummy variable for "city".
+\[ \text{logit}[\pi_n (x)] = \log \left[ \frac{\pi_m(x)}{\pi_M(x)}\right] = \beta_{0,m} + \beta_{1,m}X_1+\beta_{2,m}X_2
+\]
+where $m \in \{ \text{yes, undecided}\}$ and $M=$ no is reference category.\\
+
+Interpret the parameters related to X1. \\
+
+$\beta_{1,\text{yes}} = 0.419$ : the coefficient is significantly different from zero on a $5\%$ level. The relative risk ratio (RRR) between female in countryside and male in countrside is $e^{0.419}=1.5204$ for buying buying a product (yes) vsersus not buying a product (no), holding all other variables constant. Or in another words, for a female in countryside, the probability og buying a product is 1.52 time the probability of not buying a product.\\
+
+$\beta_{1,\text{undecided}} = 0.105$ : the coefficient is not significantly different from zero. Thus we conclude that there are no differences in probability for buying a product (yes) vsersus undecided on buying a product (undecided) for a female in countryside and male in countryside.\\
+
+We would like to test the model fit. Write down the null and the alternative hypotheses, the test statistic and its distribution, and the rejection region. Interpret the result of the test by knowing that the corresponding p-value is 0.021.\\
+
+One example for a test of a model fit is to test all the parameters simultaneously being equal to zero. In this case the null and alternative hypothesis are:
+\begin{align*}
+H_0:& \; \beta_{1,\text{yes}}=\beta_{2,\text{yes}}=\beta_{1,\text{undecided}}=\beta_{2,\text{undecided}} = 0\\
+H_1:& \; \text{at least one } \beta_j,m \neq 0 \quad \forall j,m
+\end{align*}
+where $j \in \{1,2\}$ and $m \in \{ \text{yes, undecided}\}$.\\
+
+The test statistic for this hypothesis test is:
+\[ G=D(\text{reduced}) - D(\text{full}) \sim \chi^2_{4} \]
+where $D$ symbolizes deviance and the test statistic $G$ is chi-squared distributed with 4 degrees of freedom. Therefore, when testing at $\alpha=0.05$ level, the rejection region is when $G > \chi^2_{4,1-\alpha}$.
+
+\section*{Task 3}
+
+For 30 Galapagos Islands, we have a count of the number of tortoise species found on each island and the number of tortoise species that are endemic to that island. We also have three geographic variables for each island, namely the area (in km2), the elevation (in meters), and the distance from the closest island (in km).\\
+
+Which model(s) would you use to describe the dependence of the number of endemic species on the geographical variables and the number of species?\\
+
+To model the number of species or the number of endemic species one could use Linear Regression Model as the outcome could be treated as continuous variable. However due to the nature of the depenendent variable being a count of some outcome, Poisson Regression Model or Negative Binomial Regression Model would in my opinion perform better, as LRM can theoretically predict negative values or parial values of number of species. The main difference between PRM and NBRM is that the PRM is based on the Poisson distribution and assumes equidispersion of the data, i.e. the conditional mean and variance of the dependent variable are the same. The NBRM assumes that the conditional variance is bigger than mean and is also estimated. In practice, one can also use Wald test to verify whether the assumption of equidispersion is satisfied. To make an educated guess, one would expect the number of species on each island being higher than the number of encemic species to each island and therefore having also a larger variance. Hence, to model the number of endemic species to each island we could use PRM and to model the number of species on each island we could use NBRM.\\
+
+Write down the formula of the model(s). How would you interpret the parameters according to the model you chose?\\
+
+The counts for the number of endemic species to each island are outcome of random variables $Y_i = Y|X_i$ having a Poisson distribution with conditional mean $\lambda_i$ that depends on the geographical variables $X_{i,1}$ (area in km2), $X_{i,2}$ (elevation in m) and $X_{i,3}$ (distance to closest island in km). Hence,
+\[ P(\text{Y}_i = y_i) = e^{-\lambda_i}\frac{\lambda_i^{y_i}}{y_i !}
+\]
+and the PRM for the association between Y and $X1, \ldots, X_p$ we model the conditional expected
+value $\lambda_i$ as
+\[ \log[\lambda_i]=\log[\text{E}[\text{Y}|X_i]]=\beta_0 + \beta_1 X_{i,1} + \beta_2 X_{i,2} + \beta_3 X_{i,3}
+\]
+The interpretation for the parameters $\beta_j$ in terms of factor change would be that for a change of 1 unit in $X_j$, the expected count changes by a factor of $e^{\beta_j}$, holding all the other variables constant.\\
+
+The counts for the number of observed species on each island are also an outcome of radom variables $Y_i = Y|X_i$, but having a Negative Binomial distribution with parameters $\lambda_i$ and $\theta$, where $\lambda_i$ is still conditional mean, but conditional variance is $\lambda_i + \frac {1}{\theta} \lambda_i$. Hence,
+\[ P(\text{Y}_i = y_i) = \frac{\Gamma(y_i + \theta)}{\Gamma(y_i)\Gamma(\theta)}\left( \frac{\lambda_i}{\lambda_i + \theta} \right)^{y_i} \left( \frac{\theta}{\lambda_i + \theta} \right)^\theta
+\]
+and the NBRM for the association between Y and $X1, \ldots, X_p$ we model the same as in PRM
+\[ \log[\lambda_i]=\log[\text{E}[\text{Y}|X_i]]=\beta_0 + \beta_1 X_{i,1} + \beta_2 X_{i,2} + \beta_3 X_{i,3}
+\]
+and the interpratation for the parameters $\beta_j$ is also the same as above.
+
+\section*{Task 4}
+
+Consider the graphs below. What are they used for? Which model(s) they refer to? What can you infer from them? Write a summary of your findings in a short paragraph.\\
+
+\includegraphics[width=\textwidth]{task4}
+
+The plots above are Residual plots used for model diagnostics. Residual values are the difference between observed values and predicted valued by the model. They represent the estimated errors for our model. Analysing the residuals allows us to check whether the assumptions of the model are satisfied. These residuals probably refer to Linear Regression Model. \\
+
+The first plot (on the left) represents the Normal percentage probability plot. It allows us to see how are the residuals distributed compared to the assumed distribution of errors (in this case normal distribution). The residuals looks normally distributed however there is a very prominent skewness. This is usually caused by the dependent variable not being symmetrical and some form of transformation would resolve this issue. \\
+
+The second plot (on the right) represents the Tukey-Anscombe Plot, which shows the fitted values against the residuals. It usually help to discover several model defects as bias, nonlinearity, heteroskedasticity, unbalanced x or y axes or outliers. In this case we immediately see that our model fits only three possible values and hence the predictor is categorical. Other issues like bias and heteroskedasticity are not apparent.
+
+
+
+
+\end{document}
