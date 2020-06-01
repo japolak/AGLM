@@ -50,7 +50,7 @@ options(formatR.arrow=TRUE,width=90)
 
 \section*{Task 1}
 
-(1) Import the data. Recode the variable race so that all the categories that have a frequency lower than 100 are combined into the category "other". Recode missing values in the dataset into NA.
+\textbf{(1) Import the data. Recode the variable race so that all the categories that have a frequency lower than 100 are combined into the category "other". Recode missing values in the dataset into NA.}
 <<t1-setup, include=TRUE, echo=TRUE >>=
 library(MASS)
 freq <- read.csv("frequency.csv")
@@ -91,7 +91,7 @@ freq$married <- factor(freq$married,
 @
 
 
-(2) Consider the OLRM intercept model having Q2 as the dependent variable (i.e. the OLRM without explanatory variables). Write down the formula of the model and compute the estimate of the intercept parameters without estimating the model.\\
+\textbf{(2) Consider the OLRM intercept model having Q2 as the dependent variable (i.e. the OLRM without explanatory variables). Write down the formula of the model and compute the estimate of the intercept parameters without estimating the model.}\\
 \\
 The general form can be written as:
 \begin{align*}
@@ -130,7 +130,7 @@ We have:\\
  \beta_{0often} = \Sexpr{round(beta_often, 3)}\\
 \end{align*}\\
 \\
-(3) Use the backward selection procedure to select the best fitting OLRM. The code we used in the practical session on OLRM returns an error. Explain why the error occurs and correct the code so that you can select the best fitting model.
+\textbf{(3) Use the backward selection procedure to select the best fitting OLRM. The code we used in the practical session on OLRM returns an error. Explain why the error occurs and correct the code so that you can select the best fitting model.}
 <<t1-beckward-selection, include=TRUE, echo=TRUE >>=
 mod.full <- polr(Q2~., data = na.omit(freq))
 mod.fin <- step(mod.full, direction = "backward")
@@ -148,7 +148,7 @@ mod.fin <- step(mod.full, direction = "backward")
 @
 We use the $step()$ function which selects the best model based on the AIC criterion. The best model in terms of AIC is the one with explanatory variables age, gender, eduaction and race. \\
 \\
-(4) Consider the best fitting OLRM returned by the backward selection procedure. Test its goodness of fit using an adequate test.\\
+\textbf{(4) Consider the best fitting OLRM returned by the backward selection procedure. Test its goodness of fit using an adequate test.}\\
 \\
 The formula of the best fitting model $mod.fin$ is the following:
 \begin{align*}
@@ -174,7 +174,7 @@ anova(mod.empty, mod.fin, test = "Chisq")
 @
 We have the value of the G statistic equal to $\Sexpr{round(anova(mod.empty, mod.fin, test = "Chisq")$`LR stat.`[2], 3)}$ and the corresponding p-value equal to $\Sexpr{round(anova(mod.empty, mod.fin, test = "Chisq")$`Pr(Chi)`[2])}$, which is close to zero and much lower than the general significance level 0.05. Hence, at significance level $\alpha = 5\%$, we reject the null hypothesis and conclude that the best model selected by AIC $mod.fin$ has a better fit than the model with just an intecept $mod.empty$.\\
 \\
-(5) Interpret the model coefficients.\\
+\textbf{(5) Interpret the model coefficients.}\\
 \\
 First we need to address the significance of the coefficient estimates, since only those that are statistically significantly different from zero deserve an interpretation of the value of the estimate. The fact that this model is the best model by AIC criterion is a strong indication that the explanatory variables are all significant. In fact, because the explanatory variables are multi-level factors, we have two notions of significance, i.e. one related to significance of the factor as a whole, and the other related to significance of the differences between the factor levels of the same explanatory variable. The significance of factor explanatory variables as a whole can be examined with $drop1()$ function and this one determines whether an explanatory variable as a whole is significant, i.e. is any of the coefficients related to this variable significantly different from zero. The significance of the individual coefficient estimates is examined with $summary()$ function and it relates to significance of the difference between reference category of explanatory factor and its other levels. Note that if explanatory factor as a whole is significant, we have to include all of its levels in the model, regardless of whether some levels are not significantly different from the reference level.
 <<t1-significance, include=TRUE, echo=TRUE >>=
@@ -213,12 +213,15 @@ Note that for factor race, both our estimates are not significant and we saw tha
 \section*{Task 2}
 
 \textbf{The assumption of parallel slopes (or proportional odds) underlying the OLRM implies that the coefficients describing the relationship between the ordinal dependent variable and the explanatory variables are the same between any pair of adjacent categories. \\
-Develop a procedure to informal assess the assumption of parallel slopes.\\
-(1)  Describe the procedure and its logic.\\
-(2)  Apply the developed procedure to check whether the parallel slopes assumption is matched by the data in Task 1 and the explanatory variables included in the best fitting model (Task 1, point 2).}\\
-
-Since we are assuming that the effect of, say education, is the same for each change from one ordered outcome category to the next, we are therefore saying that the effect of the education variable, $\beta_{education}$, is the same when changing from each category to the next. One way to informally test this is by building four binary logistic regression models (one for each `jump' in category, e.g. one model would be  for the change in category between `never' and `rarely', another for the change between `rarely' and `occassional', and so on). We would build these considering just one explanatory variable at a time, and we would transform the outcome variable to be binary, e.g. for modeling the change between `never' and `rarely', we would make the outcome category 0 where it was originally `never' or `rarely', and 1 where it is `occassional', `often', or `always'. \\
-
+\\
+Develop a procedure to informal assess the assumption of parallel slopes.}\\
+\\
+\textbf{(1)  Describe the procedure and its logic.}\\
+\\
+Since we are assuming that the effect of, say education, is the same for each change from one ordered outcome category to the next, we are therefore saying that the effect of the education variable, $\beta_{education}$, is the same when changing from each category to the next. One way to informally test this is by building four binary logistic regression models (one for each `jump' in category, e.g. one model would be for the change in category between `never' and `rarely', another for the change between `rarely' and `occassional', and so on). We would build these considering just one explanatory variable at a time, and we would transform the outcome variable to be binary, e.g. for modeling the change between `never' and `rarely', we would make the outcome category 0 where it was originally `never' or `rarely', and 1 where it is `occassional', `often', or `always'. \\
+\\
+\textbf{(2)  Apply the developed procedure to check whether the parallel slopes assumption is matched by the data in Task 1 and the explanatory variables included in the best fitting model (Task 1, point 2)}.
+\\
 Consider the explanatory variable education. After we fit the four models using the binary transform outlined above, we can then plot the logit `fits' for these four models. `Fits' here refers to the $\beta_{interccept} + \beta_{<education:dummy>}$ value which can be obtained from the fitted model. Therefore, for each model we will get 4 plotted points (one for the intercept value with the reference category of education, and 3 more for the intercept value plus the beta corresponding to the next education category). If our assumption holds, we expect these 4 lines to be approximately the same in slope and approximately pairwise equidistant at each point (where each point represents a different education category) on the line.\\
 
 Below we can see the result of this procedure used with the 4 variables that were chosen by the best fitting model, namely education, gender, race, and age. From this, we can informally deduce whether our original assumption holds. For the`age' variable it clearly holds, while for the other three variables it appears to hold too, though perhaps not as obviously as for `age' It is up to the analyst here whether to perform more rigorous tests to further check this assumption, however from this quick visual inspection it would appear that the assumption holds well enough.
@@ -298,6 +301,7 @@ legend(x = "bottom",inset = 0,cex=1,
 @
 
 \newpage
+
 Below we have a table of coefficients which we can also use for informally testing this assumption. The coefficients for the full model that was chosen in task 1, part 3 are shown, along with the coefficients from the individual binary logistic regression models which were described above. Here, `m<=1' indicates the model where the outcome variable Y was transformed to be 0 if Y was 1, and 1 otherwise. Similar for `m<=2' and so on.
 
 Again, we are checking if the beta coefficients are similar across these models. Taking standard error into account allows us to see the confidence in our estimates, and therefore gives our test some more credibility. From looking at these, we can again say that our parallel assumption can be accepted for these betas. Some values are dubious, for example the estimate for `education: high school' for the full model is 0.135, while it is -0.059 for `m<=1' - however when we take the standard errors for these estimates into account (0.173 and 0.403 respectively), we can see that perhaps this difference is significant. Having said that, for these values that are quite different it would be worth it to perform a more formal test for this assumption.
@@ -364,8 +368,8 @@ medpar$age80 <- factor(medpar$age80, levels=c("0", "1"), labels=c("<80", ">80"))
 medpar$type <- factor(medpar$type, levels=c("1", "2", "3"), labels=c("elective", "urgent", "emergency"))
 @
 
-The data set medpar.csv is an excerpt from US national Medicare inpatient hospital database. It contains 1495 observations on the following variables:
-
+The data set medpar.csv is an excerpt from US national Medicare inpatient hospital database. It contains 1495 observations on the following variables:\\
+\\
 \begin{itemize}
 \item los: length of hospital stay (in days)
 \item hmo: patient belongs to a Health Maintenance Organization (1), or private
@@ -374,10 +378,10 @@ pay (0)
 \item age80: patient age 80 and over (1), or age < 80 (0)
 \item type: a three-level explanatory variable related to the type of admission
 (1 = elective, 2 = urgent, and 3 = emergency)
-\end{itemize}
-
-We would like to investigate whether there is an association between the length of hospital stay and the other variables.
-
+\end{itemize}\\
+\\
+We would like to investigate whether there is an association between the length of hospital stay and the other variables.\\
+\\
 \begin{enumerate}
 \item Import the data. Based on the descriptive statistics, do you expect that there is a significant relation between \texttt{los} and \texttt{type}? Justify your answer.
 
@@ -507,6 +511,8 @@ influenceIndexPlot(mod3,vars=c("Studentized", "hat", "Cook"), id=list(n=c(2)), m
 @
 Comparing Diagnostic plots \autoref{fig:outliers} and \autoref{fig:outliers} we see that we do not observe two levarege points for negative binomial model. Negative binomial model accounts for higher variance and from studentized residuals we see that fit of this model is overall better than the one of model2.
 \end{enumerate}
+
+\newpage
 
 \section*{Task 4}
 
