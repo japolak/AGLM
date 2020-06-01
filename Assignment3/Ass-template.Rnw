@@ -223,6 +223,7 @@ Below we can see the result of this procedure used with the 4 variables that wer
 
 <<t2-plot, include=TRUE, echo=FALSE >>=
 
+all_coefs <- matrix(ncol = 5, nrow=0)  # model var, beta label, beta value, standard error
 
 layout(matrix(c(1,2,3,4,5,5), ncol=2, byrow=TRUE), heights = c(2,2,0.5))
 
@@ -243,6 +244,13 @@ for(v in vars){
     glm_coefs[i,] <- f$coef
     coefs <- f$coef
     coefs[2:p] <- coefs[2:p] + coefs[1]
+
+    coef_df <- data.frame(summary(f)$coefficients[, 1:2])
+    coef_df <- cbind(beta_label=rownames(coef_df), coef_df)
+    rownames(coef_df) <- NULL
+    coef_df <- cbind(variable=v, m_thresh=i, coef_df)
+    all_coefs <- rbind(all_coefs, coef_df)
+
 
   }
 
@@ -283,6 +291,51 @@ legend(x = "bottom",inset = 0,cex=1,
        legend = c("never vs rarely, occasionally, often, always", "never, rarely vs occasionally, often, always",
                   "never, rarely, occasionally vs often, always", "never, rarely, occasionally, often vs always"),
        col=plot_colours, lwd=2, pch=19, ncol=2)
+
+
+@
+
+\newpage
+Below we have a table of coefficients which we can also use for informally testing this assumption. The coefficients for the full model that was chosen in task 1, part 3 are shown, along with the coefficients from the individual binary logistic regression models which were described above. Here, `m<=1' indicates the model where the outcome variable Y was transformed to be 0 if Y was 1, and 1 otherwise. Similar for `m<=2' and so on.
+
+Again, we are checking if the beta coefficients are similar across these models. Taking standard error into account allows us to see the confidence in our estimates, and therefore gives our test some more credibility. From looking at these, we can again say that our parallel assumption can be accepted for these betas. Some values are dubious, for example the estimate for `education: high school' for the full model is 0.135, while it is -0.059 for `m<=1' - however when we take the standard errors for these estimates into account (0.173 and 0.403 respectively), we can see that perhaps this difference is significant. Having said that, for these values that are quite different it would be worth it to perform a more formal test for this assumption.
+
+<<t2_table, echo=FALSE>>=
+# Getting tables together
+complete_table <- data.frame()
+# Table of full model coefs
+full_model_c <- data.frame(summary(mod.fin)$coefficients[,1:2])
+full_model_c[, "beta_label"] <- rownames(full_model_c)
+rownames(full_model_c) <- NULL
+full_c <- reshape(full_model_c, varying = c("Value", "Std..Error"), v.names = "Full model",
+             idvar = c("beta_label"),
+             timevar = "Beta", direction="long", times = c("Estimate", "Std..Error"))
+rownames(full_c) <- NULL
+
+# Education coefs
+
+for(v in vars){
+  c_table <- all_coefs[all_coefs[,"variable"] == v, -1]
+
+  z <- reshape(c_table, varying = c("Estimate", "Std..Error"), v.names = "Value",
+          idvar = c("m_thresh", "beta_label"),
+          timevar = "Beta", direction="long", times = c("Estimate", "Std..Error"))
+  rownames(z) <- NULL
+
+  label_order = paste0(v, levels(freq2[,v]))
+  label_order[1] = "(Intercept)"
+  z <- z[order(z$m_thresh, match(z$beta_label, label_order)), ]
+
+  final_table <- reshape(z, idvar = c('beta_label', 'Beta'), direction = 'wide',
+          timevar = 'm_thresh', sep = '_model_')
+
+  final_table <- merge(full_c,final_table, by = c('beta_label', "Beta"))
+  complete_table <- rbind(complete_table, final_table)
+}
+
+complete_table[,3:7] <- round(complete_table[,3:7], 3)
+colnames(complete_table) <- c("beta_label", "Beta", "Full Model", "m<=1", "m<=2", "m<=3", "m<=4")
+print(complete_table)
 
 
 @
