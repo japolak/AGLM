@@ -7,8 +7,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
 \usepackage{fancyhdr}
+\usepackage{fancyvrb}
 \usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{dsfont}
 
 % Margins of the document
 \geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
@@ -130,7 +132,7 @@ We have:\\
 \\
 (3) Use the backward selection procedure to select the best fitting OLRM. The code we used in the practical session on OLRM returns an error. Explain why the error occurs and correct the code so that you can select the best fitting model.
 <<t1-beckward-selection, include=TRUE, echo=TRUE >>=
-mod.full <- polr(Q2~., data = freq)
+mod.full <- polr(Q2~., data = na.omit(freq))
 mod.fin <- step(mod.full, direction = "backward")
 @
 The reason for the error can be read off in the error message. The $polr()$ function is not equipped to handle missing values. There are two main ways of treating missing values. One is discarding the rows that contain missing values, and the other is data imputation. If there are not many data points with missing values then removing the rows with missing values is a reasonable practice. However, if the a lot of data goes to waste by removing rows with some missing values, then imputation might be better. We first try the first method as it is easier to implement and does not require selcting the imputation procedure.
@@ -380,7 +382,7 @@ We would like to investigate whether there is an association between the length 
 \item Import the data. Based on the descriptive statistics, do you expect that there is a significant relation between \texttt{los} and \texttt{type}? Justify your answer.
 
 <<t3-expl_anal, fig.height=3, echo=FALSE, fig.cap="\\label{fig:boxplot}Boxplot showing relationship between los and type">>=
-ggplot(medpar, aes(x=type, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
+ggplot(medpar, aes(x=type, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun.y=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
 @
 
 From the boxplot in \autoref{fig:boxplot} we can see that mean, median, top quartiles and top extremes are all rising with how serious the type of the visit is. On the other hand bottom quartile and bottom extreme values are on the same level between types of stay. There might be different reason for low extremes between the stays. For elective stay the short stay is expected due to nature of procedures. However for emergency, low stay might mean that a patient died.
@@ -455,7 +457,7 @@ These are two patients which stayed in the hospital for a very long period. We w
 For patients with age greater than 80, we see shorter stay in hospitals by factor of -0.05471.
 
 <<t3-age_anal, fig.height=3, echo=FALSE, fig.cap="\\label{fig:boxplot2}Boxplot showing relationship between los and type with respect to age group">>=
-ggplot(medpar, aes(x=type:age80, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
+ggplot(medpar, aes(x=type:age80, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun.y=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
 @
 
 From \autoref{fig:boxplot2} we can conclude that the greatest difference between two age groups is for emergency stay. Older patients stay shorter time in hospitals in case of emergency. With that in mind simple explanation is the death of patients. Older patients have a higher chance of dying in the hospitals. Therefore, final length of stay will be actually shorter.
@@ -482,13 +484,14 @@ with(medpar, tapply(los, hmo, function(x) {
 }))
 @
 
-We see a case of overdispersion in our data. We can test it following test:
+We see a case of overdispersion in our data. We use \Verb+dispersiontest()+ on the poisson-model (Model2) included int the \Verb+AER+-package to test for dispersion. Poisson regression assumes $\mathds{E}[Y|X] = \mu$ and $\mathds{V}[Y|X] = \mu$. This test assumes that $\mathds{V}[Y|X] = \mu + \alpha \times \text{trafo}(\mu)$ and tests $H_0: \alpha=0$. As we know from the negative binomial model and evidence above, we should test for over-dispersion, and thus set the $H_A$ to “greater” than 0 ($H_A: \alpha > 0$). As shown in the lecture, in negative binomial model, the variance is a quadratic function of the mean, and hence we set trafo$(\mu)=2$.
 
+Performing the above described test:
 <<t3-overdisp>>=
 dispersiontest(mod2,alternative="greater",trafo=2)
 @
 
-We reject the null hypotheses that our data are equidispersed since p-value is <0.05, therefore, true dispersion parameter $\alpha$ is non zero. We can fit a negative binomial regression model which has a dispersion parameter $\theta$ (different from $\alpha$) to better fit the variance of data.
+One can see that $\alpha$ is detected as 0.6015419. We reject the null hypotheses that our data are equidispersed since p-value is <0.05, therefore, true dispersion parameter $\alpha$ is non zero. Thus we conclude that we deal with over-dispersed data and the pure poisson-model is not adequate. We can fit a negative binomial regression model which has a dispersion parameter $\theta$ (different from $\alpha$) to better fit the variance of data.
 
 <<t3-nbm>>=
 mod3 <- glm.nb(los ~ type + white + age80 + hmo, data=medpar)
@@ -504,5 +507,39 @@ influenceIndexPlot(mod3,vars=c("Studentized", "hat", "Cook"), id=list(n=c(2)), m
 @
 Comparing Diagnostic plots \autoref{fig:outliers} and \autoref{fig:outliers} we see that we do not observe two levarege points for negative binomial model. Negative binomial model accounts for higher variance and from studentized residuals we see that fit of this model is overall better than the one of model2.
 \end{enumerate}
+
+\section*{Task 4}
+
+Could you think of a test for equi-dispersed data based on the comparison of two models rather than testing the over-dispersion parameter $\alpha$ of the negative binomial regression model? Define the null and the alternative hypotheses, the test statistic and the rejec- tion region. Explain the logic of the test. Apply the test to the data in Task 3.\\
+
+As we mentioned earlier, negative binomial models assume the conditional means are not equal to the conditional variances. This inequality is captured by estimating a dispersion parameter (not shown in the output) that is held constant in a Poisson model. Thus, the Poisson model is actually nested in the negative binomial model. We can therefore use a likelihood ratio test to compare these two models and test this model assumption $[1]$.\\
+
+Since $\theta = \frac 1\alpha$, the null hypothesis and alternative hypothesis are:
+\[ H_0 : \theta = \infty \qquad vs. \qquad H_1 : \theta < \infty
+\]
+
+We use the \Verb+logLik()+ function to obtain the log-likelihood values for the estimated models 2 and 3. We know that the difference between these likelihoods follow a $\chi^2$ distribution with degrees of freedom being equal to the difference in the number of estimated parameters . Then we obtain the p-value for the test statistic.
+
+<<>>=
+mod2 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar)
+mod3 <- glm.nb(los ~ type + white + age80 + hmo, data=medpar)
+
+print("Poisson Regression Model (Model 2)"); print(logLik(mod2))
+print("Negative Binomial Regression Model (Model 3)"); print(logLik(mod3))
+print(paste("Test statistic is ",(-2 * (logLik(mod2) - logLik(mod3)))[1]))
+
+pchisq((-2 * (logLik(mod2) - logLik(mod3)))[1], df = 1, lower.tail = FALSE)
+@
+
+We see that the test statistics is very large 4256.8940 and comparing it with $\chi^2_1 $ distribution with 1 degree of freedome we obtain the p-value. The p-value is very small (rounded to 0), therefore we can reject null hypothesis. We conclude that model3 models the data better. We can reject a hypothesis that the data are equidisperse.
+
+
+\begin{thebibliography}{9}
+
+\bibitem{ucla}
+UCLA - Statistical Consulting: Negative binomial regression,
+\\\texttt{https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/}
+
+\end{thebibliography}
 
 \end{document}
