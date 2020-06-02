@@ -163,13 +163,12 @@ mod0 <- aov(los ~ type, data=medpar)
 summary(mod0)
 
 mod1 <- glm(los ~ type, family="poisson", data=medpar)
+mod.empty <- glm(los ~ 1, family="poisson", data=medpar)
+anova(mod.empty, mod1, test = "Chisq")
 summary(mod1)
 
 mod2 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar)
 summary(mod2)
-
-anova(mod1, mod2, test="Chisq")
-anova(mod1,mod2)
 
 ggplot(subset(medpar, age80 == '>80'), aes(x=type, y=los, fill=type)) + geom_boxplot() +stat_summary(fun.y=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw()
 ggplot(subset(medpar, age80 == '<80'), aes(x=type, y=los, fill=type)) + geom_boxplot() +stat_summary(fun.y=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw()
