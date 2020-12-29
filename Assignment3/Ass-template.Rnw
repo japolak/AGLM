@@ -7,8 +7,13 @@
 \usepackage[utf8]{inputenc}
 \usepackage{geometry}
 \usepackage{fancyhdr}
+\usepackage{fancyvrb}
 \usepackage{hyperref}
 \usepackage{amsmath}
+\usepackage{dsfont}
+
+% Remove indentation
+\setlength\parindent{0pt}
 
 % Margins of the document
 \geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
@@ -48,8 +53,8 @@ options(formatR.arrow=TRUE,width=90)
 
 \section*{Task 1}
 
-(1) Import the data. Recode the variable race so that all the categories that have a frequency lower than 100 are combined into the category "other". Recode missing values in the dataset into NA.
-<<t1-setup, include=TRUE, echo=TRUE >>=
+\textbf{(1) Import the data. Recode the variable race so that all the categories that have a frequency lower than 100 are combined into the category "other". Recode missing values in the dataset into NA.}
+<<t1-setup, include=TRUE, warning=FALSE, echo=TRUE >>=
 library(MASS)
 freq <- read.csv("frequency.csv")
 
@@ -89,8 +94,8 @@ freq$married <- factor(freq$married,
 @
 
 
-(2) Consider the OLRM intercept model having Q2 as the dependent variable (i.e. the OLRM without explanatory variables). Write down the formula of the model and compute the estimate of the intercept parameters without estimating the model.\\
-\\
+\textbf{(2) Consider the OLRM intercept model having Q2 as the dependent variable (i.e. the OLRM without explanatory variables). Write down the formula of the model and compute the estimate of the intercept parameters without estimating the model.}\\
+
 The general form can be written as:
 \begin{align*}
 log[\frac{P(Y \leq m)}{P(Y > m)}] = \beta_{0m}
@@ -112,7 +117,7 @@ representing the log-odds of "never", "rarely" and "occasionally" vs. "often" an
 log[\frac{P(Y \leq "often")}{P(Y > "often")}] = \beta_{0often}
 \end{align*}
 representing the log-odds of "never", "rarely", "occasionally" and "often" vs. "always".\\
-\\
+
 The intercepts are easily obtained without estimating the model because in the absence of explanatory variables the odds are equal to the empirical odds obtained by counting the number of instances of two events. So, the intercept parameters are equal to log of empirical odds:
 <<t1-intercepts, include=TRUE, echo=TRUE >>=
 beta_never <- log(sum(na.omit(as.numeric(freq$Q2) <= 1))/sum(na.omit(as.numeric(freq$Q2) > 1)))
@@ -126,9 +131,10 @@ We have:\\
  \beta_{0rarely} = \Sexpr{round(beta_rarely, 3)}\\
  \beta_{0occasionallt} = \Sexpr{round(beta_occasionally, 3)}\\
  \beta_{0often} = \Sexpr{round(beta_often, 3)}\\
-\end{align*}\\
-\\
-(3) Use the backward selection procedure to select the best fitting OLRM. The code we used in the practical session on OLRM returns an error. Explain why the error occurs and correct the code so that you can select the best fitting model.
+\end{align*}
+
+\newpage
+\textbf{(3) Use the backward selection procedure to select the best fitting OLRM. The code we used in the practical session on OLRM returns an error. Explain why the error occurs and correct the code so that you can select the best fitting model.}
 <<t1-beckward-selection, include=TRUE, echo=TRUE >>=
 mod.full <- polr(Q2~., data = freq)
 mod.fin <- step(mod.full, direction = "backward")
@@ -145,9 +151,9 @@ mod.full <- polr(Q2~., data = freq2)
 mod.fin <- step(mod.full, direction = "backward")
 @
 We use the $step()$ function which selects the best model based on the AIC criterion. The best model in terms of AIC is the one with explanatory variables age, gender, eduaction and race. \\
-\\
-(4) Consider the best fitting OLRM returned by the backward selection procedure. Test its goodness of fit using an adequate test.\\
-\\
+
+\textbf{(4) Consider the best fitting OLRM returned by the backward selection procedure. Test its goodness of fit using an adequate test.}\\
+
 The formula of the best fitting model $mod.fin$ is the following:
 \begin{align*}
 log[\frac{P(Y \leq m)}{P(Y > m)}] = \beta_{0m} + \beta_{1}D_{highschool} + \beta_{2}D_{university} + \beta_{3}D_{graduate} + \\
@@ -157,11 +163,11 @@ In order to test the fit of the best fitting model by selction via AIC, we need 
 \begin{align*}
 G = Dev(mod.empty) - Dev(mod.fin)
 \end{align*}
-which has asymptotic $\chi_4^2$ distribution under the null hypothesis
+which has asymptotic $\chi_8^2$ distribution under the null hypothesis
 \begin{align*}
 H_0: \beta_{1} = \beta_{2} = \beta_{3} = \beta_{4} = \beta_{5} = \beta_{6} = \beta_{7} = \beta_{8} = 0
 \end{align*}
-since the best fitting model "mod.fin" has 4 explanatory variables. We are testing the above null hypothesis versus the alternative hypothesis:
+since the best fitting model "mod.fin" has 8 parameters to estimate. We are testing the above null hypothesis versus the alternative hypothesis:
 \begin{align*}
 At \: least \: one \: \beta_j \neq 0, \: for \: j = 1,2,3,4,5,6,7,8
 \end{align*}
@@ -170,10 +176,10 @@ The code below performs the test:
 mod.empty <- polr(Q2~1, data = freq2)
 anova(mod.empty, mod.fin, test = "Chisq")
 @
-We have the value of the G statistic equal to $\Sexpr{round(anova(mod.empty, mod.fin, test = "Chisq")$`LR stat.`[2], 3)}$ and the corresponding p-value equal to $\Sexpr{round(anova(mod.empty, mod.fin, test = "Chisq")$`Pr(Chi)`[2])}$, which is close to zero and much lower than the general significance level 0.05. Hence, at significance level $\alpha = 5\%$, we reject the null hypothesis and conclude that the best model selected by AIC $mod.fin$ has a better fit than the model with just an intecept $mod.empty$.\\
-\\
-(5) Interpret the model coefficients.\\
-\\
+We have the value of the G statistic equal to $\Sexpr{round(anova(mod.empty, mod.fin, test = "Chisq")$`LR stat.`[2], 3)}$ and the corresponding p-value is close to zero and much lower than the general significance level 0.05. Hence, at significance level $\alpha = 5\%$, we reject the null hypothesis and conclude that the best model selected by AIC $mod.fin$ has a better fit than the model with just an intecept $mod.empty$.\\
+
+\textbf{(5) Interpret the model coefficients.}\\
+
 First we need to address the significance of the coefficient estimates, since only those that are statistically significantly different from zero deserve an interpretation of the value of the estimate. The fact that this model is the best model by AIC criterion is a strong indication that the explanatory variables are all significant. In fact, because the explanatory variables are multi-level factors, we have two notions of significance, i.e. one related to significance of the factor as a whole, and the other related to significance of the differences between the factor levels of the same explanatory variable. The significance of factor explanatory variables as a whole can be examined with $drop1()$ function and this one determines whether an explanatory variable as a whole is significant, i.e. is any of the coefficients related to this variable significantly different from zero. The significance of the individual coefficient estimates is examined with $summary()$ function and it relates to significance of the difference between reference category of explanatory factor and its other levels. Note that if explanatory factor as a whole is significant, we have to include all of its levels in the model, regardless of whether some levels are not significantly different from the reference level.
 <<t1-significance, include=TRUE, echo=TRUE >>=
 drop1(mod.fin, test = "Chisq")
@@ -183,7 +189,7 @@ p <- (1 - pnorm(abs(out$coefficients[,3]), 0, 1))*2
 OR <- c(exp(out$coefficients[,1]))
 data.frame(round(cbind(out$coefficients, pvalue = p, OR = OR),5))
 @
-Another thing to keep in mind is that the estimates above are modified so that they fit $\beta$-parameterization as it is specified in the model formula. $polr()$ function uses different parameterization and hence we need to invert the sign to obtain correct $\beta$ estimates. Note that we omit the interpretation of the intercepts as with OLRM we are generally only interested in the parameters related to explanatory variables. Also, here we put the interpretation for the odds of "never" vs. "rarely", "occasionally", "often" and "always", however, due to the parallel slopes assumption, equivalent interpretation holds also for the odds of "never" and "rarely" vs. "occasionally", "often" and "always", the odds of "never", "rarely" and "occasionally" vs. "often" and "always", and the odds of "never", "rarely", "occasionally" and "often" vs. "always".The parameters are interpreted as follows:
+We see from the results of $drop1()$ function that all explanatory variables are significant at significance level $\alpha = 5\%$, meaning that for every multi-level explanatory factor (education, gender, race) we reject the null hypothesis that there are no differences between levels of these factors, i.e. we reject the hypothesis that all the $\beta$ coefficients related to the dummies of multi-level explanatory factor are simultaneously equal to zero. Another thing to keep in mind is that the estimates above are modified so that they fit $\beta$-parameterization as it is specified in the model formula. $polr()$ function uses different parameterization and hence we need to invert the sign to obtain correct $\beta$ estimates. Note that we omit the interpretation of the intercepts as with OLRM we are generally only interested in the parameters related to explanatory variables. Also, here we put the interpretation for the odds of "never" vs. "rarely", "occasionally", "often" and "always", however, due to the parallel slopes assumption, equivalent interpretation holds also for the odds of "never" and "rarely" vs. "occasionally", "often" and "always", the odds of "never", "rarely" and "occasionally" vs. "often" and "always", and the odds of "never", "rarely", "occasionally" and "often" vs. "always".The parameters are interpreted as follows:
 \begin{itemize}
 
 \item $\beta_1 = \Sexpr{round(out$coefficients[1,1],3)}$: The parameter $\beta_{1}$ represents the difference between the log-odds (or the logit) of "never" vs. "rarely", "occasionally", "often" and "always" for a person with high school eduaction compared to a person with less than high school education, while holding all other variables in the model constant, i.e. holding age, gender and race constant. In a more intuitive inerpretation, the odds of "never" vs. "rarely", "occasionally", "often" and "always" change by a factor of $e^{\beta_1}$, or by $(e^{\beta_1} - 1)\cdot100\%$, when going from less than high school education to high school education, while keeping all other variables constant. The estimate for parameter $\beta_{1}$ is $\Sexpr{round(out$coefficients[1,1],3)}$, which means that the data shows that the odds of "never" vs. "rarely", "occasionally", "often" and "always" for a person with high school education are $\Sexpr{round(exp(out$coefficients[1,1]),3)}$ times the same odds for a person with less than high school education, i.e. $\Sexpr{(round(exp(out$coefficients[1,1]),3) -1)*100}$$\%$ lower odds for a person with high school education than for a person with less than high school education, keeping age, gender and race constant. This would indicate that getting high school education raises awareness about our actions affecting the environment. However, we must note that the p-value for this estimate is $\Sexpr{round(p[1],3)}$ meaning that there is no significant difference between high school eduaction and less than high school education in terms of association with environmental awareness, but since there are significant differences in the levels of factor education as a whole, all levels deserve an interpretation.
@@ -210,82 +216,84 @@ Note that for factor race, both our estimates are not significant and we saw tha
 
 \section*{Task 2}
 
-\textbf{The assumption of parallel slopes (or proportional odds) underlying the OLRM implies that the coefficients describing the relationship between the ordinal dependent variable and the explanatory variables are the same between any pair of adjacent categories. \\
-Develop a procedure to informal assess the assumption of parallel slopes.\\
-(1)  Describe the procedure and its logic.\\
-(2)  Apply the developed procedure to check whether the parallel slopes assumption is matched by the data in Task 1 and the explanatory variables included in the best fitting model (Task 1, point 2).}\\
+\textbf{The assumption of parallel slopes (or proportional odds) underlying the OLRM implies that the coefficients describing the relationship between the ordinal dependent variable and the explanatory variables are the same between any pair of adjacent categories.} \\
 
-Since we are assuming that the effect of, say education, is the same for each change from one ordered outcome category to the next, we are therefore saying that the effect of the education variable, $\beta_{education}$, is the same when changing from each category to the next. One way to informally test this is by building four binary logistic regression models (one for each `jump' in category, e.g. one model would be  for the change in category between `never' and `rarely', another for the change between `rarely' and `occassional', and so on). We would build these considering just one explanatory variable at a time, and we would transform the outcome variable to be binary, e.g. for modeling the change between `never' and `rarely', we would make the outcome category 0 where it was originally `never' or `rarely', and 1 where it is `occassional', `often', or `always'. \\
+\textbf{Develop a procedure to informal assess the assumption of parallel slopes.}\\
 
-Consider the explanatory variable education. After we fit the four models using the binary transform outlined above, we can then plot the logit `fits' for these four models. `Fits' here refers to the $\beta_{interccept} + \beta_{<education:dummy>}$ value which can be obtained from the fitted model. Therefore, for each model we will get 4 plotted points (one for the intercept value with the reference category of education, and 3 more for the intercept value plus the beta corresponding to the next education category). If our assumption holds, we expect these 4 lines to be approximately the same in slope and approximately pairwise equidistant at each point (where each point represents a different education category) on the line.\\
+\textbf{(1)  Describe the procedure and its logic.}\\
 
-Below we can see the result of this procedure used with the 4 variables that were chosen by the best fitting model, namely education, gender, race, and age. From this, we can informally deduce whether our original assumption holds. For the`age' variable it clearly holds, while for the other three variables it appears to hold too, though perhaps not as obviously as for `age' It is up to the analyst here whether to perform more rigorous tests to further check this assumption, however from this quick visual inspection it would appear that the assumption holds well enough.
+The parallel slopes assumption implies that all $\beta_j$ coefficients, $j = 1,...,p$, that are related to explanatory variables in the OLRM remain the same for every m. This means that for M ordered groups, the log odds of 1 vs. 2,...,M, log odds of 1,2 vs. 3,...,M, ... , and log odds of 1,...,M-1 vs. M all change by the same amount when changing explanatory variables because they all have the same $\beta_j$ coefficients, $j = 1,...,p$. In other words, the odds of 1 vs. 2,...,M, log odds of 1,2 vs. 3,...,M, ... , and log odds of 1,...,M-1 vs. M all change by the same factor when changing explanatory variables, which is why parallel slopes assumption is also called proportional odds assumption. One way to informally test this is by building M-1 binary logistic regressions where the response will be 1 if $Y \leq m$ and 0 if $Y > m$ for $m = 1,...,M-1$ respectively. If the parallel slopes assumption holds for explanatory variable j, the $\beta_{jm}$ coefficients from M-1 binary logistic regressions should be similar for all $m = 1,...,M-1$. Therefore, to informally test the parallel slopes assumption for explanatory variable j, we need to compare the $\beta_{jm}$ coefficient estimates from M-1 binary logistic regressions, and decide whether they are sufficiently different for us to refute parallel slopes assumption or sufficiently similar for us to accept the assumption. Last point is that we must look at the differences between estimates in relation to their standard error, since for large standard error we can have differences in estimates that are attributable to variation in data generating process and don't imply violation of the parallel slopes assumption. Looking at estimate differences while accounting for standard errors is a step towards a formal test for parallel slopes assumption.\\
 
-<<t2-plot, include=TRUE, echo=FALSE >>=
+\textbf{(2)  Apply the developed procedure to check whether the parallel slopes assumption is matched by the data in Task 1 and the explanatory variables included in the best fitting model (Task 1, point 2)}.\\
 
+So, the best OLRM for the data in task 1 was the one with explanatory variables education, gender, age and race. To apply the procedure above and test the parallel slopes assumption we need four binary logistic regressions with responeses: first BLR response 1 if $Y \leq "never"$, 0 if $Y > "never"$, second BLR response 1 if $Y \leq "rarely"$, 0 if $Y > "rarely"$, third BLR response 1 if $Y \leq "occasionally"$, 0 if $Y > "occasionally"$ and fourth BLR response 1 if $Y \leq "often"$, 0 if $Y > "often"$. We arrange all the coefficients from four BLRs with their standard deviations in the table below.\\
 
-layout(matrix(c(1,2,3,4,5,5), ncol=2, byrow=TRUE), heights = c(2,2,0.5))
+\newpage
 
-vars <- c("education", "gender", "race", "age")
+<<t2_table, echo=FALSE>>=
 q2_levels <- levels(freq2[,"Q2"])
+all_coefs <- data.frame()
 
-for(v in vars){
-  par(mai=rep(0.55, 4))
-  p <- nlevels(freq2[,v])
-  p <- ifelse(p==0, 2, p)  # age isn't a factor var so we manually set this to 2 so we have 2 columns, one for intercept one for effect of1 unit increase
-  glm_coefs = matrix(ncol = p, nrow=4)
-
-  for(i in c(1, 2, 3, 4)){
+for (i in c(1, 2, 3, 4)) {
+  if (i == 1) {
+  df <- freq2  # So we don't overwrite the original data with our changes
+  df[,"Q2"] = (!(df[,"Q2"] %in% q2_levels[1:i]))*1
+  f = glm(Q2~ education + gender + age + race, data=df, family = "binomial")
+  all_coefs <- summary(f)$coefficients[, 1:2]
+  } else {
     df <- freq2  # So we don't overwrite the original data with our changes
     df[,"Q2"] = (!(df[,"Q2"] %in% q2_levels[1:i]))*1
-
-    f = glm(as.formula(paste0("Q2~", v)), data=df, family = "binomial")
-    glm_coefs[i,] <- f$coef
-    coefs <- f$coef
-    coefs[2:p] <- coefs[2:p] + coefs[1]
-
+    f = glm(Q2~ education + gender + age + race, data=df, family = "binomial")
+    all_coefs <- cbind(all_coefs, summary(f)$coefficients[, 1:2])
   }
-
-  coefs_plot <- glm_coefs
-
-  if(v=="age"){
-    coefs_plot[,2] = coefs_plot[,1] + (coefs_plot[,2] * max(df[,"age"]))
-  }
-  else{
-    coefs_plot[, 2:p] <- coefs_plot[, 2:p] + coefs_plot[, 1]
-  }
-
-  plot(coefs_plot[1,], type="b", ylim=c(min(coefs_plot)*1.1, max(coefs_plot)*1.1), lwd=2, pch=19, xlab=v, ylab="logit", col="red", xaxt="n")
-  lines(coefs_plot[2,], type="b", col="blue", lwd=2, pch=19, xaxt="n")
-  lines(coefs_plot[3,], type="b", col="purple", lwd=2, pch=19, xaxt="n")
-  lines(coefs_plot[4,], type="b", col="green", lwd=2, pch=19, xaxt="n")
-
-  if(v=="education"){
-    labs <- c("Less than HS", "High School", "University", "Graduate")
-  }
-  else if(v=="gender"){
-    labs <- c("Male", "Female", "Other")
-  }
-  else if(v=="race"){
-    labs <- c("Asian", "White", "Other")
-  }
-  else{
-    labs <- c(0, max(df[,"age"]))
-  }
-  axis(1, at=1:p, labels=labs)
 }
 
+all_coefs <- all_coefs[-1, ]
+complete <- cbind(out$coefficients[1:8,1:2], all_coefs)
 
-par(mar=c(0,0,0,0))
-plot(1, type = "n", axes=FALSE, xlab="", ylab="")
-plot_colours <- c("red", "blue", "purple", "green")
-legend(x = "bottom",inset = 0,cex=1,
-       legend = c("never vs rarely, occasionally, often, always", "never, rarely vs occasionally, often, always",
-                  "never, rarely, occasionally vs often, always", "never, rarely, occasionally, often vs always"),
-       col=plot_colours, lwd=2, pch=19, ncol=2)
+final <- data.frame("m <= never" = c(complete[1,3:4], complete[2,3:4],
+                                     complete[3,3:4], complete[4,3:4],
+                                     complete[5,3:4], complete[6,3:4],
+                                     complete[7,3:4], complete[8,3:4]),
+                    "m <= rarely" = c(complete[1,5:6], complete[2,5:6],
+                                      complete[3,5:6], complete[4,5:6],
+                                      complete[5,5:6], complete[6,5:6],
+                                      complete[7,5:6], complete[8,5:6]),
+                    "m <= occasionally" = c(complete[1,7:8], complete[2,7:8],
+                                            complete[3,7:8], complete[4,7:8],
+                                            complete[5,7:8], complete[6,7:8],
+                                            complete[7,7:8], complete[8,7:8]),
+                    "m <= often" = c(complete[1,9:10], complete[2,9:10],
+                                     complete[3,9:10], complete[4,9:10],
+                                     complete[5,9:10], complete[6,9:10],
+                                     complete[7,9:10], complete[8,9:10]))
 
+names(final) <- c(paste0("m = never"), paste0("m = rarely"),
+                  paste0("m = occasionally"), paste0("m = often"))
+
+row.names(final) <- c(paste0("educationHS"," Est."),
+                      paste0("educationHS"," Std."),
+                      paste0("educationUD"," Est."),
+                      paste0("educationUD"," Std."),
+                      paste0("educationGD"," Est."),
+                      paste0("educationGD"," Std."),
+                      paste0("genderF"," Est."),
+                      paste0("genderF"," Std."),
+                      paste0("genderO"," Est."),
+                      paste0("genderO"," Std."),
+                      paste0("age"," Est."),
+                      paste0("age"," Std."),
+                      paste0("raceW"," Est."),
+                      paste0("raceW"," Std."),
+                      paste0("raceO"," Est."),
+                      paste0("raceO"," Std."))
+
+final
 
 @
+
+In order to disprove the parallel slopes assumption, we need to observe sufficient differences between $\beta_j$ coefficient estimates for different m while taking into account the variation by looking at standard errors of the estimates. We can indeed observe that there are some large differences between the estimates for some j, but it is very hard to argue while looking at the differences relative to standard errors without doing a formal test. Our conjecture is that the parallel slopes assumption might be violated which we base on observed differences in estimates from BLRs, however many of those differences could be attributed to large standard errors, and we cannot form a definite conclusion without a statistical test that would test the significance of the differences while taking into account standard errors.
+
 
 \newpage
 
@@ -309,7 +317,7 @@ medpar$age80 <- factor(medpar$age80, levels=c("0", "1"), labels=c("<80", ">80"))
 medpar$type <- factor(medpar$type, levels=c("1", "2", "3"), labels=c("elective", "urgent", "emergency"))
 @
 
-The data set medpar.csv is an excerpt from US national Medicare inpatient hospital database. It contains 1495 observations on the following variables:
+The data set medpar.csv is an excerpt from US national Medicare inpatient hospital database. It contains 1495 observations on the following variables:\\
 
 \begin{itemize}
 \item los: length of hospital stay (in days)
@@ -321,60 +329,62 @@ pay (0)
 (1 = elective, 2 = urgent, and 3 = emergency)
 \end{itemize}
 
-We would like to investigate whether there is an association between the length of hospital stay and the other variables.
+We would like to investigate whether there is an association between the length of hospital stay and the other variables.\\
 
-\begin{enumerate}
-\item Import the data. Based on the descriptive statistics, do you expect that there is a significant relation between \texttt{los} and \texttt{type}? Justify your answer.
+\textbf{(1) Import the data. Based on the descriptive statistics, do you expect that there is a significant relation between \texttt{los} and \texttt{type}? Justify your answer.}\\
+
 
 <<t3-expl_anal, fig.height=3, echo=FALSE, fig.cap="\\label{fig:boxplot}Boxplot showing relationship between los and type">>=
-ggplot(medpar, aes(x=type, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
+ggplot(medpar, aes(x=type, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun.y=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
 @
 
-From the boxplot in \autoref{fig:boxplot} we can see that mean, median, top quartiles and top extremes are all rising with how serious the type of the visit is. On the other hand bottom quartile and bottom extreme values are on the same level between types of stay. There might be different reason for low extremes between the stays. For elective stay the short stay is expected due to nature of procedures. However for emergency, low stay might mean that a patient died.
+From the boxplot in \autoref{fig:boxplot} we can see that mean, median, top quartiles and top extremes of length of hospital stay are all rising with how serious the type of the visit is (going from "elective" to "emergency"). On the other hand, bottom quartile and bottom extreme values are roughly on the same level between types of stay. The cutoff at zero is due to the nature of the dependent variable (there can't be less than zero days stay). Also, there might be different reason for low extremes between the stays. For "elective" stay the short stay could be due to nature of procedures, while for "emergency", a low stay might mean that a patient died. Based on the plot, we could argue that there could be a significant association between $los$ and $type$ with more serious type of addmission ("emergency", "urgent") being associated with longer hospital stays, but any definite conclusion requires statistical significance test.\\
 
-In order to see if the means of the length of stay between the types of stay are signifficantly different, we fit a ANOVA model.
+\textbf{(2) Estimate a Poisson regression model with los as dependent variable and type as explanatory variable. Name this model Model 1. Interpret the parameters of the model (including the intercept).}\\
 
-<<t3-aov>>=
-mod0 <- aov(los ~ type, data=medpar)
-summary(mod0)
-@
+The Model 1 is defined by the equation:
 
-P-value of \texttt{<2e-16} shows that we can reject null hypothesis that the means of types are the same.
-
-\item Estimate a Poisson regression model with los as dependent variable and type as explanatory variable. Name this model Model 1. Interpret the parameters of the model (including the intercept).
+\[
+\log(\mathds{E}[Y|\mathbf{x}]) = \log(\lambda) = \beta_{0} + \beta_{1}D_{urgent} + \beta_{2}D_{emergency}
+\]
 
 <<t3-sim_poi>>=
 mod1 <- glm(los ~ type, family="poisson", data=medpar)
+mod.empty <- glm(los ~ 1, family="poisson", data=medpar)
+anova(mod.empty, mod1, test = "Chisq")
 summary(mod1)
 @
 
-Null hypothesis for each explanatory variable is that the factor is 0. Looking at the p-value, all are below 0.05 therefore we can reject the null hypothesis.
+First we make a comment on the significance of the coefficients. We see that the factor type as a whole is significant, meaning that at significance $\alpha = 5\%$ we reject the null hypothesis that there are no differences among it's levels, i.e. reject that coefficients for dummy on "urgent" and for dummy on "emergency" are both zero. Furthermore, both coefficients for dummy on "urgent" and for dummy on "emergency" are significant at significance $\alpha = 5\%$, meaning that we also reject null hypotheses that any of the two is zero. This implies that there is a significant difference between "urgent" compared to "elective" and between "emergency" compared to "elective" in their association with the length of the hospital stay. Since both parameters are significant, we interpret both of them. We also interpret the intercept, which is significant as well.\\
 
-To get expected value $E[Y|\mathbf{x}]$ in poisson regression model:
+$\beta_0 = \Sexpr{round(summary(mod1)$coefficients[1,1],3)}$: The parameter $\beta_{0}$ represents the log of the expected value of the count dependent variable $los$ when the type of admission is "elective". In a more intuitive interpretation, the expected value of the count dependent variable $los$ when the type of admission is "elective" is $e^{\beta_0}$. The estimate for $\beta_{0}$ is $\Sexpr{round(summary(mod1)$coefficients[1,1],3)}$ meaning that the estimated expected value of the count dependent variable $los$ when the type of admission is "elective" is $\Sexpr{round(exp(summary(mod1)$coefficients[1,1]),3)}$.\\
 
-$$
-E[Y|\mathbf{x}] = \lambda= = e^{\beta_{intercept} + \beta_{urgent}x_{urgent} + \beta_{emergency}x_{emergency}}
-$$
+$\beta_1 = \Sexpr{round(summary(mod1)$coefficients[2,1],3)}$: The parameter $\beta_{1}$ represents the difference between the log of the expected value of the count dependent variable $los$ when the type of admission is "urgent" compared to when the type of admission is "elective". In a more intuitive interpretation, the expected value of the count dependent variable $los$ changes by a factor of $e^{\beta_1}$, or by $(e^{\beta_1} - 1)\cdot100\%$, when going from "elective" to "urgent" type of admission. The estimate for parameter $\beta_{1}$ is $\Sexpr{round(summary(mod1)$coefficients[2,1],3)}$, which means that the data shows that the expected value of the count dependent variable $los$ when type of admission is "urgent" is $\Sexpr{round(exp(summary(mod1)$coefficients[2,1]),3)}$ times the same expected value when the type of admission is "elective", i.e. increases by $\Sexpr{(round(exp(summary(mod1)$coefficients[2,1]),3) -1)*100}$$\%$ when going from "elective" to "urgent". Thus, the expected value of the count dependent variable $los$ when type of admission is "urgent" is equal to $\Sexpr{round(exp(sum(summary(mod1)$coefficients[1:2,1])),3)}$. This indicates that "urgent" type of admission is associated with longer hospital stays compared to "elective" type of admission.\\
 
-For individual type of stays, we get following predicted values for length of stay:
+$\beta_2 = \Sexpr{round(summary(mod1)$coefficients[3,1],3)}$: The parameter $\beta_{2}$ represents the difference between the log of the expected value of the count dependent variable $los$ when the type of admission is "emergency" compared to when the type of admission is "elective". In a more intuitive interpretation, the expected value of the count dependent variable $los$ changes by a factor of $e^{\beta_2}$, or by $(e^{\beta_2} - 1)\cdot100\%$, when going from "elective" to "emergency" type of admission. The estimate for parameter $\beta_{2}$ is $\Sexpr{round(summary(mod1)$coefficients[3,1],3)}$, which means that the data shows that the expected value of the count dependent variable $los$ when type of admission is "emergency" is $\Sexpr{round(exp(summary(mod1)$coefficients[3,1]),3)}$ times the same expected value when the type of admission is "elective", i.e. increases by $\Sexpr{(round(exp(summary(mod1)$coefficients[3,1]),3) -1)*100}$$\%$ when going from "elective" to "emergency". Thus, the expected value of the count dependent variable $los$ when type of admission is "emergency" is equal to $\Sexpr{round(exp(sum(summary(mod1)$coefficients[c(1,3),1])),3)}$. This indicates that "emergency" type of admission is associated with longer hospital stays compared to "elective" type of admission.\\
 
-<<t3-predicted>>=
-predict(mod1, newdata = data.frame(type=factor(c(1,2,3),
-                                   levels=c("1", "2", "3"),
-                                   labels=c("elective", "urgent", "emergency"))),
-                                   type="response")
-@
+The usual interpretation is holding other variables in the model constant, but here we don't have other variables, so this is omitted.\\
 
-Where columns corresponds to los for elective stay, urgent stay and emergency stay respectively. We can see that length of emergency stay is the longest and elective the shortests as expected. The difference between elective and urgent is 2.37 days and the difference between urgent and emergency is 7.04. Even though the difference in factors is low, since expected value of poisson regression is a exponential function, the differences in the lenghts of stay are large.
+\textbf{(3) Add to the model in (2) the explanatory variables age80, hmo and white. Name the resulting model Model 2. Test whether Model 2 has a better fit than Model 1.}\\
 
-\item Add to the model in (2) the explanatory variables age80, hmo and white. Name the resulting model Model 2. Test whether Model 2 has a better fit than Model 1.
+The Model 2 is defined by the equation:
+
+\[
+log(E[Y|\mathbf{x}]) = log(\lambda) = \beta_{0} + \beta_{1}D_{urgent} + \beta_{2}D_{emergency} + \beta_{3}D_{white} + \beta_{4}D_{age80} + \beta_{5}D_{hmo}
+\]
 
 To compare the two models we can use Likelihood Ratio Test (LRT). We define two hypotheses:
 
-$$
-H_0:\beta_{white}=\beta_{age80}=\beta_{hmo}=0 \qquad vs. \qquad H_1:\beta_{white}\neq 0 \; \text{or} \; \beta_{age80}\neq 0  \; \text{or} \; \beta_{hmo}\neq 0
-$$
+\[
+H_0:\beta_{3}=\beta_{4}=\beta_{5}=0 \qquad vs. \qquad H_1:\beta_{3}\neq 0 \; \text{or} \; \beta_{4}\neq 0  \; \text{or} \; \beta_{5}\neq 0
+\]
 
+and the test statistic:
+\begin{align*}
+G = Dev(Model1) - Dev(Model2)
+\end{align*}
+
+The test statistic G has an asymptotic $\chi_3^2$ dsitribution.
 
 <<t3-comp_poi>>=
 mod2 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar)
@@ -382,7 +392,7 @@ summary(mod2)
 anova(mod1, mod2, test="Chisq")
 @
 
-At p-value of 1.86e-10 we can reject null hypothesis and conclude second model performs better. The difference of deviances of two models is greater than 95th quantile for $\chi^2_3$.
+We have the value of the G statistic equal to $\Sexpr{round(anova(mod1, mod2, test="Chisq")$Deviance[2], 3)}$ and the corresponding p-value is close to zero and much lower than the general significance level 0.05. Hence, at significance level $\alpha = 5\%$, we reject the null hypothesis and conclude that the Model2 has a better fit than the Model1.\\
 
 <<t3-lev, fig.width=8, fig.height=5.5, out.width="8.5in", out.width="6in", echo=FALSE, fig.cap="\\label{fig:outliers}Diagnostic plots for model1 and model2 respectively">>=
 influenceIndexPlot(mod1,vars=c("Studentized", "hat", "Cook"), id=list(n=c(2)))
@@ -395,24 +405,30 @@ From diagnostic plots we can find out we have two levarage points. They might gr
 medpar[c(1452, 1466),]
 @
 
-These are two patients which stayed in the hospital for a very long period. We will see in latter subquestion negative binomial models which accounts for data with greater variance.
+These are two patients which stayed in the hospital for a very long period. We will see in latter subquestion negative binomial models which accounts for data with greater variance.\\
 
-\item Interpret the parameter related to the variable age80.
+\newpage
+\textbf{(4) Interpret the parameter related to the variable age80.}\\
 
-For patients with age greater than 80, we see shorter stay in hospitals by factor of -0.05471.
-
-<<t3-age_anal, fig.height=3, echo=FALSE, fig.cap="\\label{fig:boxplot2}Boxplot showing relationship between los and type with respect to age group">>=
-ggplot(medpar, aes(x=type:age80, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
+<<t3-comp_poi_interpret>>=
+summary(mod2)
 @
 
-From \autoref{fig:boxplot2} we can conclude that the greatest difference between two age groups is for emergency stay. Older patients stay shorter time in hospitals in case of emergency. With that in mind simple explanation is the death of patients. Older patients have a higher chance of dying in the hospitals. Therefore, final length of stay will be actually shorter.
+$\beta_4 = \Sexpr{round(summary(mod2)$coefficients[5,1],3)}$: The parameter $\beta_{4}$ represents the difference between the log of the expected value of the count dependent variable $los$ when an individual is older than 80 compared to when he/she is younger than 80. In a more intuitive interpretation, the expected value of the count dependent variable $los$ changes by a factor of $e^{\beta_4}$, or by $(e^{\beta_4} - 1)\cdot100\%$, when going 80 or below to above 80 years. The estimate for parameter $\beta_{4}$ is $\Sexpr{round(summary(mod2)$coefficients[5,1],3)}$, which means that the data shows that the expected value of the count dependent variable $los$ when an individual is over 80 years old is $\Sexpr{round(exp(summary(mod2)$coefficients[5,1]),3)}$ times the same expected value when an individual is 80 years or lower, i.e. decreses by $\Sexpr{(round(exp(summary(mod2)$coefficients[5,1]),3) -1)*100}$$\%$ when going from 80 or below to above 80 years. This indicates that being older than 80 is associated with shorter hospital stays compared to being 80 or below. We also see that the parameter is significantly different from 0 as its p-value is $<0.05$.\\
 
-\item Test whether the equi-dispersion assumption is matched by the data. If that
-is not the case:
+<<t3-age_anal, fig.height=3, echo=FALSE, fig.cap="\\label{fig:boxplot2}Boxplot showing relationship between los and type with respect to age group">>=
+ggplot(medpar, aes(x=type:age80, y=los, fill=type)) + geom_boxplot()+ coord_trans(y = "log10") +stat_summary(fun.y=mean, color='black', show.legend = FALSE, geom = "point", shape=19, size=3) + theme_bw() + scale_y_continuous(breaks=c(1,5, 10, 20, 50, 100))
+@
+
+This indeed is an odd conclusion, but it can have an alternative explanation. From \autoref{fig:boxplot2} we can conclude that the greatest difference between two age groups is for emergency stay. Older patients stay shorter time in hospitals in case of emergency. With that in mind simple explanation is the death of patients. Older patients have a higher chance of dying in the hospitals. Therefore, final length of stay will be actually shorter.\\
+
+\newpage
+\textbf{(5) Test whether the equi-dispersion assumption is matched by the data. If that
+is not the case:}
 \begin{enumerate}
-\item Estimate an adequate model including all the explanatory variables. Name this model Model 3.
-\item Compare the results of Model 2 and Model 3. Are they the same?
-\end{enumerate}
+\item \textbf{Estimate an adequate model including all the explanatory variables. Name this model Model 3.}
+\item \textbf{Compare the results of Model 2 and Model 3. Are they the same?}
+
 
 <<t3-over, echo=FALSE>>=
 with(medpar, tapply(los, type, function(x) {
@@ -429,27 +445,70 @@ with(medpar, tapply(los, hmo, function(x) {
 }))
 @
 
-We see a case of overdispersion in our data. We can test it following test:
+We see a case of overdispersion in our data. We use \Verb+dispersiontest()+ on the poisson-model (Model2) included int the \Verb+AER+-package to test for dispersion. Poisson regression assumes $\mathds{E}[Y|X] = \lambda$ and $\mathds{V}[Y|X] = \lambda$. This test assumes that $\mathds{V}[Y|X] = \lambda + \alpha \times \text{trafo}(\lambda)$ and tests $H_0: \alpha=0$. As we know from the negative binomial model and evidence above, we should test for over-dispersion, and thus set the $H_A$ to “greater” than 0 ($H_A: \alpha > 0$). As shown in the lecture, in negative binomial model, the variance is a quadratic function of the mean, and hence we set trafo$(\lambda)=2$.
 
+Performing the above described test:
 <<t3-overdisp>>=
 dispersiontest(mod2,alternative="greater",trafo=2)
 @
 
-We reject the null hypotheses that our data are equidispersed since p-value is <0.05, therefore, true dispersion parameter $\alpha$ is non zero. We can fit a negative binomial regression model which has a dispersion parameter $\theta$ (different from $\alpha$) to better fit the variance of data.
+One can see that $\alpha$ is detected as 0.6015419. We reject the null hypotheses that our data are equidispersed since p-value is <0.05, therefore, true dispersion parameter $\alpha$ is non zero. Thus we conclude that we deal with over-dispersed data and the pure poisson-model is not adequate. We can fit a negative binomial regression model which has a dispersion parameter $\theta$ (different from $\alpha$) to better fit the variance of data. \\
 
 <<t3-nbm>>=
 mod3 <- glm.nb(los ~ type + white + age80 + hmo, data=medpar)
 summary(mod3)
 @
 
-The dispersion parameter $\theta$ is equal to 2.2458 with standard error 0.0999. Variance of the data is $\lambda + \frac{\lambda^2}{\theta}$. When comparing estimates of model2 and model3 we see that their absolute value is smaller for model3. That is because model3 does not need to compensate larger variance with larger estimates.
-
-Morover we see that for model3, we cannot reject null hypothesis for hmo, age80 nad white parameters that they are equal to 0.
+The dispersion parameter $\theta$ is equal to 2.2458 with standard error 0.0999. Variance of the data is $\lambda + \frac{\lambda^2}{\theta}$. When comparing estimates of model2 and model3 we see that their absolute value is smaller for model3. That is because model3 does not need to compensate larger variance with larger estimates. Morover we see that for model3, we cannot reject null hypothesis for hmo, age80 and white parameters, that they are equal to 0. \\
 
 <<t3-nbm_anal, fig.width=8, fig.height=5.5, out.width="8.5in", out.width="6in", echo=FALSE, fig.cap="\\label{fig:outliers2}Diagnostic plots for negative binomial model">>=
 influenceIndexPlot(mod3,vars=c("Studentized", "hat", "Cook"), id=list(n=c(2)), main=NULL)
 @
-Comparing Diagnostic plots \autoref{fig:outliers} and \autoref{fig:outliers} we see that we do not observe two levarege points for negative binomial model. Negative binomial model accounts for higher variance and from studentized residuals we see that fit of this model is overall better than the one of model2.
+
+Comparing Diagnostic plots \autoref{fig:outliers} and \autoref{fig:outliers2} we see that we do not observe two levarege points for negative binomial model. Negative binomial model accounts for higher variance and from studentized residuals we see that fit of this model is overall better than the one of model2.
+
+
 \end{enumerate}
+
+\newpage
+
+\section*{Task 4}
+
+Could you think of a test for equi-dispersed data based on the comparison of two models rather than testing the over-dispersion parameter $\alpha$ of the negative binomial regression model? Define the null and the alternative hypotheses, the test statistic and the rejec- tion region. Explain the logic of the test. Apply the test to the data in Task 3.\\
+
+As we mentioned earlier, negative binomial models assume the conditional means are not equal to the conditional variances. This inequality is captured by estimating a dispersion parameter (not shown in the output) that is held constant in a Poisson model. Thus, the Poisson model is actually nested in the negative binomial model. We can therefore use a likelihood ratio test to compare these two models and test this model assumption $[1]$.\\
+
+Since $\theta = \frac 1\alpha$, the null hypothesis and alternative hypothesis is:
+\[ H_0 : \theta = \infty \qquad vs. \qquad H_1 : \theta < \infty
+\]
+and the test statistic is:
+\[ G = -2(l(\text{model2}_{PRM}) - l(\text{model3}_{NBRM})) \sim \chi^2_1
+\]
+We use the \Verb+logLik()+ function to obtain the log-likelihood values for the estimated models 2 and 3. We know that the difference between these likelihoods follow a $\chi^2$ distribution with degrees of freedom being equal to the difference in the number of estimated parameters . Then we obtain the p-value for the test statistic.
+
+<<>>=
+mod2 <- glm(los ~ type + white + age80 + hmo, family="poisson", data=medpar)
+mod3 <- glm.nb(los ~ type + white + age80 + hmo, data=medpar)
+
+print("Poisson Regression Model (Model 2)"); print(logLik(mod2))
+print("Negative Binomial Regression Model (Model 3)"); print(logLik(mod3))
+print(paste("Test statistic is ",(-2 * (logLik(mod2) - logLik(mod3)))[1]))
+
+pchisq((-2 * (logLik(mod2) - logLik(mod3)))[1], df = 1, lower.tail = FALSE)
+@
+
+We see that the test statistics is very large 4256.8940 and comparing it with $\chi^2_1 $ distribution with 1 degree of freedom we obtain the p-value. The p-value is very small (rounded to 0), therefore we can reject null hypothesis. We conclude that model3 models the data better. We can reject a hypothesis that the data are equidisperse.
+
+
+\begin{thebibliography}{9}
+
+\bibitem{ucla}
+UCLA - Statistical Consulting: Negative binomial regression,
+\\\texttt{https://stats.idre.ucla.edu/r/dae/negative-binomial-regression/}
+
+\bibitem{scott}
+Scott Long, J. (1997). Regression models for categorical and limited dependent variables. Advanced quantitative techniques in the social sciences, 7.
+
+\end{thebibliography}
 
 \end{document}

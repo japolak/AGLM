@@ -52,10 +52,12 @@ int_mod
 freq2 <- na.omit(freq)
 mod.full <- polr(Q2~., data = freq2)
 mod.fin <- step(mod.full, direction = "backward")
-
+coef(mod.fin)
 
 
 ##  Task 2
+
+all_coefs <- matrix(ncol = 5, nrow=0)  # model var, beta label, beta value, standard error
 
 
 
@@ -79,6 +81,12 @@ for(v in vars){
     coefs <- f$coef
     coefs[2:p] <- coefs[2:p] + coefs[1]
 
+
+    coef_df <- data.frame(summary(f)$coefficients[, 1:2])
+    coef_df <- cbind(beta_label=rownames(coef_df), coef_df)
+    rownames(coef_df) <- NULL
+    coef_df <- cbind(variable=v, m_thresh=i, coef_df)
+    all_coefs <- rbind(all_coefs, coef_df)
   }
 
   coefs_plot <- glm_coefs
@@ -108,9 +116,9 @@ for(v in vars){
     labs <- c(0, max(df[,"age"]))
   }
   axis(1, at=1:p, labels=labs)
+
+
 }
-
-
 par(mar=c(0,0,0,0))
 plot(1, type = "n", axes=FALSE, xlab="", ylab="")
 plot_colours <- c("red", "blue", "purple", "green")
@@ -119,3 +127,38 @@ legend(x = "bottom",inset = 0,cex=1,
                   "never, rarely, occasionally vs often, always", "never, rarely, occasionally, often vs always"),
        col=plot_colours, lwd=2, pch=19, ncol=2)
 
+
+
+# Getting tables together
+complete_table <- data.frame()
+# Table of full model coefs
+full_model_c <- data.frame(summary(mod.fin)$coefficients[,1:2])
+full_model_c[, "beta_label"] <- rownames(full_model_c)
+rownames(full_model_c) <- NULL
+full_c <- reshape(full_model_c, varying = c("Value", "Std..Error"), v.names = "Full model",
+             idvar = c("beta_label"),
+             timevar = "Beta", direction="long", times = c("Estimate", "Std..Error"))
+rownames(full_c) <- NULL
+
+# Education coefs
+
+for(v in vars){
+  c_table <- all_coefs[all_coefs[,"variable"] == v, -1]
+
+  z <- reshape(c_table, varying = c("Estimate", "Std..Error"), v.names = "Value",
+          idvar = c("m_thresh", "beta_label"),
+          timevar = "Beta", direction="long", times = c("Estimate", "Std..Error"))
+  rownames(z) <- NULL
+
+  label_order = paste0(v, levels(freq2[,v]))
+  label_order[1] = "(Intercept)"
+  z <- z[order(z$m_thresh, match(z$beta_label, label_order)), ]
+
+  final_table <- reshape(z, idvar = c('beta_label', 'Beta'), direction = 'wide',
+          timevar = 'm_thresh', sep = '_model_')
+
+  final_table <- merge(full_c,final_table, by = c('beta_label', "Beta"))
+  complete_table <- rbind(complete_table, final_table)
+}
+
+print(complete_table)
