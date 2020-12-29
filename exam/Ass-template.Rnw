@@ -1,0 +1,206 @@
+%% LyX 2.2.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you  know what you are doing.
+\documentclass{article}
+\usepackage[sc]{mathpazo}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{dsfont}
+\usepackage{indentfirst}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+% Margins of the document
+\geometry{verbose,tmargin=2.5cm,bmargin=2.5cm,lmargin=2.5cm,rmargin=2.5cm}
+
+% Header and footer for all pages
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\rfoot{Page \thepage}
+
+% Header and footer for first page
+\fancypagestyle{plain}{%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyhf{}%
+  \rhead{ETH Zurich}
+  \lhead{Applied Generalized Linear Models \\ Spring Semester 2020}
+  \rfoot{Page \thepage}
+}
+
+%% Global Settings
+<<setup, include=FALSE, cache=FALSE>>=
+library(dplyr)
+library(multcomp)
+library(ggplot2)
+library(knitr)
+# set global chunk options
+opts_chunk$set(fig.path='figures/plot-', fig.align='center', fig.show='hold')
+options(formatR.arrow=TRUE,width=90)
+@
+
+%% ---------- BEGIN DOCUMENT -----------------------------------------------
+\begin{document}
+
+%% Tiltle
+\title{Assignment 4}
+\author{Martin Kotuliak}
+\date{\today}
+
+\maketitle
+
+\section*{Task 1}
+
+The table below reports the R output of a multinomial logistic regression model comparing the category $m$ with the reference category $M$. Fill in the missing information and report the computation.
+
+<<t1-comps, include=FALSE>>=
+
+z_x1 <- -2.10
+x1_se <- 0.28
+x1 <- z_x1/x1_se
+
+
+
+x2 <- 0.39
+or_x2 <- exp(x2)
+x2_se <- 0.60
+
+l_ci_x2 <- exp(x2-qnorm(0.975)*x2_se)
+h_ci_x2 <- exp(x2+qnorm(0.975)*x2_se)
+
+
+l_ci_x3 <- 1.59
+h_ci_x3 <- 6.03
+
+x3 <- (log(l_ci_x3) + log(h_ci_x3)) / 2
+x3_se <- (- log(l_ci_x3) + log(h_ci_x3)) /(2*qnorm(0.975))
+z_x3 <- x3/x3_se
+
+or_x3 <- exp(x3)
+@
+
+\begin{center}
+\begin{tabular}{ l r r r r r r r}
+ \hline
+            & & & & &  \multicolumn{2}{c}{95\% C.I. for OR}\\
+ \hline
+            & Est.            & s.e.              & z          & OR & lower & higher\\
+ \hline
+ $X_1$      & {\bf \Sexpr{round(x1, 3)}} & 0.28 & -2.10    & 0.55 & 0.38 & 1.22 \\
+ $X_2$      & 0.39  & 0.60 & 0.65    & {\bf \Sexpr{round(or_x2, 3)}} & 0.456 & {\bf \Sexpr{round(h_ci_x2, 3)}} \\
+ $X_3$      & 1.13  & {\bf \Sexpr{round(x3_se, 3)}} & {\bf \Sexpr{round(z_x3, 3)}}    & 3.09 & 1.59 & 6.03 \\
+ \hline
+\end{tabular}
+\end{center}
+
+\begin{align*}
+X_1=\frac{z_{X_1}}{\text{s.e.}_{X_1}}=\frac{\Sexpr{round(z_x1, 3)}}{\Sexpr{round(x1_se, 3)}}=\Sexpr{round(x1, 3)}\\
+\text{OR}_{X_2}=e^{X_2}=e^{\Sexpr{round(x2, 3)}}=\Sexpr{round(or_x2, 3)}\\
+\text{higher}_{X_2}=e^{X_2 - z_{0.025} \times \text{s.e.}_{X_2}}=e^{X_2 + z_{0.975} \times \text{s.e.}_{X_2}}=e^{\Sexpr{round(x2, 3)} + \Sexpr{round(qnorm(0.975), 3)}\times \Sexpr{round(x2_se, 3)}}=\Sexpr{round(h_ci_x2, 3)}\\
+\text{s.e.}_{X_3}=\frac{- \ln (\text{lower}_{X_3}) + \ln (\text{higher}_{X_3})}{2 \times z_{0.975}} = \frac{- \ln (\Sexpr{round(l_ci_x3, 3)}) + \ln (\Sexpr{round(h_ci_x3, 3)})}{2 \times \Sexpr{round(qnorm(0.975), 3)}} = \Sexpr{round(x3_se, 3)}\\
+\text{z}_{X_3}=\frac{X_3}{\text{s.e.}_{X_3}}=\frac{\Sexpr{round(x3, 3)}}{\Sexpr{round(x3_se, 3)}}=\Sexpr{round(z_x3, 3)}\\
+\end{align*}
+
+\section*{Task 2}
+Let $Y$ be a variable taking value 1 if a Swiss banknote is counterfeit and 0 if it is genuine. Four physical measurements (all in millimetres) of the notes were collected: the length of the left (Left) and right (Right) edges of the note; the distance from the image to the top (Top) and bottom (Bottom) edges of the note. The goal of the analysis is to estimate the probability that a banknote is counterfeit, given the values of the four measurements. Two binomial logistic regression models were estimated. The results are reported in the table below.
+
+\begin{center}
+\includegraphics[width=0.5\textwidth]{table.png}
+\end{center}
+\begin{enumerate}
+\item Consider Model 1. Interpret the parameters related to the variables Bottom and Top.
+
+Using significance level $\alpha$=0.05 we cannot conclude that coefficient estimates for Left and Right measurements are significantly different from 0. For coefficient estimates for Bottom and Top we can reject null hypothesis with them having p-value of less than 0.001.
+
+Bottom parameter tells us that for each additional unit (1mm) of an image being displaced from the bottom of a banknote, odds of banknote being counterfeit increases by factor of $e^{Bottom}=e^{5.194}=180.19$ (17,919\%) holding all other variables constant.
+
+Top parameter tells us that for each additional unit (1mm) of an image being displaced from the top of a banknote, odds of banknote being counterfeit increases by factor of $e^{Bottom}=e^{6.950}=1043.15$ (104,215\%) holding all other variables constant.
+
+\item Compare Model 1 and Model 2 by means of an adequate test. Write down the null and the alternative hypotheses, the test statistic and its distribution, and the rejection region. Interpret the result of the test by knowing that the corresponding p-value is 0.338.
+
+To compare the two models we can use Likelihood Ratio Test (LRT). We define two hypotheses:
+
+$$
+H_0:\beta_{Left}=\beta_{Right}=0 \qquad vs. \qquad H_1:\beta_{Left}\neq 0 \; \text{or} \; \beta_{Right}\neq 0
+$$
+
+For LRT the test statistic is difference of deviances:
+
+$$
+G = deviance(\text{model 2}) - deviance(\text{model 1})
+$$
+
+Its assymptotic distribution is $\chi^2_k$ where $k$ is difference in degrees of freedom. In our task $k=2$. Rejection region is then $>5.991=\chi^2_{2,0.95}$. Difference in deviances is 2.167 between model 2 and model 1. $2.167 < 5.991$, therefore, it is not in rejection region.
+
+Knowing p-value is 0.338>0.05 we cannot reject null hypotheses. Therefore we cannot conclude that model 1 is significantly better than model 2.
+\item Consider Model 2. Compute the predicted probability of being counterfeit for a note with bottom and top distances of 9 and 10 millimetres, respectively.
+
+\begin{align*}
+P[\text{note is counterfeit} \;|\; Bottom = 9\text{mm}, Top = 10\text{mm}] &= logistic(\beta_{Intercept} + \beta_{Bottom} Bottom + \beta_{Top}Top) \\
+&= logistic(-130.116 + 9 \cdot 5.6 + 10 \cdot 7.428)\\
+&=0.0043=0.43\%
+\end{align*}
+\end{enumerate}
+
+\section*{Task3}
+
+An article in Nature describes an experiment to investigate the effect of consuming chocolate on cardiovascular health. The experiment consisted of using three different types of chocolates: 100 g of dark chocolate (DC), 100 g of dark chocolate with 200 mL of full-fat milk (DC + MK), and 200 g of milk chocolate (MC). Twelve subjects were used. On different days a subject consumed one of the chocolate-factor levels and one hour later the total antioxidant capacity of their blood plasma was measured in an assay.
+
+\begin{enumerate}
+\item Which model(s) would you use to describe the dependence of the antioxidant capacity on the other variables in the data set? Argue for your answer.
+
+Antioxidant capacity of blood plasma is measured in mmol/liter. mmol is a quantity representing a count, therefore we count particles in a liter of blood plasma. We are working with a count data. We would like to represent a number of particles as a function of chocolate-factor level and we can use a count response model. Suitable models are Poisson regression and Negative binomial model. Negative binomial model is a generalization of Poisson regression model. Assumption for Poisson regression model is $Var[Y|X_i]=E[Y|X_i]$. However usually this is not the case and $Var[Y|X_i]>E[Y|X_i]$. Negative binomial model adds a scaling parameter to model data for which the variance assumption does not hold.
+
+\item Write down the formula of the model(s). How would you interpret the parameters according to the model you chose?
+
+For Poisson regression model:
+\begin{align*}
+&P[Y_i=y_i]=e^{-\lambda_i}\frac{\lambda_i^{y_i}}{y_i!}\\
+&\lambda_i=E[Y|X_i]=e^{\beta_0+\beta_1X_{i1}+...+\beta_pX_{ip}}\\
+&Var[Y|X_i]=\lambda_i
+\end{align*}
+
+For Negative binomial model $Y|X_i$ follows the negative binomial distribution where:
+$$
+\lambda_i=E[Y|X_i]=e^{\beta_0+\beta_1X_{i1}+...+\beta_pX_{ip}}
+$$
+is the same as for poisson model. However,
+$$
+Var[Y|X_i]=\lambda_i+\alpha\lambda^2
+$$
+
+For interpretation of both of them we use factor or percentage change, when we change one variable and hold the others constant.
+
+Factor change:
+$$
+\frac{E[Y|\mathbf{x}+\delta]}{E[Y|\mathbf{x}]}=\frac{e^{\beta_0+\beta_1x_{i1}+...+\beta_j(x_{ij}+\delta)+...+\beta_px_{ip}}}{e^{\beta_0+\beta_1x_{i1}+...+\beta_j(x_{ij})+...+\beta_px_{ip}}}=e^{\delta \beta_j}
+$$
+
+Percentage change:
+$$
+\frac{E[Y|\mathbf{x}+\delta]-E[Y|\mathbf{x}]}{E[Y|\mathbf{x}]}\cdot 100=[e^{\delta \beta_j} - 1]\cdot 100
+$$
+
+If $\delta=1$, we say that for each additional unit in $j$th parameter number of modeled occurences increases by factor of $e^{\beta_j}$ ($[e^{\beta_j}-1]\cdot 100$\%) holding all other variables constant.
+
+$j$th parameter could be an age of a subject, so unit would be a year. We can then interpret the effect of age on the total antioxidant capacity of blood plasma holding all other variables constant.
+\end{enumerate}
+
+\section*{Task 4}
+
+Write a short paragraph (max. 20 lines) to explain why the ordinal logistic regression model cannot be applied with a nominal dependent variable, but a nominal logistic regression model can be applied with an ordinal dependent variable. Use an example to support your explanation.
+\\
+\\
+Nominal data is such that you can assign a category to each instance. The category is the nominal dependent variable, and we model it from observed variables. Such modeled dependent variables could be i.e. favourite food, political party, side in an argument.
+
+On the other hand, for ordinal data we can assign each instance a category such that we can order (rank) those categories i.e. highest finished education (we can order them since you need to finish lower level to advance in higher level, the rank of elementary school is lower than the rank for university) or likert scales (strongly disagree, disagree, agree, strongly agree, the rank for strongly disagree is lower the than rank for agree). To use ordinal logistic regression model we assume following. Let $p_n$ be probability that data is in rank $n$ or lower. Than for each two adjacent ranks the difference in probabilities $p_i$ and $p_{i+1}$ is constant. This is called proportional odds assumption.
+
+One can always represent the ordinal categories as nominal and use nominal logistic regression model and ignore the ordering (ranking). Then the nominal regression model would work since it compares the odds of success in one category instead of another (finished university vs elementary school).
+
+But we usually cannot find an order in nominal variables such that proportional odds assumption holds. You cannot find natural ranking for foods for example. You cannot find good ranking for pizza, pasta, lasagne and sushi such that proportional odds assumption holds when modeling favourite food of subjects. Ordinal regression model wouldn't yield good results.
+
+\end{document}
